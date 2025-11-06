@@ -1,0 +1,221 @@
+import { FormSubmission } from '../types/form';
+
+interface GeneralInfoSectionProps {
+  formData: FormSubmission;
+  onChange: (field: string, value: any) => void;
+  readOnly: boolean;
+}
+
+export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfoSectionProps) {
+  return (
+    <div className="section-card">
+      <h2 className="section-header">
+        Field Service Report - Work Order
+      </h2>
+
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="form-label">
+              Date <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="date"
+              value={formData.date || ''}
+              onChange={(e) => onChange('date', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              Job/PO # <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.job_po_number || ''}
+              onChange={(e) => {
+                let rawValue = e.target.value.replace(/[^0-9]/g, '');
+                let formatted = '';
+
+                if (rawValue.length > 0) {
+                  formatted = rawValue.slice(0, 2);
+
+                  if (rawValue.length > 2) {
+                    formatted += '-' + rawValue.slice(2, 4);
+                  }
+
+                  if (rawValue.length > 4) {
+                    formatted += '-' + rawValue.slice(4, 8);
+                  }
+                }
+
+                onChange('job_po_number', formatted);
+              }}
+              disabled={readOnly}
+              className="form-input"
+              placeholder="XX-XX-XXXX"
+              maxLength={10}
+              required
+            />
+            <p className="text-xs text-gray-600 mt-1">
+              Format: XX-XX-XXXX (Middle section must be 23, 29, or 42)
+            </p>
+            {formData.job_po_number && (() => {
+              const parts = formData.job_po_number.split('-');
+              const middleValue = parts[1];
+              const isValid = middleValue === '23' || middleValue === '29' || middleValue === '42';
+
+              return parts.length === 3 && middleValue && !isValid ? (
+                <p className="text-xs text-amber-700 mt-1 font-medium">
+                  ⚠️ Middle section should be 23, 29, or 42
+                </p>
+              ) : null;
+            })()}
+          </div>
+          <div>
+            <label className="form-label">
+              Technician <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.technician || ''}
+              onChange={(e) => onChange('technician', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="form-label">
+              CUSTOMER <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.customer || ''}
+              onChange={(e) => onChange('customer', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+              required
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              CONTACT NAME <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.contact_name || ''}
+              onChange={(e) => onChange('contact_name', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              SITE NAME <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.site_name || ''}
+              onChange={(e) => onChange('site_name', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+              required
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              CONTACT PHONE <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="tel"
+              value={formData.contact_phone || ''}
+              onChange={(e) => onChange('contact_phone', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              SITE ADDRESS <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.site_address || ''}
+              onChange={(e) => onChange('site_address', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+              required
+            />
+          </div>
+          <div>
+            <label className="form-label">
+              CONTACT EMAIL <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="email"
+              value={formData.contact_email || ''}
+              onChange={(e) => onChange('contact_email', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="form-label">
+              TYPE OF SERVICE <span className="text-red-600">*</span>
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+              {[
+                'PREVENTATIVE MAINTENANCE',
+                'INSPECTION',
+                'SERVICE CALL/REPAIR',
+                'STARTUP/WARRANTY',
+                'LOAD BANK'
+              ].map((service) => {
+                const services = (formData.type_of_service || '').split(',').map(s => s.trim()).filter(Boolean);
+                const isChecked = services.includes(service);
+
+                return (
+                  <label key={service} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        let newServices = [...services];
+                        if (e.target.checked) {
+                          newServices.push(service);
+                        } else {
+                          newServices = newServices.filter(s => s !== service);
+                        }
+                        onChange('type_of_service', newServices.join(', '));
+                      }}
+                      disabled={readOnly}
+                      className="w-4 h-4 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                    <span className="text-sm">{service}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label className="form-label">
+              NEXT INSPECTION DUE <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="date"
+              value={formData.next_inspection_due || ''}
+              onChange={(e) => onChange('next_inspection_due', e.target.value)}
+              disabled={readOnly}
+              className="form-input"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
