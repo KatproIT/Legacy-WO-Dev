@@ -46,7 +46,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               </select>
             </div>
             <div>
-              <label className="form-label">FULL CAPS <span className="text-red-600">*</span></label>
+              <label className="form-label">Fuel Capacity <span className="text-red-600">*</span></label>
               <input
                 type="text"
                 value={formData.full_caps || ''}
