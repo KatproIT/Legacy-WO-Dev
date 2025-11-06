@@ -58,9 +58,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               maxLength={10}
               required
             />
-            <p className="text-xs text-gray-600 mt-1">
-              Format: XX-XX-XXXX (Middle section must be 23, 29, or 42)
-            </p>
+    
             {formData.job_po_number && (() => {
               const parts = formData.job_po_number.split('-');
               const middleValue = parts[1];
