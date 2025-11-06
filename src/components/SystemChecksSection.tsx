@@ -97,7 +97,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               />
             </div>
             <div>
-              <label className="form-label">OIL CAP <span className="text-red-600">*</span></label>
+              <label className="form-label">Oil Capacity <span className="text-red-600">*</span></label>
               <input
                 type="text"
                 value={formData.oil_cap || ''}
