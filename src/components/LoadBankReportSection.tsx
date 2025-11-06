@@ -15,7 +15,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly }: LoadBank
   const addEntry = () => {
     const newEntry: LoadBankEntry = {
       id: Math.random().toString(36).substr(2, 9),
-      time: '',
+      time: '00:00',
       kw: '',
       hertz: '',
       ab: '',

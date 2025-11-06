@@ -61,7 +61,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
           <label className="form-label">Time <span className="text-red-600">*</span></label>
           <input
             type="time"
-            value={formData.exercise_time || ''}
+            value={formData.exercise_time || '00:00'}
             onChange={(e) => onChange('exercise_time', e.target.value)}
             disabled={readOnly}
             className="form-input"
