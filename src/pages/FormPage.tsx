@@ -492,6 +492,7 @@ export function FormPage() {
       const formLink = `${window.location.origin}/form/${formData.job_po_number}`;
 
       const payload = {
+        to: formData.submitted_by_email || '',
         note,
         formLink,
         jobPO: formData.job_po_number
