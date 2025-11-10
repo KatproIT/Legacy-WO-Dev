@@ -10,7 +10,8 @@ export const getSelectClass = (value: any, hasValidationErrors: boolean, readOnl
 };
 
 export const isLoadBankRequired = (formData: FormSubmission): boolean => {
-  return formData.load_bank_test !== '' && formData.load_bank_test !== 'N/A';
+  const services = (formData.type_of_service || '').split(',').map(s => s.trim()).filter(Boolean);
+  return services.includes('LOAD BANK');
 };
 
 export const validateLoadBankReport = (formData: FormSubmission): { isValid: boolean; errors: string[] } => {
