@@ -68,7 +68,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
 
               return parts.length === 3 && middleValue && !isValid ? (
                 <p className="text-xs text-amber-700 mt-1 font-medium">
-                  ⚠️ Middle section should be 23, 29, or 42
+                  ⚠️ Invalid PO number
                 </p>
               ) : null;
             })()}
