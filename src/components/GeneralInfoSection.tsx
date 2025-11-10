@@ -68,7 +68,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
 
               return parts.length === 3 && middleValue && !isValid ? (
                 <p className="text-xs text-amber-700 mt-1 font-medium">
-                  ⚠️ Invalid PO number
+                  ⚠️ Invalid Job/PO number
                 </p>
               ) : null;
             })()}
