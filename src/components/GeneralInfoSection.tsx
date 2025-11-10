@@ -1,12 +1,14 @@
 import { FormSubmission } from '../types/form';
+import { getInputClass } from '../utils/formValidation';
 
 interface GeneralInfoSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
-export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfoSectionProps) {
+export function GeneralInfoSection({ formData, onChange, readOnly, hasValidationErrors }: GeneralInfoSectionProps) {
   return (
     <div className="section-card">
       <h2 className="section-header">
@@ -24,7 +26,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.date || ''}
               onChange={(e) => onChange('date', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.date, hasValidationErrors, readOnly)}
             />
           </div>
           <div>
@@ -53,7 +55,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
                 onChange('job_po_number', formatted);
               }}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.job_po_number, hasValidationErrors, readOnly)}
               placeholder="XX-XX-XXXX"
               maxLength={10}
               required
@@ -80,7 +82,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.technician || ''}
               onChange={(e) => onChange('technician', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.technician, hasValidationErrors, readOnly)}
               required
             />
           </div>
@@ -96,7 +98,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.customer || ''}
               onChange={(e) => onChange('customer', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.customer, hasValidationErrors, readOnly)}
               required
             />
           </div>
@@ -109,7 +111,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.contact_name || ''}
               onChange={(e) => onChange('contact_name', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.contact_name, hasValidationErrors, readOnly)}
             />
           </div>
           <div>
@@ -121,7 +123,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.site_name || ''}
               onChange={(e) => onChange('site_name', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.site_name, hasValidationErrors, readOnly)}
               required
             />
           </div>
@@ -134,7 +136,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.contact_phone || ''}
               onChange={(e) => onChange('contact_phone', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.contact_phone, hasValidationErrors, readOnly)}
             />
           </div>
           <div>
@@ -146,7 +148,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.site_address || ''}
               onChange={(e) => onChange('site_address', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.site_address, hasValidationErrors, readOnly)}
               required
             />
           </div>
@@ -159,7 +161,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.contact_email || ''}
               onChange={(e) => onChange('contact_email', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.contact_email, hasValidationErrors, readOnly)}
             />
           </div>
           <div className="md:col-span-2">
@@ -209,7 +211,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly }: GeneralInfo
               value={formData.next_inspection_due || ''}
               onChange={(e) => onChange('next_inspection_due', e.target.value)}
               disabled={readOnly}
-              className="form-input"
+              className={getInputClass(formData.next_inspection_due, hasValidationErrors, readOnly)}
             />
           </div>
         </div>

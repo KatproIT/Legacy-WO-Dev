@@ -456,6 +456,11 @@ export function FormPage() {
     }
   }, [validationErrors]);
 
+  const getFieldError = (value: any): boolean => {
+    if (validationErrors.length === 0) return false;
+    return !value || value === '' || (Array.isArray(value) && value.length === 0);
+  };
+
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -720,31 +725,37 @@ export function FormPage() {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <EquipmentDetailsSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <MaintenanceInfoSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <SystemChecksSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <DynamicTablesSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <WorkLogSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>
