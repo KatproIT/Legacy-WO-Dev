@@ -5,6 +5,7 @@ interface WorkLogSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
 export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionProps) {

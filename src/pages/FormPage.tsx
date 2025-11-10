@@ -766,6 +766,7 @@ export function FormPage() {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>
@@ -776,6 +777,7 @@ export function FormPage() {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { FormSubmission } from '../types/form';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { getInputClass } from '../utils/formValidation';
 
 interface MaintenanceInfoSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
-export function MaintenanceInfoSection({ formData, onChange, readOnly }: MaintenanceInfoSectionProps) {
+export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValidationErrors }: MaintenanceInfoSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
@@ -30,7 +32,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.exercise_day || ''}
             onChange={(e) => onChange('exercise_day', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.exercise_day, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT EXERCISE DAY</option>
             <option value="MONDAY">MONDAY</option>
@@ -49,7 +51,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.with_load, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT WITH LOAD</option>
             <option value="YES">YES</option>
@@ -64,7 +66,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.exercise_time || '00:00'}
             onChange={(e) => onChange('exercise_time', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly)}
           />
         </div>
         <div>
@@ -73,7 +75,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.exercise_interval, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT EXERCISE INTERVAL</option>
             <option value="WEEKLY">WEEKLY</option>
@@ -88,7 +90,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.load_bank_test, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT LOAD BANK TEST</option>
             <option value="1 HR">1 HR</option>
@@ -103,7 +105,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly }: Mainten
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}
             disabled={readOnly}
-            className="form-input"
+            className={getInputClass(formData.transfer_test, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT TRANSFER TEST</option>
             <option value="YES">YES</option>

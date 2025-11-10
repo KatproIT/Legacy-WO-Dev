@@ -6,6 +6,7 @@ interface SystemChecksSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
 const statusOptions = ['GOOD', 'REPLACED', 'SEE NOTES', 'N/A'];

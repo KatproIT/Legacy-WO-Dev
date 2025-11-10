@@ -5,6 +5,7 @@ interface AdditionalATSSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
 export function AdditionalATSSection({ formData, onChange, readOnly }: AdditionalATSSectionProps) {

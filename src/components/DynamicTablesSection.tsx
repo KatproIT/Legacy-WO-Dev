@@ -5,6 +5,7 @@ interface DynamicTablesSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
+  hasValidationErrors: boolean;
 }
 
 export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTablesSectionProps) {
