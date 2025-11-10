@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FormSubmission, LoadBankEntry } from '../types/form';
 import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { isLoadBankRequired, getInputClass } from '../utils/formValidation';
 
 interface LoadBankReportSectionProps {
   formData: FormSubmission;
@@ -9,9 +10,10 @@ interface LoadBankReportSectionProps {
   hasValidationErrors: boolean;
 }
 
-export function LoadBankReportSection({ formData, onChange, readOnly }: LoadBankReportSectionProps) {
+export function LoadBankReportSection({ formData, onChange, readOnly, hasValidationErrors }: LoadBankReportSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const entries = formData.load_bank_entries || [];
+  const isRequired = isLoadBankRequired(formData);
 
   const addEntry = () => {
     const newEntry: LoadBankEntry = {
@@ -67,22 +69,22 @@ export function LoadBankReportSection({ formData, onChange, readOnly }: LoadBank
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">CUSTOMER</label>
+              <label className="form-label">CUSTOMER{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_customer || ''}
                 onChange={(e) => onChange('load_bank_customer', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">RESISTIVE LOAD</label>
+              <label className="form-label">RESISTIVE LOAD{isRequired && <span className="text-red-600"> *</span>}</label>
               <select
                 value={formData.load_bank_resistive_load || ''}
                 onChange={(e) => onChange('load_bank_resistive_load', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_resistive_load, hasValidationErrors && isRequired, readOnly)}
               >
                 <option value="">SELECT</option>
                 <option value="YES">YES</option>
@@ -93,22 +95,22 @@ export function LoadBankReportSection({ formData, onChange, readOnly }: LoadBank
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">SITE NAME</label>
+              <label className="form-label">SITE NAME{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_site_name || ''}
                 onChange={(e) => onChange('load_bank_site_name', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">BUILDING LOAD</label>
+              <label className="form-label">BUILDING LOAD{isRequired && <span className="text-red-600"> *</span>}</label>
               <select
                 value={formData.load_bank_reactive_load || ''}
                 onChange={(e) => onChange('load_bank_reactive_load', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_reactive_load, hasValidationErrors && isRequired, readOnly)}
               >
                 <option value="">SELECT</option>
                 <option value="YES">YES</option>
@@ -119,56 +121,56 @@ export function LoadBankReportSection({ formData, onChange, readOnly }: LoadBank
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">SITE ADDRESS</label>
+              <label className="form-label">SITE ADDRESS{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_site_address || ''}
                 onChange={(e) => onChange('load_bank_site_address', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">AMBIENT AIR TEMP</label>
+              <label className="form-label">AMBIENT AIR TEMP{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_ambient_air_temp || ''}
                 onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_ambient_air_temp, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="form-label">MAKE</label>
+              <label className="form-label">MAKE{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_make || ''}
                 onChange={(e) => onChange('load_bank_make', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_make, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">MODEL</label>
+              <label className="form-label">MODEL{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_model || ''}
                 onChange={(e) => onChange('load_bank_model', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_model, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">S/N</label>
+              <label className="form-label">S/N{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_sn || ''}
                 onChange={(e) => onChange('load_bank_sn', e.target.value)}
                 disabled={readOnly}
-                className="form-input"
+                className={getInputClass(formData.load_bank_sn, hasValidationErrors && isRequired, readOnly)}
               />
             </div>
           </div>

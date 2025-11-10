@@ -3,9 +3,10 @@ import { useState } from 'react';
 interface TabProps {
   activeTab: number;
   onTabChange: (tab: number) => void;
+  hasLoadBankErrors?: boolean;
 }
 
-export function FormTabs({ activeTab, onTabChange }: TabProps) {
+export function FormTabs({ activeTab, onTabChange, hasLoadBankErrors = false }: TabProps) {
   return (
     <div className="bg-white rounded-t-xl shadow-sm border border-gray-200 border-b-0">
       <div className="flex gap-1 p-2">
@@ -34,6 +35,8 @@ export function FormTabs({ activeTab, onTabChange }: TabProps) {
           className={`px-8 py-3.5 font-semibold rounded-lg transition-all ${
             activeTab === 2
               ? 'bg-blue-600 text-white shadow-md'
+              : hasLoadBankErrors
+              ? 'bg-transparent text-gray-600 hover:bg-gray-100 ring-2 ring-red-500'
               : 'bg-transparent text-gray-600 hover:bg-gray-100'
           }`}
         >

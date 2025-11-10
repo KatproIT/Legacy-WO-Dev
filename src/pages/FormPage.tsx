@@ -16,6 +16,7 @@ import EmailAuthModal from '../components/EmailAuthModal';
 import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
 import { isPM, isTechnician, isAuthorizedUser, extractNameFromEmail } from '../utils/userRoles';
+import { validateLoadBankReport } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 
 const POWER_AUTOMATE_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
@@ -59,6 +60,7 @@ export function FormPage() {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showForwardModal, setShowForwardModal] = useState(false);
   const [isUserPM, setIsUserPM] = useState(false);
+  const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
 
   useEffect(() => {
     if (userEmail) {
@@ -177,10 +179,6 @@ export function FormPage() {
     if (!formData.load_bank_test) errors.push('Load Bank Test is required');
     if (!formData.transfer_test) errors.push('Transfer Test is required');
 
-    if (formData.load_bank_test === 'YES' && (!formData.load_bank_entries || formData.load_bank_entries.length === 0)) {
-      errors.push('At least one Load Bank entry is required when Load Bank Test is YES');
-    }
-
     if (!formData.fuel_type) errors.push('Fuel Type is required');
     if (!formData.full_caps) errors.push('Full Caps is required');
     if (formData.fuel_percentage === undefined || formData.fuel_percentage === null) errors.push('Fuel Percentage is required');
@@ -242,10 +240,13 @@ export function FormPage() {
     if (!formData.voltage_b) errors.push('Current B is required');
     if (!formData.voltage_c) errors.push('Current C is required');
 
-    if (!formData.load_bank_customer) errors.push('Load Bank Customer is required');
-    if (!formData.load_bank_site_name) errors.push('Load Bank Site is required');
-    if (!formData.load_bank_resistive_load) errors.push('Resistive Load is required');
-    if (!formData.load_bank_reactive_load) errors.push('Building Load is required');
+    const loadBankValidation = validateLoadBankReport(formData);
+    if (!loadBankValidation.isValid) {
+      errors.push(...loadBankValidation.errors);
+      setHasLoadBankErrors(true);
+    } else {
+      setHasLoadBankErrors(false);
+    }
 
     if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
 
@@ -717,7 +718,7 @@ export function FormPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-8 print-container">
         <div className="no-print">
-          <FormTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          <FormTabs activeTab={activeTab} onTabChange={setActiveTab} hasLoadBankErrors={hasLoadBankErrors} />
         </div>
 
         <div className="mt-8">
