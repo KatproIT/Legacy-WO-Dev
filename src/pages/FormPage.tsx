@@ -243,7 +243,7 @@ export function FormPage() {
     if (!formData.voltage_c) errors.push('Current C is required');
 
     if (!formData.load_bank_customer) errors.push('Load Bank Customer is required');
-    if (!formData.load_bank_site) errors.push('Load Bank Site is required');
+    if (!formData.load_bank_site_name) errors.push('Load Bank Site is required');
     if (!formData.load_bank_resistive_load) errors.push('Resistive Load is required');
     if (!formData.load_bank_reactive_load) errors.push('Building Load is required');
 

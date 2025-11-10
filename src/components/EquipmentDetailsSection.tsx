@@ -306,8 +306,8 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
-                    value={formData.equipment_ats1?.genAmp || ''}
-                    onChange={(e) => updateEquipment('equipment_ats1', 'genAmp', e.target.value)}
+                    value={formData.equipment_ats1?.ats1Amp || ''}
+                    onChange={(e) => updateEquipment('equipment_ats1', 'ats1Amp', e.target.value)}
                     disabled={readOnly}
                     className={getTableInputClass(formData.equipment_ats1?.ats1Amp)}
                   />
@@ -315,8 +315,8 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
-                    value={formData.equipment_ats2?.genAmp || ''}
-                    onChange={(e) => updateEquipment('equipment_ats2', 'genAmp', e.target.value)}
+                    value={formData.equipment_ats2?.ats2Amp || ''}
+                    onChange={(e) => updateEquipment('equipment_ats2', 'ats2Amp', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                   />
