@@ -486,33 +486,35 @@ export function FormPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200 no-print">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-6">
               <img
                 src="/image.png"
                 alt="Legacy Power Systems"
-                className="h-20 object-contain"
+                className="h-12 sm:h-20 object-contain"
               />
               {isReadOnly && (
-                <span className="px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 text-sm font-semibold rounded-lg flex items-center gap-2">
-                  <Lock size={16} />
-                  Read-Only Mode
+                <span className="px-2 py-1 sm:px-4 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-1 sm:gap-2">
+                  <Lock size={14} className="sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Read-Only Mode</span>
+                  <span className="sm:hidden">Read-Only</span>
                 </span>
               )}
               {formData.id && formData.http_post_sent && (
-                <span className="px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg">
-                  ✓ Submitted to Power Automate
+                <span className="px-2 py-1 sm:px-4 sm:py-2 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm font-semibold rounded-lg">
+                  ✓ <span className="hidden sm:inline">Submitted to Power Automate</span>
+                  <span className="sm:hidden">Submitted</span>
                 </span>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={handlePrint}
-                className="btn-secondary flex items-center gap-2"
+                className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
               >
-                <Printer size={18} />
-                Print
+                <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-sm sm:text-base">Print</span>
               </button>
 
               {isUserPM && !isReadOnly && formData.id && (
@@ -520,17 +522,17 @@ export function FormPage() {
                   <button
                     onClick={() => setShowRejectModal(true)}
                     disabled={saving}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
                   >
-                    <XCircle size={18} />
+                    <XCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
                     Reject
                   </button>
                   <button
                     onClick={() => setShowForwardModal(true)}
                     disabled={saving}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
                   >
-                    <Forward size={18} />
+                    <Forward size={16} className="sm:w-[18px] sm:h-[18px]" />
                     Forward
                   </button>
                 </>
@@ -539,10 +541,10 @@ export function FormPage() {
               {isReadOnly ? (
                 <button
                   onClick={handleEnableEdit}
-                  className="btn-primary flex items-center gap-2"
+                  className="btn-primary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
                 >
-                  <Edit size={18} />
-                  Enable Edit
+                  <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  <span className="text-sm sm:text-base">Enable Edit</span>
                 </button>
               ) : (
                 <>
@@ -550,10 +552,10 @@ export function FormPage() {
                     <button
                       onClick={handleSaveForm}
                       disabled={saving || isReadOnly}
-                      className="btn-primary flex items-center gap-2"
+                      className="btn-primary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
                     >
-                      <Save size={18} />
-                      {saving ? 'Saving...' : 'Save Form'}
+                      <Save size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-sm sm:text-base">{saving ? 'Saving...' : 'Save Form'}</span>
                     </button>
                   )}
 
@@ -561,10 +563,10 @@ export function FormPage() {
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
-                      className="btn-success flex items-center gap-2"
+                      className="btn-success flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
                     >
-                      <CheckCircle size={18} />
-                      {saving ? 'Submitting...' : 'Submit Work Order'}
+                      <CheckCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      <span className="text-sm sm:text-base">{saving ? 'Submitting...' : 'Submit Work Order'}</span>
                     </button>
                   )}
                 </>
@@ -575,18 +577,18 @@ export function FormPage() {
       </div>
 
       {toast && (
-        <div className={`fixed top-6 right-6 px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 border-l-4 no-print ${
+        <div className={`fixed top-4 right-4 sm:top-6 sm:right-6 px-4 py-3 sm:px-6 sm:py-4 rounded-lg sm:rounded-xl shadow-2xl z-50 flex items-center gap-2 sm:gap-3 border-l-4 no-print max-w-[calc(100%-2rem)] sm:max-w-md ${
           toast.type === 'success'
             ? 'bg-green-50 text-green-800 border-green-500'
             : 'bg-red-50 text-red-800 border-red-500'
         }`}>
-          {toast.type === 'success' ? <CheckCircle size={22} className="flex-shrink-0" /> : <AlertCircle size={22} className="flex-shrink-0" />}
-          <span className="font-medium">{toast.message}</span>
+          {toast.type === 'success' ? <CheckCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" /> : <AlertCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" />}
+          <span className="font-medium text-sm sm:text-base">{toast.message}</span>
         </div>
       )}
 
       {validationErrors.length > 0 && (
-        <div className="max-w-7xl mx-auto px-6 mt-6 no-print">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 mt-4 sm:mt-6 no-print">
           <div className="bg-amber-50 border-l-4 border-amber-500 rounded-lg shadow p-4">
             <div className="flex items-start gap-3">
               <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
@@ -613,7 +615,7 @@ export function FormPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-6 py-8 print-container">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 print-container">
         <div className="no-print">
           <FormTabs
             activeTab={activeTab}

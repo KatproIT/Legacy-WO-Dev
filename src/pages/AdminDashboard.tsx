@@ -105,34 +105,34 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-6">
               <img
                 src="/image.png"
                 alt="Legacy Power Systems"
-                className="h-20 object-contain"
+                className="h-12 sm:h-20 object-contain"
               />
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             </div>
             <button
               onClick={() => navigate('/form/new')}
-              className="btn-primary flex items-center gap-2"
+              className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
             >
-              <Plus size={20} />
+              <Plus size={18} className="sm:w-5 sm:h-5" />
               New Form
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <div className="section-card">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex gap-3">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-6 py-2.5 font-semibold rounded-lg transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
                   filter === 'all'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -142,23 +142,25 @@ export function AdminDashboard() {
               </button>
               <button
                 onClick={() => setFilter('not_submitted')}
-                className={`px-6 py-2.5 font-semibold rounded-lg transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
                   filter === 'not_submitted'
                     ? 'bg-yellow-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Not Submitted ({submissions.filter(s => !s.http_post_sent).length})
+                <span className="hidden sm:inline">Not Submitted</span>
+                <span className="sm:hidden">Pending</span> ({submissions.filter(s => !s.http_post_sent).length})
               </button>
               <button
                 onClick={() => setFilter('submitted')}
-                className={`px-6 py-2.5 font-semibold rounded-lg transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
                   filter === 'submitted'
                     ? 'bg-green-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Submitted to PA ({submissions.filter(s => s.http_post_sent === true).length})
+                <span className="hidden sm:inline">Submitted to PA</span>
+                <span className="sm:hidden">Done</span> ({submissions.filter(s => s.http_post_sent === true).length})
               </button>
             </div>
           </div>
@@ -175,71 +177,138 @@ export function AdminDashboard() {
               </button>
             </div>
           ) : (
-            <div className="table-wrapper">
-              <table className="w-full border-collapse">
-                <thead className="bg-blue-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Job/PO #</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Site Name</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Technician</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Created</th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSubmissions.map((submission, index) => (
-                    <tr
-                      key={submission.id}
-                      className="border-b border-gray-200 hover:bg-blue-50 transition-colors bg-white"
-                    >
-                      <td className="px-6 py-4">
-                        {submission.http_post_sent ? (
-                          <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg">
-                            <CheckCircle size={16} />
-                            Submitted
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-lg">
-                            <Clock size={16} />
-                            Not Submitted
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 font-semibold text-gray-900">{submission.job_po_number || '-'}</td>
-                      <td className="px-6 py-4 text-gray-700">{submission.customer || '-'}</td>
-                      <td className="px-6 py-4 text-gray-700">{submission.site_name || '-'}</td>
-                      <td className="px-6 py-4 text-gray-700">{submission.technician || '-'}</td>
-                      <td className="px-6 py-4 text-gray-700">{submission.date || '-'}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {formatDate(submission.created_at)}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => navigate(`/form/${submission.job_po_number}`)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-all rounded-lg font-medium"
-                          >
-                            <ExternalLink size={16} />
-                            Open
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(submission)}
-                            disabled={deleting === submission.id}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition-all rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Trash2 size={16} />
-                            {deleting === submission.id ? 'Deleting...' : 'Delete'}
-                          </button>
+            <>
+              {/* Mobile Card View */}
+              <div className="block md:hidden space-y-4">
+                {filteredSubmissions.map((submission) => (
+                  <div key={submission.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="font-bold text-gray-900 text-lg mb-1">
+                          {submission.job_po_number || '-'}
                         </div>
-                      </td>
+                        <div className="text-sm text-gray-600 mb-2">
+                          {submission.customer || '-'}
+                        </div>
+                      </div>
+                      {submission.http_post_sent ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded">
+                          <CheckCircle size={14} />
+                          Done
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold rounded">
+                          <Clock size={14} />
+                          Pending
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-1 text-sm mb-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Site:</span>
+                        <span className="text-gray-900">{submission.site_name || '-'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Technician:</span>
+                        <span className="text-gray-900">{submission.technician || '-'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Date:</span>
+                        <span className="text-gray-900">{submission.date || '-'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Created:</span>
+                        <span className="text-gray-900 text-xs">{formatDate(submission.created_at)}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate(`/form/${submission.job_po_number}`)}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-all rounded-lg font-medium text-sm"
+                      >
+                        <ExternalLink size={14} />
+                        Open
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(submission)}
+                        disabled={deleting === submission.id}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-600 text-white hover:bg-red-700 transition-all rounded-lg font-medium text-sm disabled:opacity-50"
+                      >
+                        <Trash2 size={14} />
+                        {deleting === submission.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block table-wrapper">
+                <table className="w-full border-collapse">
+                  <thead className="bg-blue-50">
+                    <tr>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Job/PO #</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Customer</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Site Name</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Technician</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Created</th>
+                      <th className="px-4 lg:px-6 py-3 lg:py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredSubmissions.map((submission) => (
+                      <tr
+                        key={submission.id}
+                        className="border-b border-gray-200 hover:bg-blue-50 transition-colors bg-white"
+                      >
+                        <td className="px-4 lg:px-6 py-3 lg:py-4">
+                          {submission.http_post_sent ? (
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg">
+                              <CheckCircle size={16} />
+                              Submitted
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-lg">
+                              <Clock size={16} />
+                              Not Submitted
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 font-semibold text-gray-900">{submission.job_po_number || '-'}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-gray-700">{submission.customer || '-'}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-gray-700">{submission.site_name || '-'}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-gray-700">{submission.technician || '-'}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-gray-700">{submission.date || '-'}</td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-sm text-gray-500">
+                          {formatDate(submission.created_at)}
+                        </td>
+                        <td className="px-4 lg:px-6 py-3 lg:py-4 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => navigate(`/form/${submission.job_po_number}`)}
+                              className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-all rounded-lg font-medium text-sm"
+                            >
+                              <ExternalLink size={16} />
+                              Open
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(submission)}
+                              disabled={deleting === submission.id}
+                              className="inline-flex items-center gap-2 px-3 lg:px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition-all rounded-lg font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Trash2 size={16} />
+                              {deleting === submission.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
 
