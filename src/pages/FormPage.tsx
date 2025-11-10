@@ -20,9 +20,9 @@ import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward }
 
 const POWER_AUTOMATE_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
 
-const REJECT_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8c955439781483da47a26e4f8b0a9f8/triggers/manual/paths/invoke?api-version=1';
+const REJECT_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8c955439781483da47a26e4f8b0a9f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d9sGvuhHfJre8BA5uSNPJiSvrA7o7nhS0tagqS6mh9k';
 
-const FORWARD_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/78e08f8b26154239a6c728bcb8f03738/triggers/manual/paths/invoke?api-version=1';
+const FORWARD_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/78e08f8b26154239a6c728bcb8f03738/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OolUtQrJfdW6u_rtE_7oKBrntwEO4Q-GY2D336QTack';
 
 export function FormPage() {
   const { jobNumber } = useParams();
