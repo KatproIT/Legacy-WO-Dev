@@ -533,6 +533,7 @@ export function FormPage() {
       const formLink = `${window.location.origin}/form/${formData.job_po_number}`;
 
       const payload = {
+        to: technicianEmail,
         formLink,
         jobPO: formData.job_po_number
       };
