@@ -633,6 +633,7 @@ export function FormPage() {
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
+                isExistingForm={!isNewForm}
               />
               <EquipmentDetailsSection
                 formData={formData}

@@ -6,9 +6,10 @@ interface GeneralInfoSectionProps {
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
   hasValidationErrors: boolean;
+  isExistingForm?: boolean;
 }
 
-export function GeneralInfoSection({ formData, onChange, readOnly, hasValidationErrors }: GeneralInfoSectionProps) {
+export function GeneralInfoSection({ formData, onChange, readOnly, hasValidationErrors, isExistingForm = false }: GeneralInfoSectionProps) {
   return (
     <div className="section-card">
       <h2 className="section-header">
@@ -54,8 +55,8 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
 
                 onChange('job_po_number', formatted);
               }}
-              disabled={readOnly}
-              className={getInputClass(formData.job_po_number, hasValidationErrors, readOnly)}
+              disabled={readOnly || isExistingForm}
+              className={getInputClass(formData.job_po_number, hasValidationErrors, readOnly || isExistingForm)}
               placeholder="XX-XX-XXXX"
               maxLength={10}
               required
