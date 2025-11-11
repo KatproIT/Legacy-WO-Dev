@@ -29,7 +29,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
       <div className="p-4 space-y-4">
         <div className="bg-gray-50 p-4 border border-gray-300">
           <h3 className="font-semibold mb-3">Fuel Information</h3>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">FUEL TYPE <span className="text-red-600">*</span></label>
               <select
@@ -86,7 +86,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
         <div className="bg-gray-50 p-4 border border-gray-300">
           <h3 className="font-semibold mb-3">Oil Information</h3>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">OIL TYPE <span className="text-red-600">*</span></label>
               <input
@@ -132,7 +132,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
         <div className="bg-gray-50 p-4 border border-gray-300">
           <h3 className="font-semibold mb-3">Filter Information</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-label">OIL FILTER P/N <span className="text-red-600">*</span></label>
               <input
@@ -229,7 +229,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
           <div className="mb-3">
             <label className="form-label">COOLANT LEVEL / PROTECTION <span className="text-red-600">*</span></label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <input
                 type="text"
                 value={formData.coolant_level_field1 || ''}
@@ -258,7 +258,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-x-4 gap-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3">
             {[
               { field: 'hoses_belts_cooling_fins', label: 'HOSES / BELTS / COOLING FINS' },
               { field: 'block_heater_status', label: 'BLOCK HEATER STATUS' },
@@ -321,7 +321,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <h3 className="font-semibold mb-3">Electrical Readings</h3>
               <div className="space-y-3">

@@ -87,7 +87,8 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
           TIME ON JOB
         </h2>
         <div className="p-4">
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-blue-100">
                 <th className="border border-gray-300 px-3 py-2 text-center">ACTIVITY</th>
@@ -167,7 +168,8 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                 );
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
           {!readOnly && (
             <button
               onClick={addTimeEntry}
@@ -180,7 +182,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="section-card">
           <div className="bg-blue-100 px-4 py-2 font-semibold border-b border-gray-300">
             ADDITIONAL CHARGES

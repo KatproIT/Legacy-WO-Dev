@@ -222,7 +222,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
           MANUFACTURE - FACTORY RECOMMENDED SERVICE INTERVAL
         </div>
         <div className="p-4">
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse min-w-[600px]">
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2 text-left">SERVICE TYPE</th>
@@ -252,7 +253,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -261,7 +263,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
           RECOMMENDED PARTS REPLACEMENT
         </div>
         <div className="p-4">
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse min-w-[700px]">
             <thead>
               <tr className="bg-blue-100">
                 <th className="border border-gray-300 px-3 py-2 text-center">QTY</th>
@@ -315,7 +318,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
           {!readOnly && (
             <button
               onClick={addRecommendedPart}
@@ -333,7 +337,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
           PARTS & SUPPLIES USED
         </div>
         <div className="p-4">
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-blue-100">
                 <th className="border border-gray-300 px-3 py-2 text-center">QTY</th>
@@ -417,7 +422,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 <td colSpan={2} className="border border-gray-300"></td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
           {!readOnly && (
             <button
               onClick={addPartsSupply}
