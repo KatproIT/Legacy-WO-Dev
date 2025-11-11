@@ -218,7 +218,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
       </div>
 
       <div className="bg-white border border-gray-300 shadow-sm">
-        <div className="bg-blue-100 px-4 py-2 font-semibold border-b border-gray-300">
+        <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           MANUFACTURE - FACTORY RECOMMENDED SERVICE INTERVAL
         </div>
         <div className="p-4">
