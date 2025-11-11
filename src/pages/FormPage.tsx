@@ -647,14 +647,12 @@ export function FormPage() {
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-              <div className="section-card">
-                <AdditionalATSSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              </div>
+              <AdditionalATSSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
               <SystemChecksSection
                 formData={formData}
                 onChange={handleFieldChange}
