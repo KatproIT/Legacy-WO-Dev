@@ -363,15 +363,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     className={getTableInputClass(formData.equipment_generator?.hours)}
                   />
                 </td>
-                <td className="border border-gray-300 p-1">
-                  <input
-                    type="text"
-                    value={formData.equipment_engine?.hours || ''}
-                    onChange={(e) => updateEquipment('equipment_engine', 'hours', e.target.value)}
-                    disabled={readOnly}
-                    className={getTableInputClass(formData.equipment_engine?.hours)}
-                  />
-                </td>
+
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
               </tr>
