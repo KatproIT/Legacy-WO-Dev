@@ -20,7 +20,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        Maintenance Information
+         ATS Exerciser
       </h2>
 
       {!isCollapsed && (
