@@ -43,13 +43,6 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
 
   return (
     <div className="section-card">
-      <h2
-        className="section-header cursor-pointer flex items-center gap-2 hover:bg-gray-50"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        ATS EXERCISER
-      </h2>
 
       {!isCollapsed && (
         <div className="p-4 space-y-6">
