@@ -22,7 +22,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        Maintenance Information
+        ATS Exerciser
       </h2>
 
       {!isCollapsed && (
