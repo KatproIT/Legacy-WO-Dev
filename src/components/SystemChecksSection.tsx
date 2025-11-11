@@ -306,7 +306,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
           </div>
 
           <div className="mt-3">
-            <label className="form-label">OIL / Coolant Fill capacity <span className="text-red-600">*</span></label>
+            <label className="form-label">OIL / Coolant Fill cap <span className="text-red-600">*</span></label>
             <select
               value={formData.fill_caps || ''}
               onChange={(e) => onChange('fill_caps', e.target.value)}
