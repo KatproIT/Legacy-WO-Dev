@@ -11,7 +11,7 @@ interface MaintenanceInfoSectionProps {
 }
 
 export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValidationErrors }: MaintenanceInfoSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div className="section-card">
@@ -63,7 +63,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           <label className="form-label">Time <span className="text-red-600">*</span></label>
           <input
             type="time"
-            value={formData.exercise_time || '00:00'}
+            value={formData.exercise_time || ''}
             onChange={(e) => onChange('exercise_time', e.target.value)}
             disabled={readOnly}
             className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly)}
