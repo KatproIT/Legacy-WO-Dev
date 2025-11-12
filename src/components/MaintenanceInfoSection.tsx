@@ -19,7 +19,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
         className="section-header cursor-pointer flex items-center gap-2 hover:bg-gray-50"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
+         {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
         ATS Exerciser
       </h2>
 
