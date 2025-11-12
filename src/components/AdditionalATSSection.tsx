@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { FormSubmission, AdditionalATS } from '../types/form';
-import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface AdditionalATSSectionProps {
   formData: FormSubmission;
@@ -10,7 +9,6 @@ interface AdditionalATSSectionProps {
 }
 
 export function AdditionalATSSection({ formData, onChange, readOnly }: AdditionalATSSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
   const additionalATS = formData.additional_ats || [];
 
   const addATS = () => {
@@ -42,31 +40,28 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
   };
 
   return (
-    <div className="section-card">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Additional ATS Units (ATS 3-6)</h2>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={addATS}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={18} />
+            Add ATS Unit
+          </button>
+        )}
+      </div>
 
-      {!isCollapsed && (
-        <div className="p-4 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Additional ATS Units (ATS 3-6)</h3>
-            {!readOnly && (
-              <button
-                type="button"
-                onClick={addATS}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              >
-                <Plus size={18} />
-                Add ATS Unit
-              </button>
-            )}
-          </div>
-
-          {additionalATS.length === 0 ? (
-            <div className="bg-gray-50 border border-gray-300 p-8 text-center text-gray-500">
-              No additional ATS units added. Click "Add ATS Unit" to add one.
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {additionalATS.map((ats: AdditionalATS, index: number) => (
+      {additionalATS.length === 0 ? (
+        <div className="bg-gray-50 border border-gray-300 p-8 text-center text-gray-500">
+          No additional ATS units added. Click "Add ATS Unit" to add one.
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {additionalATS.map((ats: AdditionalATS, index: number) => (
             <div key={ats.id} className="bg-white border border-gray-300 p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">{ats.name}</h3>
@@ -169,10 +164,8 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                   />
                 </div>
               </div>
-              </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
         </div>
       )}
     </div>

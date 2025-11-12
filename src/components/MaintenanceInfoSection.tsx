@@ -24,27 +24,27 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
       </h2>
 
       {!isCollapsed && (
-      <div className="p-4 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label className="form-label">Exercise Day <span className="text-red-600">*</span></label>
-              <select
-                value={formData.exercise_day || ''}
-                onChange={(e) => onChange('exercise_day', e.target.value)}
-                disabled={readOnly}
-                className={getInputClass(formData.exercise_day, hasValidationErrors, readOnly)}
-              >
-                <option value="">SELECT EXERCISE DAY</option>
-                <option value="MONDAY">MONDAY</option>
-                <option value="TUESDAY">TUESDAY</option>
-                <option value="WEDNESDAY">WEDNESDAY</option>
-                <option value="THURSDAY">THURSDAY</option>
-                <option value="FRIDAY">FRIDAY</option>
-                <option value="SATURDAY">SATURDAY</option>
-                <option value="SUNDAY">SUNDAY</option>
-                <option value="UNKNOWN">UNKNOWN</option>
-              </select>
-            </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div>
+          <label className="form-label">Exercise Day <span className="text-red-600">*</span></label>
+          <select
+            value={formData.exercise_day || ''}
+            onChange={(e) => onChange('exercise_day', e.target.value)}
+            disabled={readOnly}
+            className={getInputClass(formData.exercise_day, hasValidationErrors, readOnly)}
+          >
+            <option value="">SELECT EXERCISE DAY</option>
+            <option value="MONDAY">MONDAY</option>
+            <option value="TUESDAY">TUESDAY</option>
+            <option value="WEDNESDAY">WEDNESDAY</option>
+            <option value="THURSDAY">THURSDAY</option>
+            <option value="FRIDAY">FRIDAY</option>
+            <option value="SATURDAY">SATURDAY</option>
+            <option value="SUNDAY">SUNDAY</option>
+            <option value="UNKNOWN">UNKNOWN</option>
+          </select>
+        </div>
         <div>
           <label className="form-label">With Load <span className="text-red-600">*</span></label>
           <select
@@ -111,7 +111,6 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             <option value="YES">YES</option>
             <option value="NO">NO</option>
           </select>
-        </div>
         </div>
       </div>
       )}
