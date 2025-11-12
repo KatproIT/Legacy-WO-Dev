@@ -365,6 +365,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
+                <td className="border border-gray-300 p-1 bg-gray-100"></td>
               </tr>
             </tbody>
           </table>
