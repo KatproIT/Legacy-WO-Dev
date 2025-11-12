@@ -64,6 +64,18 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
         {!isCollapsed && (
         <div className="mt-4 space-y-6">
 
+      {!readOnly && (
+        <div>
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={18} />
+            Add Battery
+          </button>
+        </div>
+      )}
+
       <div className="bg-gray-50 p-4 border border-gray-300">
         <h3 className="font-semibold mb-3">Load Bank Test Information</h3>
         <div className="space-y-4">
