@@ -647,12 +647,6 @@ export function FormPage() {
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-              <AdditionalATSSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
               <SystemChecksSection
                 formData={formData}
                 onChange={handleFieldChange}
