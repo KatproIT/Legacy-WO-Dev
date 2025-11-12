@@ -58,7 +58,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-          ATS Exerciser
+          LOAD BANK TEST / TRANSFER TEST SECTION
         </h2>
 
         {!isCollapsed && (
