@@ -641,13 +641,13 @@ export function FormPage() {
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-              <MaintenanceInfoSection
+              <SystemChecksSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-              <SystemChecksSection
+              <MaintenanceInfoSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
