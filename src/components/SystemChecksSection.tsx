@@ -469,11 +469,9 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
           </div>
         </div>
 
-        <div className="bg-white border border-gray-300 shadow-sm">
-          <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
-            BATTERY INFORMATION <span className="text-white">*</span>
-          </div>
-          <div className="p-4 space-y-6">
+        <div className="bg-gray-50 p-4 border border-gray-300">
+          <h3 className="font-semibold mb-3">BATTERY INFORMATION <span className="text-red-600">*</span></h3>
+          <div className="space-y-6">
             {batteryReadings.map((battery, index) => (
               <div key={battery.id}>
                 {index > 0 && (
@@ -496,33 +494,33 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Battery Date</label>
+                      <label className="form-label">Battery Date</label>
                       <input
                         type="date"
                         value={battery.batteryDate || ''}
                         onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
                         disabled={readOnly}
-                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className="form-input"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Battery Type</label>
+                      <label className="form-label">Battery Type</label>
                       <input
                         type="text"
                         value={battery.batteryType || ''}
                         onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value)}
                         disabled={readOnly}
-                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className="form-input"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Battery Charger Volts</label>
+                      <label className="form-label">Battery Charger Volts</label>
                       <input
                         type="text"
                         value={battery.batteryChargerVolts || ''}
                         onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value)}
                         disabled={readOnly}
-                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className="form-input"
                       />
                     </div>
                   </div>

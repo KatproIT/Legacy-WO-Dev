@@ -486,7 +486,7 @@ export function FormPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200 no-print">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-6">
               <img
@@ -588,7 +588,7 @@ export function FormPage() {
       )}
 
       {validationErrors.length > 0 && (
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 mt-4 sm:mt-6 no-print">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 mt-4 sm:mt-6 no-print">
           <div className="bg-amber-50 border-l-4 border-amber-500 rounded-lg shadow p-4">
             <div className="flex items-start gap-3">
               <AlertCircle size={20} className="text-amber-600 mt-0.5 flex-shrink-0" />
@@ -615,7 +615,7 @@ export function FormPage() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 print-container">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 print-container">
         <div className="no-print">
           <FormTabs
             activeTab={activeTab}

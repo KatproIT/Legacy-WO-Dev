@@ -105,7 +105,7 @@ export function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-6">
               <img
@@ -126,7 +126,7 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <div className="section-card">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div className="flex flex-wrap gap-2 sm:gap-3">
