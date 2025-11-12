@@ -1,5 +1,5 @@
 import { Trash2, Plus } from 'lucide-react';
-import { FormSubmission, BatteryReading, RecommendedPart, PartsSupply } from '../types/form';
+import { FormSubmission, RecommendedPart, PartsSupply } from '../types/form';
 
 interface DynamicTablesSectionProps {
   formData: FormSubmission;
@@ -9,35 +9,8 @@ interface DynamicTablesSectionProps {
 }
 
 export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTablesSectionProps) {
-  const batteryReadings = formData.battery_health_readings || [];
   const recommendedParts = formData.recommended_parts || [];
   const partsSupplies = formData.parts_supplies_used || [];
-
-  const addBattery = () => {
-    const newBattery: BatteryReading = {
-      id: Date.now().toString(),
-      battery: batteryReadings.length + 1,
-      batteryDate: '',
-      batteryType: '',
-      batteryChargerVolts: '',
-      voltage: '',
-      ccaRating: '',
-      ccaTested: '',
-      testedPercent: '',
-      passFail: 'Pass'
-    };
-    onChange('battery_health_readings', [...batteryReadings, newBattery]);
-  };
-
-  const removeBattery = (id: string) => {
-    onChange('battery_health_readings', batteryReadings.filter(b => b.id !== id));
-  };
-
-  const updateBattery = (id: string, field: keyof BatteryReading, value: any) => {
-    onChange('battery_health_readings', batteryReadings.map(b =>
-      b.id === id ? { ...b, [field]: value } : b
-    ));
-  };
 
   const addRecommendedPart = () => {
     const newPart: RecommendedPart = {
@@ -89,134 +62,6 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="bg-white border border-gray-300 shadow-sm">
-        <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
-          BATTERY INFORMATION <span className="text-white">*</span>
-        </div>
-        <div className="p-4 space-y-6">
-          {batteryReadings.map((battery, index) => (
-            <div key={battery.id}>
-              {index > 0 && (
-                <div className="mb-6 border-t-2 border-gray-300"></div>
-              )}
-
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-700">Battery {battery.battery}</h3>
-                  {!readOnly && (
-                    <button
-                      onClick={() => removeBattery(battery.id)}
-                      className="text-red-600 hover:text-red-800 transition-colors flex items-center gap-2"
-                    >
-                      <Trash2 size={18} />
-                      Remove
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Battery Date</label>
-                    <input
-                      type="date"
-                      value={battery.batteryDate || ''}
-                      onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
-                      disabled={readOnly}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Battery Type</label>
-                    <input
-                      type="text"
-                      value={battery.batteryType || ''}
-                      onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value)}
-                      disabled={readOnly}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Battery Charger Volts</label>
-                    <input
-                      type="text"
-                      value={battery.batteryChargerVolts || ''}
-                      onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value)}
-                      disabled={readOnly}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-blue-100">
-                        <th className="border border-gray-300 px-3 py-2 text-center">Voltage</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">CCA Rating</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">CCA Tested</th>
-                        <th className="border border-gray-300 px-3 py-2 text-center">Pass/Fail</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="bg-white">
-                        <td className="border border-gray-300 px-2 py-2">
-                          <input
-                            type="text"
-                            value={battery.voltage}
-                            onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value)}
-                            disabled={readOnly}
-                            className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2">
-                          <input
-                            type="text"
-                            value={battery.ccaRating}
-                            onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value)}
-                            disabled={readOnly}
-                            className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2">
-                          <input
-                            type="text"
-                            value={battery.ccaTested}
-                            onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value)}
-                            disabled={readOnly}
-                            className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                          />
-                        </td>
-                        <td className="border border-gray-300 px-2 py-2">
-                          <select
-                            value={battery.passFail}
-                            onChange={(e) => updateBattery(battery.id, 'passFail', e.target.value)}
-                            disabled={readOnly}
-                            className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                          >
-                            <option value="Pass">Pass</option>
-                            <option value="Fail">Fail</option>
-                          </select>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {!readOnly && (
-            <button
-              onClick={addBattery}
-              className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={18} />
-              Add Battery
-            </button>
-          )}
-        </div>
-      </div>
-
       <div className="bg-white border border-gray-300 shadow-sm">
         <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           MANUFACTURE - FACTORY RECOMMENDED SERVICE INTERVAL
