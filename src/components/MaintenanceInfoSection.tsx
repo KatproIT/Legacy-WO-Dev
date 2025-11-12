@@ -25,49 +25,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
 
       {!isCollapsed && (
       <div className="p-4 space-y-6">
-        <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">Battery Information</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label className="form-label">Battery Date</label>
-              <input
-                type="date"
-                value={formData.battery_date || ''}
-                onChange={(e) => onChange('battery_date', e.target.value)}
-                disabled={readOnly}
-                className="form-input"
-              />
-            </div>
-            <div>
-              <label className="form-label">Battery Type</label>
-              <input
-                type="text"
-                value={formData.battery_type || ''}
-                onChange={(e) => onChange('battery_type', e.target.value)}
-                disabled={readOnly}
-                className="form-input"
-                placeholder="e.g., Lead Acid, AGM"
-              />
-            </div>
-            <div>
-              <label className="form-label">Battery Charger Volts</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={formData.battery_charger_volts ?? ''}
-                onChange={(e) => onChange('battery_charger_volts', e.target.value === '' ? null : parseFloat(e.target.value))}
-                disabled={readOnly}
-                className="form-input"
-                placeholder="Voltage"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">ATS Exerciser Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">Exercise Day <span className="text-red-600">*</span></label>
               <select
@@ -154,7 +112,6 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             <option value="NO">NO</option>
           </select>
         </div>
-          </div>
         </div>
       </div>
       )}
