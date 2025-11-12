@@ -11,7 +11,7 @@ interface MaintenanceInfoSectionProps {
 }
 
 export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValidationErrors }: MaintenanceInfoSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <div className="section-card">
