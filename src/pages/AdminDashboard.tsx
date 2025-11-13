@@ -9,7 +9,7 @@ export function AdminDashboard() {
   const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'submitted' | 'not_submitted'>('all');
+  const [filter, setFilter] = useState<'all'>('all');
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -39,12 +39,7 @@ export function AdminDashboard() {
     }
   };
 
-  const filteredSubmissions = submissions.filter(sub => {
-    if (filter === 'all') return true;
-    if (filter === 'submitted') return sub.http_post_sent === true;
-    if (filter === 'not_submitted') return !sub.http_post_sent;
-    return true;
-  });
+  const filteredSubmissions = submissions;
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -130,38 +125,9 @@ export function AdminDashboard() {
         <div className="section-card">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div className="flex flex-wrap gap-2 sm:gap-3">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
-                  filter === 'all'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
+              <div className="px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all bg-blue-600 hover:bg-green-600 text-white shadow-md">
                 All ({submissions.length})
-              </button>
-              <button
-                onClick={() => setFilter('not_submitted')}
-                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
-                  filter === 'not_submitted'
-                    ? 'bg-yellow-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <span className="hidden sm:inline">Not Submitted</span>
-                <span className="sm:hidden">Pending</span> ({submissions.filter(s => !s.http_post_sent).length})
-              </button>
-              <button
-                onClick={() => setFilter('submitted')}
-                className={`px-3 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold rounded-lg transition-all ${
-                  filter === 'submitted'
-                    ? 'bg-green-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <span className="hidden sm:inline">Submitted to PA</span>
-                <span className="sm:hidden">Done</span> ({submissions.filter(s => s.http_post_sent === true).length})
-              </button>
+              </div>
             </div>
           </div>
 
