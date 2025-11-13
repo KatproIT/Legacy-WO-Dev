@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - OntivityWOform
 on:
   push:
     branches:
-      - Legacy-WO-Dev
+      - main
   workflow_dispatch:
 
 jobs:
@@ -53,3 +53,4 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CF24F557AABC427588F4D70F6D47DBEB }}
+
