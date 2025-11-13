@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - OntivityWOform
 on:
   push:
     branches:
-      - main
+      - Legacy-WO-Dev
   workflow_dispatch:
 
 jobs:
