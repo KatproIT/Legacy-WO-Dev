@@ -13,42 +13,46 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: "18.x"
 
       - name: Install dependencies
-        working-directory: ./api     # 👈 Install inside /api folder
+        working-directory: ./api
         run: npm install
 
       - name: Build (if needed)
         working-directory: ./api
         run: npm run build --if-present
 
-      - name: Upload artifact for deployment
+      - name: Upload API folder as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: api/                 # 👈 Upload entire /api folder
+          name: api-artifact
+          path: ./api/**
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Download artifact from build job
+      - name: Download API artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
-          path: .                    # 👈 Extract to current directory
+          name: api-artifact
+          path: ./api   # 👈 Make sure artifact is extracted here
+
+      - name: Display structure (debug)
+        run: ls -R ./api   # 👀 Just to confirm folder structure
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'ontivitywo-backend'
-          slot-name: 'Production'
-          package: ./api             # 👈 Now this will exist
+          app-name: "ontivitywo-backend"
+          slot-name: "Production"
+          package: ./api   # 👈 This folder will now exist
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A70D2CB279044FE2A8849A6AB59A1A3B }}
