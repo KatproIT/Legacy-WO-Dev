@@ -17,13 +17,14 @@ jobs:
     permissions:
       id-token: write
       contents: read
+
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
           lfs: false
 
-      - name: Install OIDC Client from Core Package
+      - name: Install OIDC Client
         run: npm install @actions/core@1.6.0 @actions/http-client
 
       - name: Get Id Token
@@ -31,8 +32,8 @@ jobs:
         id: idtoken
         with:
           script: |
-            const coredemo = require('@actions/core')
-            return await coredemo.getIDToken()
+            const core = require('@actions/core')
+            return await core.getIDToken()
           result-encoding: string
 
       - name: Build And Deploy
@@ -41,21 +42,20 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_NICE_MUD_0C7AA8500 }}
           action: "upload"
-          app_location: "/" # App source code path
-          api_location: "api" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
+          app_location: "/"
+          api_location: "api"
+          output_location: "dist"
           github_id_token: ${{ steps.idtoken.outputs.result }}
         env:
-          VITE_SUPABASE_URL: https://nmgloirdngrtwhjafdaa.supabase.co
-          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tZ2xvaXJkbmdydHdoamFmZGFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwODY2MjgsImV4cCI6MjA3NzY2MjYyOH0.bj4dZiDpPp6yoM_1PmcdpjwLNbQhRKEX9BgiGz2vOlc
+          VITE_API_URL: https://ontivitywo-backend-cgdac4g3hjd0bmbs.southindia-01.azurewebsites.net
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     name: Close Pull Request Job
+
     steps:
       - name: Close Pull Request
-        id: closepullrequest
         uses: Azure/static-web-apps-deploy@v1
         with:
           action: "close"
