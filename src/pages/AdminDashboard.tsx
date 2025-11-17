@@ -31,7 +31,7 @@ export function AdminDashboard() {
   });
 
   // -----------------------------
-  // LOAD ALL SUBMISSIONS (Azure API)
+  // LOAD ALL SUBMISSIONS
   // -----------------------------
   useEffect(() => {
     loadSubmissions();
@@ -74,13 +74,13 @@ export function AdminDashboard() {
   };
 
   // -----------------------------
-  // DELETE FORM (Azure API)
+  // DELETE FORM
   // -----------------------------
   const performDelete = async (id: string) => {
     setConfirmDialog({ ...confirmDialog, isOpen: false });
     setDeleting(id);
 
-    try:
+    try {
       await apiDelete(`/forms/${id}`);
 
       setSubmissions((prev) => prev.filter((s) => s.id !== id));
@@ -182,7 +182,9 @@ export function AdminDashboard() {
                         )}
                       </td>
 
-                      <td className="table-cell font-semibold">{s.job_po_number}</td>
+                      <td className="table-cell font-semibold">
+                        {s.job_po_number}
+                      </td>
                       <td className="table-cell">{s.customer || "-"}</td>
                       <td className="table-cell">{s.site_name || "-"}</td>
                       <td className="table-cell">{s.technician || "-"}</td>

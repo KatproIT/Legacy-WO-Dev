@@ -1,60 +1,41 @@
+// server.js
 import express from "express";
 import cors from "cors";
-import pkg from "pg";
 import dotenv from "dotenv";
-import db from "./db.js";   // IMPORTANT: .js extension
-
+import formsRouter from "./routes/forms.js";
+import pkg from "pg";
+import db from "./db.js"; // your existing db.js
+import formsRouter from "./routes/forms.js";
+app.use("/forms", formsRouter);
 dotenv.config();
-
-const { Pool } = pkg;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-// -----------------------------------------
-// DATABASE CONNECTION (Pool is optional; db.js already handles it)
-// -----------------------------------------
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+// CORS: allow your static app + localhost for dev
+const allowedOrigins = [
+  process.env.FRONTEND_ORIGIN || "https://nice-mud-0c7aa8500.3.azurestaticapps.net",
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
 
-// -----------------------------------------
-// ROUTES MUST BE ABOVE app.listen()
-// -----------------------------------------
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS not allowed"), false);
+  }
+}));
 
-// Root endpoint
+// health / root
 app.get("/", (req, res) => {
   res.send("✅ Backend connected successfully to Azure PostgreSQL!");
 });
 
-// Fetch latest form submissions
-app.get("/forms", async (req, res) => {
-  try {
-    const { rows } = await pool.query(
-      "SELECT * FROM form_submissions ORDER BY created_at DESC LIMIT 10;"
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-// Insert a new form submission
-app.post("/forms", async (req, res) => {
-  const { data } = req.body;
-  try {
-    await pool.query("INSERT INTO form_submissions (data) VALUES ($1)", [data]);
-    res.status(201).send("Form created successfully ✅");
-  } catch (err) {
-    console.error("Insert error:", err);
-    res.status(500).json({ error: "Database insert error" });
-  }
-});
-
-// REAL DB TEST ROUTE
+// keep your existing DB test route
 app.get("/api/db-test", async (req, res) => {
   try {
     const result = await db.query("SELECT COUNT(*) FROM form_submissions;");
@@ -73,9 +54,10 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
-// -----------------------------------------
-// START SERVER (MUST COME LAST)
-// -----------------------------------------
+// mount forms routes
+app.use("/forms", formsRouter);
+
+// start
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
