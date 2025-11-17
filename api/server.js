@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import dotenv from "dotenv";
-import db from "./db";   // NOW this file exists
+import db from "./db.js";
+
 
 dotenv.config();
 const { Pool } = pkg;
