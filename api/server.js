@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import dotenv from "dotenv";
+import db from "./db";
 
 dotenv.config();
 const { Pool } = pkg;
@@ -10,21 +11,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 🧩 Connect to your Azure PostgreSQL database
+// Connect to Azure PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// 🧪 Test Route
+// ----------- ROUTES SHOULD START HERE -----------
+
+// Root test
 app.get("/", (req, res) => {
   res.send("✅ Backend connected successfully to Azure PostgreSQL!");
 });
 
-// 🧩 Example API: Fetch all form submissions
+// Forms list
 app.get("/forms", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM form_submissions ORDER BY created_at DESC LIMIT 10;");
+    const { rows } = await pool.query(
+      "SELECT * FROM form_submissions ORDER BY created_at DESC LIMIT 10;"
+    );
     res.json(rows);
   } catch (err) {
     console.error("Database error:", err);
@@ -32,7 +37,7 @@ app.get("/forms", async (req, res) => {
   }
 });
 
-// 🧩 Example API: Add a new form (for later use)
+// Insert form
 app.post("/forms", async (req, res) => {
   const { data } = req.body;
   try {
@@ -44,8 +49,7 @@ app.post("/forms", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// REAL DATABASE TEST ROUTE
 app.get("/api/db-test", async (req, res) => {
   try {
     const result = await db.query("SELECT COUNT(*) FROM form_submissions;");
@@ -63,3 +67,7 @@ app.get("/api/db-test", async (req, res) => {
     });
   }
 });
+
+// ----------- LISTEN SHOULD BE LAST -----------
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
