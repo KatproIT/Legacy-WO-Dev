@@ -46,3 +46,20 @@ app.post("/forms", async (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const result = await db.query("SELECT COUNT(*) FROM form_submissions;");
+    res.json({
+      success: true,
+      connected: true,
+      rows: result.rows[0].count
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      connected: false,
+      error: err.message
+    });
+  }
+});
