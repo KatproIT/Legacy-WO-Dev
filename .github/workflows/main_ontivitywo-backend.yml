@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - ontivitywo-backend
 
 on:
@@ -13,47 +10,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Required for actions/checkout
-
-    defaults:
-      run:
-        working-directory: ./api   # 👈 Run everything inside /api folder
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'    # 👈 Use Node 18 (stable)
+          node-version: "18.x"
 
       - name: Install dependencies
+        working-directory: ./api
         run: npm install
 
       - name: Build (if needed)
+        working-directory: ./api
         run: npm run build --if-present
 
-      - name: Upload artifact for deployment
+      - name: Upload API folder as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: ./api   # 👈 Only upload your backend folder
+          name: api-artifact
+          path: ./api/**
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Download artifact from build job
+      - name: Download API artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: api-artifact
+          path: ./api   # 👈 Make sure artifact is extracted here
+
+      - name: Display structure (debug)
+        run: ls -R ./api   # 👀 Just to confirm folder structure
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'ontivitywo-backend'
-          slot-name: 'Production'
-          package: ./api  # 👈 Deploy /api folder only
+          app-name: "ontivitywo-backend"
+          slot-name: "Production"
+          package: ./api   # 👈 This folder will now exist
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A70D2CB279044FE2A8849A6AB59A1A3B }}
