@@ -84,7 +84,8 @@ export interface LoadBankEntry {
 
 export interface FormSubmission {
   id?: string;
-  status: 'submitted';
+  // status can be 'draft' while editing, or 'submitted' after workflow submission
+  status?: 'draft' | 'submitted';
   submitted_at?: string;
   created_at?: string;
   updated_at?: string;

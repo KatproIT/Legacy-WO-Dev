@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { FormSubmission } from '../types/form';
 import { FormTabs } from '../components/FormTabs';
 import { GeneralInfoSection } from '../components/GeneralInfoSection';
@@ -19,11 +18,12 @@ import { isPM, isTechnician, isAuthorizedUser, extractNameFromEmail } from '../u
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 
-const POWER_AUTOMATE_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
+const API = import.meta.env.VITE_API_URL || 'https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api';
 
-const REJECT_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8c955439781483da47a26e4f8b0a9f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d9sGvuhHfJre8BA5uSNPJiSvrA7o7nhS0tagqS6mh9k';
-
-const FORWARD_URL = 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/78e08f8b26154239a6c728bcb8f03738/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OolUtQrJfdW6u_rtE_7oKBrntwEO4Q-GY2D336QTack';
+// (optional fallback constants — not used by the new code, backend will call PowerAutomate)
+const POWER_AUTOMATE_URL = import.meta.env.VITE_POWER_AUTOMATE_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
+const REJECT_URL = import.meta.env.VITE_REJECT_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8c955439781483da47a26e4f8b0a9f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d9sGvuhHfJre8BA5uSNPJiSvrA7o7nhS0tagqS6mh9k';
+const FORWARD_URL = import.meta.env.VITE_FORWARD_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/78e08f8b26154239a6c728bcb8f03738/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OolUtQrJfdW6u_rtE_7oKBrntwEO4Q-GY2D336QTack';
 
 export function FormPage() {
   const { jobNumber } = useParams();
@@ -40,7 +40,7 @@ export function FormPage() {
   const [formData, setFormData] = useState<FormSubmission>({
     job_po_number: jobNumber || '',
     status: 'submitted'
-  });
+  } as FormSubmission);
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -73,6 +73,7 @@ export function FormPage() {
         setIsReadOnly(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobNumber, userEmail]);
 
   const handleEmailSubmit = (email: string) => {
@@ -95,36 +96,36 @@ export function FormPage() {
     }
   };
 
-
+  // ---------- Load form ----------
   const loadFormData = async (jobNumber: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('form_submissions')
-        .select('*')
-        .eq('job_po_number', jobNumber)
-        .maybeSingle();
 
-      if (error) throw error;
-
-      if (data) {
-        let updatedData = { ...data };
-
-        if (userEmail && isTechnician(userEmail)) {
-          const technicianName = extractNameFromEmail(userEmail);
-          updatedData = {
-            ...updatedData,
-            technician: technicianName,
-            submitted_by_email: userEmail
-          };
+      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNumber)}`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          showToast('Form not found', 'error');
+          navigate('/');
+          return;
         }
-
-        setFormData(updatedData);
-        setIsReadOnly(data.is_rejected || data.is_forwarded || false);
-      } else {
-        showToast('Form not found', 'error');
-        navigate('/');
+        throw new Error('Failed to load form');
       }
+
+      const data = await res.json();
+
+      let updatedData = { ...data };
+
+      if (userEmail && isTechnician(userEmail)) {
+        const technicianName = extractNameFromEmail(userEmail);
+        updatedData = {
+          ...updatedData,
+          technician: technicianName,
+          submitted_by_email: userEmail
+        };
+      }
+
+      setFormData(updatedData as FormSubmission);
+      setIsReadOnly(Boolean((data as any).is_rejected || (data as any).is_forwarded));
     } catch (error) {
       console.error('Error loading form:', error);
       showToast('Error loading form', 'error');
@@ -133,7 +134,7 @@ export function FormPage() {
     }
   };
 
-
+  // ---------- Validation ----------
   const validateForm = (): boolean => {
     const errors: string[] = [];
 
@@ -157,6 +158,7 @@ export function FormPage() {
     return errors.length === 0;
   };
 
+  // ---------- Save (create or update) ----------
   const handleSaveForm = async () => {
     if (!validateForm()) {
       showToast('Please complete all required fields', 'error');
@@ -172,45 +174,48 @@ export function FormPage() {
         submitted_by_email: userEmail || formData.submitted_by_email
       };
 
-      let savedData;
+      let savedData: FormSubmission | null = null;
 
       if (formData.id) {
-        const { data, error } = await supabase
-          .from('form_submissions')
-          .update(submissionData)
-          .eq('id', formData.id)
-          .select()
-          .single();
+        // Update
+        const res = await fetch(`${API}/forms/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        });
 
-        if (error) throw error;
-        savedData = data;
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || 'Failed to update');
+        }
+
+        savedData = await res.json();
       } else {
-        const { data: existingForm } = await supabase
-          .from('form_submissions')
-          .select('id')
-          .eq('job_po_number', submissionData.job_po_number)
-          .maybeSingle();
+        // Create
+        const res = await fetch(`${API}/forms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        });
 
-        if (existingForm) {
+        if (res.status === 409) {
           showToast(`Job/PO # "${submissionData.job_po_number}" already exists. Please use a different number.`, 'error');
           setSaving(false);
           return;
         }
 
-        const { data, error } = await supabase
-          .from('form_submissions')
-          .insert([submissionData])
-          .select()
-          .single();
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || 'Failed to create');
+        }
 
-        if (error) throw error;
-        savedData = data;
+        savedData = await res.json();
       }
 
-      setFormData(savedData);
+      setFormData(savedData as FormSubmission);
 
       if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${savedData.job_po_number}`, { replace: true });
+        navigate(`/form/${(savedData as FormSubmission).job_po_number}`, { replace: true });
       }
 
       setIsReadOnly(true);
@@ -223,6 +228,7 @@ export function FormPage() {
     }
   };
 
+  // ---------- Submit flow ----------
   const handleSubmit = async () => {
     if (!validateForm()) {
       showToast('Please complete all required fields', 'error');
@@ -250,6 +256,9 @@ export function FormPage() {
     setSaving(true);
 
     try {
+      // Ensure the form is saved first (create or update)
+      let savedData: FormSubmission | null = null;
+
       const submissionData: FormSubmission = {
         ...formData,
         status: 'submitted',
@@ -257,57 +266,59 @@ export function FormPage() {
         submitted_by_email: userEmail || formData.submitted_by_email
       };
 
-      let savedData;
-
       if (formData.id) {
-        const { data, error } = await supabase
-          .from('form_submissions')
-          .update(submissionData)
-          .eq('id', formData.id)
-          .select()
-          .single();
+        const res = await fetch(`${API}/forms/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        });
 
-        if (error) throw error;
-        savedData = data;
+        if (!res.ok) throw new Error('Failed to update before submit');
+        savedData = await res.json();
       } else {
-        const { data: existingForm } = await supabase
-          .from('form_submissions')
-          .select('id')
-          .eq('job_po_number', submissionData.job_po_number)
-          .maybeSingle();
+        const res = await fetch(`${API}/forms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        });
 
-        if (existingForm) {
+        if (res.status === 409) {
           showToast(`Job/PO # "${submissionData.job_po_number}" already exists. Please use a different number.`, 'error');
           setSaving(false);
           return;
         }
-
-        const { data, error } = await supabase
-          .from('form_submissions')
-          .insert([submissionData])
-          .select()
-          .single();
-
-        if (error) throw error;
-        savedData = data;
+        if (!res.ok) throw new Error('Failed to create before submit');
+        savedData = await res.json();
         setIsNewForm(false);
       }
 
-      if (savedData && savedData.is_first_submission) {
-        await sendPowerAutomateRequest(savedData);
-        await supabase
-          .from('form_submissions')
-          .update({ is_first_submission: false })
-          .eq('id', savedData.id);
+      // Now call backend workflow submit (backend will set status, submitted_at and call Power Automate)
+      const wf = await fetch(`${API}/workflow/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: savedData!.id })
+      });
+
+      if (!wf.ok) {
+        console.error('Workflow submit failed', await wf.text());
+        // don't throw — user should still know form saved
       }
 
-      setFormData(savedData);
+      // Refresh saved data from backend to reflect workflow update
+      if (savedData) {
+        const refreshRes = await fetch(`${API}/forms/${savedData.id}`);
+        if (refreshRes.ok) {
+          const refreshed = await refreshRes.json();
+          setFormData(refreshed);
+        }
+      }
 
       if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${savedData.job_po_number}`, { replace: true });
+        navigate(`/form/${savedData!.job_po_number}`, { replace: true });
       }
 
       showToast('WO submitted successfully', 'success');
+      setIsReadOnly(true);
     } catch (error) {
       console.error('Error submitting form:', error);
       showToast('Error submitting form', 'error');
@@ -316,42 +327,91 @@ export function FormPage() {
     }
   };
 
-  const sendPowerAutomateRequest = async (data: FormSubmission) => {
+  // ---------- Reject ----------
+  const handleReject = async (note: string) => {
     try {
-      const editLink = `${window.location.origin}/form/${data.job_po_number}`;
+      setSaving(true);
+      setShowRejectModal(false);
 
-      const payload = {
-        date: data.date,
-        jobNumber: data.job_po_number,
-        technician: data.technician,
-        editLink: editLink
-      };
-
-      const response = await fetch(POWER_AUTOMATE_URL, {
+      // Call backend workflow reject (backend updates DB and triggers PA)
+      const payload = { id: formData.id, note };
+      const res = await fetch(`${API}/workflow/reject`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        await supabase
-          .from('form_submissions')
-          .update({ http_post_sent: true })
-          .eq('id', data.id);
+      if (!res.ok) {
+        throw new Error('Reject failed');
       }
+
+      // Refresh the form
+      if (formData.id) {
+        const refreshRes = await fetch(`${API}/forms/${formData.id}`);
+        if (refreshRes.ok) {
+          const refreshed = await refreshRes.json();
+          setFormData(refreshed);
+        }
+      }
+
+      // Also persist any changes if required
+      await handleSaveForm();
+
+      setIsReadOnly(true);
+      showToast('Form rejected successfully', 'success');
     } catch (error) {
-      console.error('Error sending Power Automate request:', error);
+      console.error('Error rejecting form:', error);
+      showToast('Error rejecting form', 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
+  // ---------- Forward ----------
+  const handleForward = async (technicianEmail: string) => {
+    try {
+      setSaving(true);
+      setShowForwardModal(false);
+
+      const payload = { id: formData.id, to: technicianEmail };
+      const res = await fetch(`${API}/workflow/forward`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error('Forward failed');
+      }
+
+      // Refresh form
+      if (formData.id) {
+        const refreshRes = await fetch(`${API}/forms/${formData.id}`);
+        if (refreshRes.ok) {
+          const refreshed = await refreshRes.json();
+          setFormData(refreshed);
+        }
+      }
+
+      await handleSaveForm();
+      setIsReadOnly(true);
+      showToast('Form forwarded successfully', 'success');
+    } catch (error) {
+      console.error('Error forwarding form:', error);
+      showToast('Error forwarding form', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ---------- Helpers ----------
   const handleFieldChange = useCallback((field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
     if (validationErrors.length > 0) {
       validateForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validationErrors]);
 
   const getFieldError = (value: any): boolean => {
@@ -382,89 +442,7 @@ export function FormPage() {
     });
   };
 
-  const handleReject = async (note: string) => {
-    try {
-      setSaving(true);
-      setShowRejectModal(false);
-
-      const formLink = `${window.location.origin}/form/${formData.job_po_number}`;
-
-      const payload = {
-        to: formData.submitted_by_email || '',
-        note,
-        formLink,
-        jobPO: formData.job_po_number
-      };
-
-      await fetch(REJECT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      await supabase
-        .from('form_submissions')
-        .update({
-          is_rejected: true,
-          rejection_note: note,
-          workflow_timestamp: new Date().toISOString()
-        })
-        .eq('id', formData.id);
-
-      await handleSaveForm();
-      setIsReadOnly(true);
-      showToast('Form rejected successfully', 'success');
-    } catch (error) {
-      console.error('Error rejecting form:', error);
-      showToast('Error rejecting form', 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleForward = async (technicianEmail: string) => {
-    try {
-      setSaving(true);
-      setShowForwardModal(false);
-
-      const formLink = `${window.location.origin}/form/${formData.job_po_number}`;
-
-      const payload = {
-        to: technicianEmail,
-        formLink,
-        jobPO: formData.job_po_number
-      };
-
-      await fetch(FORWARD_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      await supabase
-        .from('form_submissions')
-        .update({
-          is_forwarded: true,
-          forwarded_to_email: technicianEmail,
-          workflow_timestamp: new Date().toISOString()
-        })
-        .eq('id', formData.id);
-
-      await handleSaveForm();
-      setIsReadOnly(true);
-      showToast('Form forwarded successfully', 'success');
-    } catch (error) {
-      console.error('Error forwarding form:', error);
-      showToast('Error forwarding form', 'error');
-    } finally {
-      setSaving(false);
-    }
-  };
-
+  // ---------- UI ----------
   if (!userEmail) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -501,7 +479,7 @@ export function FormPage() {
                   <span className="sm:hidden">Read-Only</span>
                 </span>
               )}
-              {formData.id && formData.http_post_sent && (
+              {formData.id && (formData as any).http_post_sent && (
                 <span className="px-2 py-1 sm:px-4 sm:py-2 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm font-semibold rounded-lg">
                   ✓ <span className="hidden sm:inline">Submitted to Power Automate</span>
                   <span className="sm:hidden">Submitted</span>
@@ -559,7 +537,7 @@ export function FormPage() {
                     </button>
                   )}
 
-                  {!formData.id && !formData.http_post_sent && (
+                  {!formData.id && !((formData as any).http_post_sent) && (
                     <button
                       onClick={handleSubmit}
                       disabled={saving}

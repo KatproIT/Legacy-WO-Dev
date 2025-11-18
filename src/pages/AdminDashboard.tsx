@@ -9,7 +9,7 @@ export function AdminDashboard() {
   const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all'>('all');
+  // filter state removed as it's not used; keep simple dashboard for now
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
