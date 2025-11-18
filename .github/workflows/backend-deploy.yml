@@ -20,7 +20,7 @@ jobs:
         node-version: '18'
 
     - name: Install Dependencies
-      working-directory: backend
+      working-directory: Backend
       run: npm install
 
     - name: Deploy to Azure Web App
