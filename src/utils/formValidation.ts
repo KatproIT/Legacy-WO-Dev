@@ -43,6 +43,7 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.equipment_engine?.model) errors.push('Engine Model is required');
   if (!formData.equipment_engine?.serial) errors.push('Engine Serial is required');
   if (!formData.equipment_engine?.spec) errors.push('Engine Spec is required');
+  if (!formData.equipment_engine?.hours) errors.push('Engine Hours is required');
 
   if (!formData.equipment_ats1?.make) errors.push('ATS 1 Make is required');
   if (!formData.equipment_ats1?.model) errors.push('ATS 1 Model is required');
