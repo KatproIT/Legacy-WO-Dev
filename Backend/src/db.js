@@ -1,5 +1,5 @@
-// src/db.js
 const { Pool } = require('pg');
+
 const pool = new Pool({
   connectionString: process.env.AZURE_POSTGRES_URL,
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
