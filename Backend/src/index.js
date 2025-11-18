@@ -28,3 +28,10 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+app.get('/api/debug-env', (req, res) => {
+  res.json({
+    AZURE_POSTGRES_URL: process.env.AZURE_POSTGRES_URL || null,
+    DB_SSL: process.env.DB_SSL || null
+  });
+});
