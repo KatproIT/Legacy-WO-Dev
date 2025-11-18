@@ -12,6 +12,16 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: process.env.FRONTEND_ORIGIN || '*'
 }));
+
+// 🔥 FIX: Disable caching (prevents 304 Not Modified)
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+  next();
+});
+
 app.use(bodyParser.json({ limit: '20mb' }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));

@@ -14,6 +14,14 @@ router.get('/', async (req, res, next) => {
       ORDER BY created_at DESC
     `;
     const result = await db.query(q);
+
+    // 🔥 No-cache headers
+    res.set({
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+
     res.json(result.rows);
   } catch (err) { next(err); }
 });
@@ -28,6 +36,13 @@ router.get('/job/:jobNumber', async (req, res, next) => {
     if (result.rows.length === 0) 
       return res.status(404).json({ message: 'Form not found' });
 
+    // 🔥 No-cache headers
+    res.set({
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+
     res.json(result.rows[0]);
   } catch (err) { next(err); }
 });
@@ -40,6 +55,13 @@ router.get('/:id', async (req, res, next) => {
 
     if (result.rows.length === 0)
       return res.status(404).json({ message: 'Not found' });
+
+    // 🔥 No-cache headers
+    res.set({
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
 
     res.json(result.rows[0]);
   } catch (err) { next(err); }
