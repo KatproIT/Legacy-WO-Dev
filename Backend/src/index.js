@@ -16,16 +16,13 @@ const PORT = process.env.PORT || 4000;
 /* -------------------------------------------------------
    ✅ CORS (MUST be FIRST middleware)
 -------------------------------------------------------- */
-app.use(
-  cors({
-    origin:
-      process.env.FRONTEND_ORIGIN ||
-      "https://green-water-05d07b500.3.azurestaticapps.net",
-    methods: "GET,POST,PUT,DELETE,OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.FRONTEND_ORIGIN || "https://green-water-05d07b500.3.azurestaticapps.net",
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type, Authorization",
+  credentials: true
+}));
+app.options('*', cors());
 
 // Enable preflight requests for all routes
 app.options("*", cors());

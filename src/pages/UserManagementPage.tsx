@@ -1,122 +1,154 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authFetch } from '../utils/authFetch';
+import { useEffect, useState } from "react";
+import { authFetch } from "../utils/authFetch";
 
-type UserRow = { id: string; email: string; role: string; created_at: string };
+const API =
+  (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
+  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
 
 export default function UserManagementPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'technician' | 'pm' | 'admin'>('technician');
+  const [users, setUsers] = useState<any[]>([]);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("12345678");
+  const [role, setRole] = useState("technician");
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
-  const loadUsers = async () => {
-    setLoading(true);
-    try {
-      const res = await authFetch('/api/auth/users');
-      if (!res.ok) {
-        const b = await res.json().catch(() => ({}));
-        throw new Error(b.message || 'Failed to load users');
-      }
-      const data = await res.json();
-      setUsers(data || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load users');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const superadminPassword = "Legacy@123!"; // can move to prompt
 
   useEffect(() => {
     loadUsers();
   }, []);
 
-  const createUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    if (!email) return setError('Email required');
-
+  const loadUsers = async () => {
     try {
-      const payload = { email, role };
-      const res = await authFetch('/api/auth/create-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) {
-        const b = await res.json().catch(() => ({}));
-        throw new Error(b.message || 'Create failed');
-      }
-      const body = await res.json();
-      setSuccess(`User created. Default password: ${body.defaultPassword || '12345678'}`);
-      setEmail('');
-      await loadUsers();
-    } catch (err: any) {
-      setError(err.message || 'Create failed');
+      const res = await authFetch(`${API}/auth/users`);
+      if (!res.ok) throw new Error("Failed to load users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      showToast("Error loading users", "error");
     }
   };
 
+  const createUser = async () => {
+    if (!email) return showToast("Email required", "error");
+
+    setLoading(true);
+    try {
+      const res = await authFetch(`${API}/auth/create-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role, superadminPassword })
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || "Failed to create user");
+      }
+
+      showToast("User created successfully", "success");
+      setEmail("");
+      loadUsers();
+    } catch (err: any) {
+      showToast(err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    if (!confirm("Delete this user?")) return;
+    try {
+      const res = await authFetch(`${API}/auth/delete-user/${id}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) throw new Error("Failed to delete user");
+      showToast("User deleted", "success");
+      loadUsers();
+    } catch {
+      showToast("Error deleting user", "error");
+    }
+  };
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-4">User Management (Superadmin)</h2>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-2xl font-bold mb-6">Superadmin - User Management</h1>
 
-          {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
-          {success && <div className="mb-3 text-sm text-green-700">{success}</div>}
-
-          <form onSubmit={createUser} className="flex gap-2 flex-col sm:flex-row items-start sm:items-end">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input value={email} onChange={(e) => setEmail(e.target.value)}
-                     className="w-full px-3 py-2 border rounded" placeholder="new.user@company.com" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <select value={role} onChange={(e) => setRole(e.target.value as any)}
-                      className="px-3 py-2 border rounded">
-                <option value="technician">technician</option>
-                <option value="pm">pm</option>
-                <option value="admin">admin</option>
-              </select>
-            </div>
-
-            <div>
-              <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Create User</button>
-            </div>
-          </form>
-
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-3">Existing users</h3>
-            {loading ? <div>Loading...</div> : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left px-4 py-2 text-sm">Email</th>
-                      <th className="text-left px-4 py-2 text-sm">Role</th>
-                      <th className="text-left px-4 py-2 text-sm">Created</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map(u => (
-                      <tr key={u.id} className="border-b">
-                        <td className="px-4 py-3 text-sm">{u.email}</td>
-                        <td className="px-4 py-3 text-sm">{u.role}</td>
-                        <td className="px-4 py-3 text-sm">{new Date(u.created_at).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+      {toast && (
+        <div className={`mb-4 p-3 rounded text-white ${toast.type === "success" ? "bg-green-600" : "bg-red-600"}`}>
+          {toast.message}
         </div>
+      )}
+
+      {/* Create User Form */}
+      <div className="bg-white p-6 rounded shadow mb-8">
+        <h2 className="text-xl font-semibold mb-4">Create New User</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            className="form-input"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            className="form-input"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <select className="form-input" value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="technician">Technician</option>
+            <option value="pm">PM</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button
+          onClick={createUser}
+          disabled={loading}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? "Creating..." : "Create User"}
+        </button>
+      </div>
+
+      {/* User List */}
+      <div className="bg-white p-6 rounded shadow">
+        <h2 className="text-xl font-semibold mb-4">Existing Users</h2>
+
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="p-2">Email</th>
+              <th className="p-2">Role</th>
+              <th className="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id} className="border-b">
+                <td className="p-2">{u.email}</td>
+                <td className="p-2 capitalize">{u.role}</td>
+                <td className="p-2">
+                  <button
+                    onClick={() => deleteUser(u.id)}
+                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

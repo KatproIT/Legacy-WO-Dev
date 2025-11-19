@@ -97,7 +97,7 @@ export function AdminDashboard() {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200">
@@ -286,6 +286,15 @@ export function AdminDashboard() {
                 </p>
               </div>
               <Clock size={40} className="text-yellow-600 opacity-50" />
+              {localStorage.getItem("userRole") === "superadmin" && (
+  <button
+    onClick={() => navigate('/admin/users')}
+    className="btn-secondary"
+  >
+    Manage Users
+  </button>
+)}
+
             </div>
           </div>
 
