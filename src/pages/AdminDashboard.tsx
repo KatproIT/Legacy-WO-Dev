@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FileText, Clock, CheckCircle, ExternalLink, Plus, Trash2 } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 
 const API =
   (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) ||
@@ -26,10 +27,9 @@ export function AdminDashboard() {
     loadSubmissions();
   }, []);
 
-  // Load all submissions from backend
   const loadSubmissions = async () => {
     try {
-      const res = await fetch(`${API}/forms`);
+      const res = await authFetch(`${API}/forms`);
       if (!res.ok) throw new Error("Failed to load submissions");
 
       const data = await res.json();
@@ -41,11 +41,10 @@ export function AdminDashboard() {
     }
   };
 
-  // Delete form
   const performDelete = async (id: string) => {
     setDeleting(id);
     try {
-      const res = await fetch(`${API}/forms/${id}`, {
+      const res = await authFetch(`${API}/forms/${id}`, {
         method: 'DELETE'
       });
 
@@ -73,7 +72,6 @@ export function AdminDashboard() {
     });
   };
 
-  // UI Helpers
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -90,7 +88,7 @@ export function AdminDashboard() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const filteredSubmissions = submissions; // You can add filters later
+  const filteredSubmissions = submissions;
 
   if (loading) {
     return (
@@ -99,7 +97,7 @@ export function AdminDashboard() {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="bg-white shadow-lg border-b border-gray-200">
