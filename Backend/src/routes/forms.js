@@ -15,7 +15,6 @@ router.get('/', async (req, res, next) => {
     `;
     const result = await db.query(q);
 
-    // 🔥 No-cache headers
     res.set({
       "Cache-Control": "no-store",
       "Pragma": "no-cache",
@@ -30,13 +29,14 @@ router.get('/', async (req, res, next) => {
 router.get('/job/:jobNumber', async (req, res, next) => {
   try {
     const { jobNumber } = req.params;
-    const q = `SELECT * FROM form_submissions WHERE job_po_number = $1 LIMIT 1`;
-    const result = await db.query(q, [jobNumber]);
+    const result = await db.query(
+      `SELECT * FROM form_submissions WHERE job_po_number = $1 LIMIT 1`,
+      [jobNumber]
+    );
 
-    if (result.rows.length === 0) 
+    if (result.rows.length === 0)
       return res.status(404).json({ message: 'Form not found' });
 
-    // 🔥 No-cache headers
     res.set({
       "Cache-Control": "no-store",
       "Pragma": "no-cache",
@@ -50,13 +50,14 @@ router.get('/job/:jobNumber', async (req, res, next) => {
 // get form by id
 router.get('/:id', async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const result = await db.query('SELECT * FROM form_submissions WHERE id = $1', [id]);
+    const result = await db.query(
+      'SELECT * FROM form_submissions WHERE id = $1',
+      [req.params.id]
+    );
 
     if (result.rows.length === 0)
       return res.status(404).json({ message: 'Not found' });
 
-    // 🔥 No-cache headers
     res.set({
       "Cache-Control": "no-store",
       "Pragma": "no-cache",
@@ -75,22 +76,19 @@ router.post('/', async (req, res, next) => {
     if (!payload.job_po_number)
       return res.status(400).json({ message: 'job_po_number required' });
 
-    // check duplicate job_po_number
+    // prevent duplicate job number
     const dup = await db.query(
-      'SELECT id FROM form_submissions WHERE job_po_number = $1', 
+      'SELECT id FROM form_submissions WHERE job_po_number = $1',
       [payload.job_po_number]
     );
-    if (dup.rows.length) {
-      return res.status(409).json({
-        message: `Job/PO # "${payload.job_po_number}" already exists.`
-      });
-    }
+    if (dup.rows.length)
+      return res.status(409).json({ message: `Job/PO # "${payload.job_po_number}" already exists.` });
 
     const id = uuidv4();
 
     const insert = `
       INSERT INTO form_submissions (
-        id, job_po_number, submitted_by_email, technician, customer, 
+        id, job_po_number, submitted_by_email, technician, customer,
         site_name, date, status, data
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
       RETURNING *;
@@ -105,7 +103,7 @@ router.post('/', async (req, res, next) => {
       payload.site_name || null,
       payload.date || null,
       payload.status || 'draft',
-      payload
+      payload.data || {}      // << ONLY dynamic fields, not entire payload
     ];
 
     const result = await db.query(insert, vals);
@@ -117,25 +115,24 @@ router.post('/', async (req, res, next) => {
 // update form by id
 router.put('/:id', async (req, res, next) => {
   try {
-    const { id } = req.params;
     const payload = req.body;
 
     const q = `
       UPDATE form_submissions SET
-        job_po_number = COALESCE($2, job_po_number),
-        submitted_by_email = COALESCE($3, submitted_by_email),
-        technician = COALESCE($4, technician),
-        customer = COALESCE($5, customer),
-        site_name = COALESCE($6, site_name),
-        date = COALESCE($7, date),
-        status = COALESCE($8, status),
-        data = $9
+        job_po_number        = COALESCE($2, job_po_number),
+        submitted_by_email   = COALESCE($3, submitted_by_email),
+        technician           = COALESCE($4, technician),
+        customer             = COALESCE($5, customer),
+        site_name            = COALESCE($6, site_name),
+        date                 = COALESCE($7, date),
+        status               = COALESCE($8, status),
+        data                 = $9
       WHERE id = $1
       RETURNING *;
     `;
 
     const vals = [
-      id,
+      req.params.id,
       payload.job_po_number || null,
       payload.submitted_by_email || null,
       payload.technician || null,
@@ -143,7 +140,7 @@ router.put('/:id', async (req, res, next) => {
       payload.site_name || null,
       payload.date || null,
       payload.status || null,
-      payload
+      payload.data || {}      // << ONLY dynamic fields
     ];
 
     const result = await db.query(q, vals);
@@ -159,8 +156,7 @@ router.put('/:id', async (req, res, next) => {
 // delete form
 router.delete('/:id', async (req, res, next) => {
   try {
-    const { id } = req.params;
-    await db.query('DELETE FROM form_submissions WHERE id = $1', [id]);
+    await db.query('DELETE FROM form_submissions WHERE id = $1', [req.params.id]);
     res.json({ ok: true });
   } catch (err) { next(err); }
 });
