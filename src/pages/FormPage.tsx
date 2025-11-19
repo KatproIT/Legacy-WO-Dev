@@ -18,7 +18,9 @@ import { isPM, isTechnician, isAuthorizedUser, extractNameFromEmail } from '../u
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || 'https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api';
+const API =
+  import.meta.env.VITE_API_URL?.trim() ||
+  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
 
 // (optional fallback constants — not used by the new code, backend will call PowerAutomate)
 const POWER_AUTOMATE_URL = import.meta.env.VITE_POWER_AUTOMATE_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
