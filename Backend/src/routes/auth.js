@@ -1,7 +1,7 @@
 // /mnt/data/src/routes/auth.js
 const express = require('express');
 const router = express.Router();
-const db = require('../../db'); // adjust path if your routes live elsewhere
+const db = require('../db'); // adjust path if your routes live elsewhere
 const jwt = require('jsonwebtoken');
 const { hashPassword, comparePassword } = require('../utils/hash');
 
