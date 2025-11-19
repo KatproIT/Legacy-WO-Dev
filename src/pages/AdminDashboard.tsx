@@ -4,7 +4,9 @@ import { FormSubmission } from '../types/form';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FileText, Clock, CheckCircle, ExternalLink, Plus, Trash2 } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
+const API =
+  (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) ||
+  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
