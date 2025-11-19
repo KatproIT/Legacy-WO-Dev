@@ -33,9 +33,10 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
+
+      // Save authentication info
       localStorage.setItem("token", data.token);
       localStorage.setItem("userEmail", data.user.email);
-      // <-- store role from server (important)
       localStorage.setItem("userRole", data.user.role || "user");
 
       navigate("/admin", { replace: true });
