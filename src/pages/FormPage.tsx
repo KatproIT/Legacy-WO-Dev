@@ -18,14 +18,100 @@ import { isPM, isTechnician, isAuthorizedUser, extractNameFromEmail } from '../u
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 
+/**
+ * Robust API base URL handling:
+ * - Use VITE_API_URL if provided (trimmed)
+ * - Otherwise fallback to the production backend URL
+ */
 const API =
-  import.meta.env.VITE_API_URL?.trim() ||
-  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
+  (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
+  'https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api';
 
-// (optional fallback constants — not used by the new code, backend will call PowerAutomate)
-const POWER_AUTOMATE_URL = import.meta.env.VITE_POWER_AUTOMATE_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/27b381b86bdb439ab4a1c21c7e91b4ca/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=T7l_jnyAgqcepy0O9s1qRoETtbiQ-_hNeqYIt9D0hRg';
-const REJECT_URL = import.meta.env.VITE_REJECT_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c8c955439781483da47a26e4f8b0a9f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=d9sGvuhHfJre8BA5uSNPJiSvrA7o7nhS0tagqS6mh9k';
-const FORWARD_URL = import.meta.env.VITE_FORWARD_URL || 'https://default3596b7c39b4b4ef89dde39825373af.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/78e08f8b26154239a6c728bcb8f03738/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OolUtQrJfdW6u_rtE_7oKBrntwEO4Q-GY2D336QTack';
+/**
+ * Utilities to transform backend <-> frontend shape
+ *
+ * Backend shape: many dynamic fields are stored inside `data: { ... }`
+ * Frontend components expect the fields to be top-level on FormSubmission.
+ *
+ * unpackForm(raw) -> merges raw.data into top-level (shallow merge)
+ * packForm(form) -> creates payload where `data` contains all non-top-level keys
+ *                    and top-level reserved fields remain top-level.
+ */
+
+// List of keys that should remain top-level in the DB (not inside `data`).
+// Keep this list conservative — top-level DB columns used in backend queries.
+const RESERVED_TOP_LEVEL_KEYS = new Set([
+  'id',
+  'job_po_number',
+  'status',
+  'submitted_at',
+  'created_at',
+  'updated_at',
+  'date',
+  'technician',
+  'customer',
+  'site_name',
+  'site_address',
+  'type_of_service',
+  'contact_name',
+  'contact_phone',
+  'contact_email',
+  'next_inspection_due',
+  'http_post_sent',
+  'is_rejected',
+  'is_forwarded',
+  'rejection_note',
+  'forwarded_to_email',
+  'workflow_timestamp'
+]);
+
+function unpackForm(raw: any): FormSubmission {
+  if (!raw) return {} as FormSubmission;
+
+  // raw may already have nested data
+  const dataPart = raw.data && typeof raw.data === 'object' ? raw.data : {};
+
+  // Merge shallow: top-level raw keys override data keys (if collisions)
+  const merged = {
+    ...dataPart,
+    ...raw
+  };
+
+  // Remove nested data to avoid duplication
+  delete (merged as any).data;
+
+  return merged as FormSubmission;
+}
+
+function packForm(form: FormSubmission): any {
+  // Build top-level object and nested data object
+  const topLevel: any = {};
+  const data: any = {};
+
+  // Iterate all keys on form
+  Object.keys(form).forEach((k) => {
+    // Skip undefined keys
+    const v = (form as any)[k];
+    if (typeof v === 'undefined') return;
+
+    if (RESERVED_TOP_LEVEL_KEYS.has(k)) {
+      topLevel[k] = v;
+    } else {
+      // everything else goes into data
+      data[k] = v;
+    }
+  });
+
+  // Always ensure job_po_number exists at top-level for backend uniqueness check
+  if (!topLevel.job_po_number && (form as any).job_po_number) {
+    topLevel.job_po_number = (form as any).job_po_number;
+  }
+
+  // Backend expects `data` column to contain the full payload of form fields
+  topLevel.data = data;
+
+  return topLevel;
+}
 
 export function FormPage() {
   const { jobNumber } = useParams();
@@ -99,11 +185,11 @@ export function FormPage() {
   };
 
   // ---------- Load form ----------
-  const loadFormData = async (jobNumber: string) => {
+  const loadFormData = async (jobNum: string) => {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNumber)}`);
+      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`);
       if (!res.ok) {
         if (res.status === 404) {
           showToast('Form not found', 'error');
@@ -113,21 +199,18 @@ export function FormPage() {
         throw new Error('Failed to load form');
       }
 
-      const data = await res.json();
+      const raw = await res.json();
+      const unpacked = unpackForm(raw);
 
-      let updatedData = { ...data };
-
+      // If user is a technician, override some fields
       if (userEmail && isTechnician(userEmail)) {
         const technicianName = extractNameFromEmail(userEmail);
-        updatedData = {
-          ...updatedData,
-          technician: technicianName,
-          submitted_by_email: userEmail
-        };
+        unpacked.technician = technicianName;
+        unpacked.submitted_by_email = userEmail;
       }
 
-      setFormData(updatedData as FormSubmission);
-      setIsReadOnly(Boolean((data as any).is_rejected || (data as any).is_forwarded));
+      setFormData(unpacked);
+      setIsReadOnly(Boolean((raw as any).is_rejected || (raw as any).is_forwarded));
     } catch (error) {
       console.error('Error loading form:', error);
       showToast('Error loading form', 'error');
@@ -170,20 +253,21 @@ export function FormPage() {
     setSaving(true);
 
     try {
-      const submissionData: FormSubmission = {
+      // Build payload expected by backend: top-level reserved fields + data: { ... }
+      const submissionPayload = packForm({
         ...formData,
         status: 'draft',
-        submitted_by_email: userEmail || formData.submitted_by_email
-      };
+        submitted_by_email: userEmail || (formData as any).submitted_by_email
+      });
 
-      let savedData: FormSubmission | null = null;
+      let savedData: any = null;
 
       if (formData.id) {
         // Update
         const res = await fetch(`${API}/forms/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submissionData)
+          body: JSON.stringify(submissionPayload)
         });
 
         if (!res.ok) {
@@ -197,11 +281,11 @@ export function FormPage() {
         const res = await fetch(`${API}/forms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submissionData)
+          body: JSON.stringify(submissionPayload)
         });
 
         if (res.status === 409) {
-          showToast(`Job/PO # "${submissionData.job_po_number}" already exists. Please use a different number.`, 'error');
+          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists. Please use a different number.`, 'error');
           setSaving(false);
           return;
         }
@@ -214,10 +298,12 @@ export function FormPage() {
         savedData = await res.json();
       }
 
-      setFormData(savedData as FormSubmission);
+      // Backend returns DB row. Unpack nested data into form shape.
+      const unpacked = unpackForm(savedData);
+      setFormData(unpacked);
 
       if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${(savedData as FormSubmission).job_po_number}`, { replace: true });
+        navigate(`/form/${(unpacked as FormSubmission).job_po_number}`, { replace: true });
       }
 
       setIsReadOnly(true);
@@ -258,21 +344,21 @@ export function FormPage() {
     setSaving(true);
 
     try {
-      // Ensure the form is saved first (create or update)
-      let savedData: FormSubmission | null = null;
-
-      const submissionData: FormSubmission = {
+      // Build payload and save as submitted
+      const submissionPayload = packForm({
         ...formData,
         status: 'submitted',
         submitted_at: new Date().toISOString(),
-        submitted_by_email: userEmail || formData.submitted_by_email
-      };
+        submitted_by_email: userEmail || (formData as any).submitted_by_email
+      });
+
+      let savedData: any = null;
 
       if (formData.id) {
         const res = await fetch(`${API}/forms/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submissionData)
+          body: JSON.stringify(submissionPayload)
         });
 
         if (!res.ok) throw new Error('Failed to update before submit');
@@ -281,11 +367,11 @@ export function FormPage() {
         const res = await fetch(`${API}/forms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submissionData)
+          body: JSON.stringify(submissionPayload)
         });
 
         if (res.status === 409) {
-          showToast(`Job/PO # "${submissionData.job_po_number}" already exists. Please use a different number.`, 'error');
+          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists. Please use a different number.`, 'error');
           setSaving(false);
           return;
         }
@@ -310,7 +396,8 @@ export function FormPage() {
       if (savedData) {
         const refreshRes = await fetch(`${API}/forms/${savedData.id}`);
         if (refreshRes.ok) {
-          const refreshed = await refreshRes.json();
+          const refreshedRaw = await refreshRes.json();
+          const refreshed = unpackForm(refreshedRaw);
           setFormData(refreshed);
         }
       }
@@ -351,12 +438,13 @@ export function FormPage() {
       if (formData.id) {
         const refreshRes = await fetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
-          const refreshed = await refreshRes.json();
+          const refreshedRaw = await refreshRes.json();
+          const refreshed = unpackForm(refreshedRaw);
           setFormData(refreshed);
         }
       }
 
-      // Also persist any changes if required
+      // Also persist any changes if required (pack then save)
       await handleSaveForm();
 
       setIsReadOnly(true);
@@ -390,7 +478,8 @@ export function FormPage() {
       if (formData.id) {
         const refreshRes = await fetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
-          const refreshed = await refreshRes.json();
+          const refreshedRaw = await refreshRes.json();
+          const refreshed = unpackForm(refreshedRaw);
           setFormData(refreshed);
         }
       }
