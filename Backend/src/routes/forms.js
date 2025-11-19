@@ -76,7 +76,6 @@ router.post('/', async (req, res, next) => {
     if (!payload.job_po_number)
       return res.status(400).json({ message: 'job_po_number required' });
 
-    // prevent duplicate job number
     const dup = await db.query(
       'SELECT id FROM form_submissions WHERE job_po_number = $1',
       [payload.job_po_number]
@@ -89,8 +88,11 @@ router.post('/', async (req, res, next) => {
     const insert = `
       INSERT INTO form_submissions (
         id, job_po_number, submitted_by_email, technician, customer,
-        site_name, date, status, data
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        site_name, site_address, type_of_service,
+        contact_name, contact_phone, contact_email,
+        next_inspection_due,
+        date, status, data
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
       RETURNING *;
     `;
 
@@ -101,9 +103,15 @@ router.post('/', async (req, res, next) => {
       payload.technician || null,
       payload.customer || null,
       payload.site_name || null,
+      payload.site_address || null,
+      payload.type_of_service || null,
+      payload.contact_name || null,
+      payload.contact_phone || null,
+      payload.contact_email || null,
+      payload.next_inspection_due || null,
       payload.date || null,
       payload.status || 'draft',
-      payload.data || {}      // << ONLY dynamic fields, not entire payload
+      payload.data || {}
     ];
 
     const result = await db.query(insert, vals);
@@ -119,14 +127,20 @@ router.put('/:id', async (req, res, next) => {
 
     const q = `
       UPDATE form_submissions SET
-        job_po_number        = COALESCE($2, job_po_number),
-        submitted_by_email   = COALESCE($3, submitted_by_email),
-        technician           = COALESCE($4, technician),
-        customer             = COALESCE($5, customer),
-        site_name            = COALESCE($6, site_name),
-        date                 = COALESCE($7, date),
-        status               = COALESCE($8, status),
-        data                 = $9
+        job_po_number = COALESCE($2, job_po_number),
+        submitted_by_email = COALESCE($3, submitted_by_email),
+        technician = COALESCE($4, technician),
+        customer = COALESCE($5, customer),
+        site_name = COALESCE($6, site_name),
+        site_address = COALESCE($7, site_address),
+        type_of_service = COALESCE($8, type_of_service),
+        contact_name = COALESCE($9, contact_name),
+        contact_phone = COALESCE($10, contact_phone),
+        contact_email = COALESCE($11, contact_email),
+        next_inspection_due = COALESCE($12, next_inspection_due),
+        date = COALESCE($13, date),
+        status = COALESCE($14, status),
+        data = $15
       WHERE id = $1
       RETURNING *;
     `;
@@ -138,9 +152,15 @@ router.put('/:id', async (req, res, next) => {
       payload.technician || null,
       payload.customer || null,
       payload.site_name || null,
+      payload.site_address || null,
+      payload.type_of_service || null,
+      payload.contact_name || null,
+      payload.contact_phone || null,
+      payload.contact_email || null,
+      payload.next_inspection_due || null,
       payload.date || null,
       payload.status || null,
-      payload.data || {}      // << ONLY dynamic fields
+      payload.data || {}
     ];
 
     const result = await db.query(q, vals);
