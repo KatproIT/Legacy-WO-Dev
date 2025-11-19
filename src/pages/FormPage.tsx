@@ -1,3 +1,4 @@
+// src/pages/FormPage.tsx
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
@@ -19,27 +20,15 @@ import { validateLoadBankReport, validateServiceReport } from '../utils/formVali
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 
 /**
- * Robust API base URL handling:
- * - Use VITE_API_URL if provided (trimmed)
- * - Otherwise fallback to the production backend URL
+ * API base URL (trim and fallback)
  */
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
   'https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api';
 
 /**
- * Utilities to transform backend <-> frontend shape
- *
- * Backend shape: many dynamic fields are stored inside `data: { ... }`
- * Frontend components expect the fields to be top-level on FormSubmission.
- *
- * unpackForm(raw) -> merges raw.data into top-level (shallow merge)
- * packForm(form) -> creates payload where `data` contains all non-top-level keys
- *                    and top-level reserved fields remain top-level.
+ * Reserved top-level keys which should remain outside `data` column when writing to backend
  */
-
-// List of keys that should remain top-level in the DB (not inside `data`).
-// Keep this list conservative — top-level DB columns used in backend queries.
 const RESERVED_TOP_LEVEL_KEYS = new Set([
   'id',
   'job_po_number',
@@ -65,65 +54,108 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'workflow_timestamp'
 ]);
 
+/**
+ * Deep merge (source -> target), mutates target and returns it.
+ * - Recurses for plain objects (not arrays).
+ * - Replaces arrays and primitive values.
+ */
+function deepMerge(target: any, source: any) {
+  if (!source) return target;
+  for (const key of Object.keys(source)) {
+    const sVal = source[key];
+    const tVal = target[key];
+
+    if (sVal && typeof sVal === 'object' && !Array.isArray(sVal)) {
+      if (!tVal || typeof tVal !== 'object' || Array.isArray(tVal)) {
+        target[key] = {};
+      }
+      deepMerge(target[key], sVal);
+    } else {
+      target[key] = sVal;
+    }
+  }
+  return target;
+}
+
+/**
+ * Unpack backend row into frontend FormSubmission shape.
+ * Backend stores many dynamic fields under `data` column. We deep merge:
+ *  merged = deepMerge({ ...raw }, dataPart) so nested objects are preserved.
+ */
 function unpackForm(raw: any): FormSubmission {
   if (!raw) return {} as FormSubmission;
 
-  // raw may already have nested data
   const dataPart = raw.data && typeof raw.data === 'object' ? raw.data : {};
+  // Start with a shallow clone of raw (top-level), then deep merge dataPart into it.
+  const base = { ...raw };
+  // Ensure base does not keep a nested data reference on result
+  delete (base as any).data;
 
-  // Merge shallow: top-level raw keys override data keys (if collisions)
-  const merged = {
-    ...dataPart,
-    ...raw
-  };
-
-  // Remove nested data to avoid duplication
+  const merged = deepMerge(base, dataPart);
   delete (merged as any).data;
-
   return merged as FormSubmission;
 }
 
+/**
+ * Pack FormSubmission into backend-ready payload:
+ * top-level reserved keys remain top-level, everything else goes into `data`.
+ * Nested objects are preserved inside `data`.
+ */
 function packForm(form: FormSubmission): any {
-  // Build top-level object and nested data object
   const topLevel: any = {};
   const data: any = {};
 
-  // Iterate all keys on form
   Object.keys(form).forEach((k) => {
-    // Skip undefined keys
     const v = (form as any)[k];
     if (typeof v === 'undefined') return;
 
     if (RESERVED_TOP_LEVEL_KEYS.has(k)) {
       topLevel[k] = v;
     } else {
-      // everything else goes into data
       data[k] = v;
     }
   });
 
-  // Always ensure job_po_number exists at top-level for backend uniqueness check
+  // Ensure job_po_number exists at top-level
   if (!topLevel.job_po_number && (form as any).job_po_number) {
     topLevel.job_po_number = (form as any).job_po_number;
   }
 
-  // Backend expects `data` column to contain the full payload of form fields
   topLevel.data = data;
-
   return topLevel;
+}
+
+/**
+ * Helper: set nested path on object (mutating).
+ * Supports:
+ *  - path like "equipment_generator.make" -> sets nested value
+ *  - single key with object value -> replace object (e.g. onChange('equipment_generator', {...}))
+ */
+function setByPath(obj: any, path: string, value: any) {
+  if (!path) return obj;
+  // If value is an object and path is a single key, replace the key fully.
+  if (typeof value === 'object' && value !== null && !Array.isArray(value) && path.indexOf('.') === -1) {
+    obj[path] = value;
+    return obj;
+  }
+
+  // Dot path handling
+  const keys = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const k = keys[i];
+    if (typeof cur[k] !== 'object' || cur[k] === null || Array.isArray(cur[k])) {
+      cur[k] = {};
+    }
+    cur = cur[k];
+  }
+  cur[keys[keys.length - 1]] = value;
+  return obj;
 }
 
 export function FormPage() {
   const { jobNumber } = useParams();
   const navigate = useNavigate();
-
-  const getTodayDate = () => {
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const year = today.getFullYear();
-    return `${year}-${month}-${day}`;
-  };
 
   const [formData, setFormData] = useState<FormSubmission>({
     job_po_number: jobNumber || '',
@@ -176,11 +208,8 @@ export function FormPage() {
 
     if (isTechnician(email)) {
       const technicianName = extractNameFromEmail(email);
-      setFormData(prev => ({
-        ...prev,
-        technician: technicianName,
-        submitted_by_email: email
-      }));
+      // Use nested-friendly setter (top-level technician)
+      setFormData(prev => ({ ...prev, technician: technicianName, submitted_by_email: email }));
     }
   };
 
@@ -189,7 +218,7 @@ export function FormPage() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`);
+      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`, { cache: 'no-store' });
       if (!res.ok) {
         if (res.status === 404) {
           showToast('Form not found', 'error');
@@ -253,7 +282,6 @@ export function FormPage() {
     setSaving(true);
 
     try {
-      // Build payload expected by backend: top-level reserved fields + data: { ... }
       const submissionPayload = packForm({
         ...formData,
         status: 'draft',
@@ -263,7 +291,6 @@ export function FormPage() {
       let savedData: any = null;
 
       if (formData.id) {
-        // Update
         const res = await fetch(`${API}/forms/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -277,7 +304,6 @@ export function FormPage() {
 
         savedData = await res.json();
       } else {
-        // Create
         const res = await fetch(`${API}/forms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -298,7 +324,6 @@ export function FormPage() {
         savedData = await res.json();
       }
 
-      // Backend returns DB row. Unpack nested data into form shape.
       const unpacked = unpackForm(savedData);
       setFormData(unpacked);
 
@@ -344,7 +369,6 @@ export function FormPage() {
     setSaving(true);
 
     try {
-      // Build payload and save as submitted
       const submissionPayload = packForm({
         ...formData,
         status: 'submitted',
@@ -380,7 +404,7 @@ export function FormPage() {
         setIsNewForm(false);
       }
 
-      // Now call backend workflow submit (backend will set status, submitted_at and call Power Automate)
+      // call backend workflow submit
       const wf = await fetch(`${API}/workflow/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -389,10 +413,9 @@ export function FormPage() {
 
       if (!wf.ok) {
         console.error('Workflow submit failed', await wf.text());
-        // don't throw — user should still know form saved
       }
 
-      // Refresh saved data from backend to reflect workflow update
+      // Refresh saved data
       if (savedData) {
         const refreshRes = await fetch(`${API}/forms/${savedData.id}`);
         if (refreshRes.ok) {
@@ -422,7 +445,6 @@ export function FormPage() {
       setSaving(true);
       setShowRejectModal(false);
 
-      // Call backend workflow reject (backend updates DB and triggers PA)
       const payload = { id: formData.id, note };
       const res = await fetch(`${API}/workflow/reject`, {
         method: 'POST',
@@ -434,7 +456,6 @@ export function FormPage() {
         throw new Error('Reject failed');
       }
 
-      // Refresh the form
       if (formData.id) {
         const refreshRes = await fetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
@@ -444,7 +465,7 @@ export function FormPage() {
         }
       }
 
-      // Also persist any changes if required (pack then save)
+      // Persist any changes
       await handleSaveForm();
 
       setIsReadOnly(true);
@@ -496,8 +517,18 @@ export function FormPage() {
   };
 
   // ---------- Helpers ----------
+  /**
+   * New handleFieldChange supports:
+   *  - dot paths: "equipment_generator.make"
+   *  - top-level keys with object replacement: onChange('equipment_generator', {...})
+   *  - array updates: onChange('battery_health_readings', [...])
+   */
   const handleFieldChange = useCallback((field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev };
+      setByPath(updated, field, value);
+      return updated;
+    });
 
     if (validationErrors.length > 0) {
       validateForm();
