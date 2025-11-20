@@ -14,7 +14,16 @@ function getUserRole(): string | null {
   return localStorage.getItem('userRole');
 }
 
-function PrivateRoute({ children, superadminOnly = false }: { children: JSX.Element; superadminOnly?: boolean }) {
+/* -------------------------
+   PRIVATE ROUTE COMPONENT
+-------------------------- */
+function PrivateRoute({
+  children,
+  superadminOnly = false
+}: {
+  children: JSX.Element;
+  superadminOnly?: boolean;
+}) {
   if (!isAuthenticated()) return <Navigate to="/login" replace />;
 
   if (superadminOnly) {
@@ -25,38 +34,72 @@ function PrivateRoute({ children, superadminOnly = false }: { children: JSX.Elem
   return children;
 }
 
+/* -------------------------
+          APP ROUTES
+-------------------------- */
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        <Route path="/" element={<Navigate to="/admin" replace />} />
+        {/* ROLE-BASED ROOT REDIRECT */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated()
+              ? (
+                  getUserRole() === "superadmin" ||
+                  getUserRole() === "admin" ||
+                  getUserRole() === "pm"
+                )
+                ? <Navigate to="/admin" replace />
+                : <Navigate to="/form/new" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
 
-        <Route path="/admin" element={
-          <PrivateRoute>
-            <AdminDashboard />
-          </PrivateRoute>
-        } />
+        {/* Admin Dashboard (admin + pm + superadmin) */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
 
-        <Route path="/form/new" element={
-          <PrivateRoute>
-            <FormPage />
-          </PrivateRoute>
-        } />
+        {/* New Form */}
+        <Route
+          path="/form/new"
+          element={
+            <PrivateRoute>
+              <FormPage />
+            </PrivateRoute>
+          }
+        />
 
-        <Route path="/form/:jobNumber" element={
-          <PrivateRoute>
-            <FormPage />
-          </PrivateRoute>
-        } />
+        {/* Existing Form */}
+        <Route
+          path="/form/:jobNumber"
+          element={
+            <PrivateRoute>
+              <FormPage />
+            </PrivateRoute>
+          }
+        />
 
-        <Route path="/admin/users" element={
-          <PrivateRoute superadminOnly={true}>
-            <UserManagementPage />
-          </PrivateRoute>
-        } />
+        {/* Superadmin Only */}
+        <Route
+          path="/admin/users"
+          element={
+            <PrivateRoute superadminOnly={true}>
+              <UserManagementPage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
