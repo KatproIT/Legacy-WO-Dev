@@ -7,7 +7,7 @@ import { authFetch } from '../utils/authFetch';
 
 const API =
   (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) ||
-  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
+  "https://legacywobe.azurewebsites.net/api";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
