@@ -16,13 +16,17 @@ const PORT = process.env.PORT || 4000;
 /* -------------------------------------------------------
    ✅ CORS (MUST be FIRST middleware)
 -------------------------------------------------------- */
-app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || "https://brave-dune-07628650f.3.azurestaticapps.net",
-  methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type, Authorization",
-  credentials: true
-}));
-app.options('*', cors());
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    process.env.FRONTEND_ORIGIN || "https://brave-dune-07628650f.3.azurestaticapps.net"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  next();
+});
+
 
 // Enable preflight requests for all routes
 app.options("*", cors());
