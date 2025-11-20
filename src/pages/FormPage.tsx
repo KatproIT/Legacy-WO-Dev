@@ -1,3 +1,4 @@
+// src/pages/FormPage.tsx
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
@@ -11,12 +12,12 @@ import { WorkLogSection } from '../components/WorkLogSection';
 import { AdditionalATSSection } from '../components/AdditionalATSSection';
 import { LoadBankReportSection } from '../components/LoadBankReportSection';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import EmailAuthModal from '../components/EmailAuthModal';
 import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
-import { isPM, isTechnician, isAuthorizedUser, extractNameFromEmail } from '../utils/userRoles';
+import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 
 /**
  * API base URL (trim and fallback)
@@ -53,11 +54,6 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'workflow_timestamp'
 ]);
 
-/**
- * Deep merge (source -> target), mutates target and returns it.
- * - Recurses for plain objects (not arrays).
- * - Replaces arrays and primitive values.
- */
 function deepMerge(target: any, source: any) {
   if (!source) return target;
   for (const key of Object.keys(source)) {
@@ -76,48 +72,18 @@ function deepMerge(target: any, source: any) {
   return target;
 }
 
-function normalizeDate(d: any) {
-  if (!d) return null;
-  try {
-    if (typeof d === 'string' && d.includes('T')) {
-      return d.split('T')[0];
-    }
-    // if it's already YYYY-MM-DD
-    return d;
-  } catch {
-    return d;
-  }
-}
-
-/**
- * Unpack backend row into frontend FormSubmission shape.
- * Backend stores many dynamic fields under `data` column. We deep merge:
- *  merged = deepMerge({ ...raw }, dataPart) so nested objects are preserved.
- */
 function unpackForm(raw: any): FormSubmission {
   if (!raw) return {} as FormSubmission;
 
   const dataPart = raw.data && typeof raw.data === 'object' ? raw.data : {};
-  // Start with a shallow clone of raw (top-level), then deep merge dataPart into it.
   const base = { ...raw };
-  // Ensure base does not keep a nested data reference on result
   delete (base as any).data;
 
   const merged = deepMerge(base, dataPart);
-
-  // normalize dates for <input type="date"> which requires yyyy-MM-dd
-  if (merged.date) merged.date = normalizeDate(merged.date);
-  if (merged.next_inspection_due) merged.next_inspection_due = normalizeDate(merged.next_inspection_due);
-
   delete (merged as any).data;
   return merged as FormSubmission;
 }
 
-/**
- * Pack FormSubmission into backend-ready payload:
- * top-level reserved keys remain top-level, everything else goes into `data`.
- * Nested objects are preserved inside `data`.
- */
 function packForm(form: FormSubmission): any {
   const topLevel: any = {};
   const data: any = {};
@@ -133,7 +99,6 @@ function packForm(form: FormSubmission): any {
     }
   });
 
-  // Ensure job_po_number exists at top-level
   if (!topLevel.job_po_number && (form as any).job_po_number) {
     topLevel.job_po_number = (form as any).job_po_number;
   }
@@ -142,21 +107,13 @@ function packForm(form: FormSubmission): any {
   return topLevel;
 }
 
-/**
- * Helper: set nested path on object (mutating).
- * Supports:
- *  - path like "equipment_generator.make" -> sets nested value
- *  - single key with object value -> replace object (e.g. onChange('equipment_generator', {...}))
- */
 function setByPath(obj: any, path: string, value: any) {
   if (!path) return obj;
-  // If value is an object and path is a single key, replace the key fully.
   if (typeof value === 'object' && value !== null && !Array.isArray(value) && path.indexOf('.') === -1) {
     obj[path] = value;
     return obj;
   }
 
-  // Dot path handling
   const keys = path.split('.');
   let cur = obj;
   for (let i = 0; i < keys.length - 1; i++) {
@@ -193,53 +150,67 @@ export function FormPage() {
     type?: 'warning' | 'info' | 'danger';
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [showEmailModal, setShowEmailModal] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showForwardModal, setShowForwardModal] = useState(false);
   const [isUserPM, setIsUserPM] = useState(false);
+  const [isUserTechnician, setIsUserTechnician] = useState(false);
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
 
+  // Initialize user info from localStorage and load form if needed
   useEffect(() => {
-    if (userEmail) {
+    const email = localStorage.getItem('userEmail');
+    const role = localStorage.getItem('userRole');
+    if (!email) {
+      // Not logged in — redirect to login
+      navigate('/login');
+      return;
+    }
+    setUserEmail(email);
+    setUserRole(role);
+
+    const isPMRole = role === 'pm' || role === 'admin' || role === 'superadmin';
+    const isTech = role === 'technician';
+    setIsUserPM(isPMRole);
+    setIsUserTechnician(isTech);
+
+    if (email) {
+      // If opening an existing form, load it
       if (jobNumber && jobNumber !== 'new') {
-        loadFormData(jobNumber);
+        loadFormData(jobNumber, email, role);
         setIsNewForm(false);
       } else {
         setIsNewForm(true);
         setIsReadOnly(false);
+        // if creating new and technician, prefill technician fields
+        if (isTech) {
+          const techName = extractNameFromEmail(email);
+          setFormData(prev => ({ ...prev, technician: techName, submitted_by_email: email }));
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobNumber, userEmail]);
-
-  const handleEmailSubmit = (email: string) => {
-    if (!isAuthorizedUser(email)) {
-      showToast('You are not authorized to access this form', 'error');
-      return;
-    }
-
-    setUserEmail(email);
-    setIsUserPM(isPM(email));
-    setShowEmailModal(false);
-
-    if (isTechnician(email)) {
-      const technicianName = extractNameFromEmail(email);
-      // Use nested-friendly setter (top-level technician)
-      setFormData(prev => ({ ...prev, technician: technicianName, submitted_by_email: email }));
-    }
-  };
+  }, [jobNumber, navigate]);
 
   // ---------- Load form ----------
-  const loadFormData = async (jobNum: string) => {
+  const loadFormData = async (jobNum: string, email?: string | null, role?: string | null) => {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`, { cache: 'no-store' });
+      const res = await authFetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`, { cache: 'no-store' });
       if (!res.ok) {
         if (res.status === 404) {
           showToast('Form not found', 'error');
           navigate('/');
+          return;
+        }
+        if (res.status === 401) {
+          // Unauthorized — probably token expired
+          localStorage.removeItem('token');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('userRole');
+          navigate('/login');
           return;
         }
         throw new Error('Failed to load form');
@@ -249,10 +220,12 @@ export function FormPage() {
       const unpacked = unpackForm(raw);
 
       // If user is a technician, override some fields
-      if (userEmail && isTechnician(userEmail)) {
-        const technicianName = extractNameFromEmail(userEmail);
+      const roleToCheck = role || localStorage.getItem('userRole');
+      const emailToCheck = email || localStorage.getItem('userEmail');
+      if (roleToCheck === 'technician' && emailToCheck) {
+        const technicianName = extractNameFromEmail(emailToCheck);
         unpacked.technician = technicianName;
-        unpacked.submitted_by_email = userEmail;
+        unpacked.submitted_by_email = emailToCheck;
       }
 
       setFormData(unpacked);
@@ -308,7 +281,7 @@ export function FormPage() {
       let savedData: any = null;
 
       if (formData.id) {
-        const res = await fetch(`${API}/forms/${formData.id}`, {
+        const res = await authFetch(`${API}/forms/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
@@ -321,7 +294,7 @@ export function FormPage() {
 
         savedData = await res.json();
       } else {
-        const res = await fetch(`${API}/forms`, {
+        const res = await authFetch(`${API}/forms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
@@ -396,7 +369,7 @@ export function FormPage() {
       let savedData: any = null;
 
       if (formData.id) {
-        const res = await fetch(`${API}/forms/${formData.id}`, {
+        const res = await authFetch(`${API}/forms/${formData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
@@ -405,7 +378,7 @@ export function FormPage() {
         if (!res.ok) throw new Error('Failed to update before submit');
         savedData = await res.json();
       } else {
-        const res = await fetch(`${API}/forms`, {
+        const res = await authFetch(`${API}/forms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
@@ -422,7 +395,7 @@ export function FormPage() {
       }
 
       // call backend workflow submit
-      const wf = await fetch(`${API}/workflow/submit`, {
+      const wf = await authFetch(`${API}/workflow/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: savedData!.id })
@@ -434,7 +407,7 @@ export function FormPage() {
 
       // Refresh saved data
       if (savedData) {
-        const refreshRes = await fetch(`${API}/forms/${savedData.id}`);
+        const refreshRes = await authFetch(`${API}/forms/${savedData.id}`);
         if (refreshRes.ok) {
           const refreshedRaw = await refreshRes.json();
           const refreshed = unpackForm(refreshedRaw);
@@ -463,7 +436,7 @@ export function FormPage() {
       setShowRejectModal(false);
 
       const payload = { id: formData.id, note };
-      const res = await fetch(`${API}/workflow/reject`, {
+      const res = await authFetch(`${API}/workflow/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -474,7 +447,7 @@ export function FormPage() {
       }
 
       if (formData.id) {
-        const refreshRes = await fetch(`${API}/forms/${formData.id}`);
+        const refreshRes = await authFetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
           const refreshedRaw = await refreshRes.json();
           const refreshed = unpackForm(refreshedRaw);
@@ -502,7 +475,7 @@ export function FormPage() {
       setShowForwardModal(false);
 
       const payload = { id: formData.id, to: technicianEmail };
-      const res = await fetch(`${API}/workflow/forward`, {
+      const res = await authFetch(`${API}/workflow/forward`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -514,7 +487,7 @@ export function FormPage() {
 
       // Refresh form
       if (formData.id) {
-        const refreshRes = await fetch(`${API}/forms/${formData.id}`);
+        const refreshRes = await authFetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
           const refreshedRaw = await refreshRes.json();
           const refreshed = unpackForm(refreshedRaw);
@@ -534,12 +507,6 @@ export function FormPage() {
   };
 
   // ---------- Helpers ----------
-  /**
-   * New handleFieldChange supports:
-   *  - dot paths: "equipment_generator.make"
-   *  - top-level keys with object replacement: onChange('equipment_generator', {...})
-   *  - array updates: onChange('battery_health_readings', [...])
-   */
   const handleFieldChange = useCallback((field: string, value: any) => {
     setFormData(prev => {
       const updated = { ...prev };
@@ -583,13 +550,9 @@ export function FormPage() {
 
   // ---------- UI ----------
   if (!userEmail) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        {showEmailModal && (
-          <EmailAuthModal onEmailSubmit={handleEmailSubmit} />
-        )}
-      </div>
-    );
+    // Fallback: if userEmail is missing redirect to login
+    navigate('/login');
+    return null;
   }
 
   if (loading) {
@@ -720,12 +683,12 @@ export function FormPage() {
                       <span>{error}</span>
                     </li>
                   ))}
-                  {validationErrors.length > 5 && (
-                    <p className="text-amber-700 text-sm mt-2 font-medium">
-                      ... and {validationErrors.length - 5} more field{validationErrors.length - 5 !== 1 ? 's' : ''}
-                    </p>
-                  )}
                 </ul>
+                {validationErrors.length > 5 && (
+                  <p className="text-amber-700 text-sm mt-2 font-medium">
+                    ... and {validationErrors.length - 5} more field{validationErrors.length - 5 !== 1 ? 's' : ''}
+                  </p>
+                )}
               </div>
             </div>
           </div>
