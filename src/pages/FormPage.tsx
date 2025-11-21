@@ -47,6 +47,14 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'forwarded_to_email',
   'workflow_timestamp'
 ]);
+function normalizeDate(val: any) {
+  if (!val) return val;
+  if (typeof val === "string" && val.includes("T")) {
+    return val.substring(0, 10);
+  }
+  return val;
+}
+
 
 function deepMerge(target: any, source: any) {
   if (!source) return target;
@@ -215,6 +223,9 @@ export function FormPage() {
 
       const raw = await res.json();
       const unpacked = unpackForm(raw);
+      unpacked.date = normalizeDate(unpacked.date);
+      unpacked.next_inspection_due = normalizeDate(unpacked.next_inspection_due);
+
 
       if (role === 'technician' && email) {
         unpacked.technician = extractNameFromEmail(email);
@@ -473,17 +484,26 @@ export function FormPage() {
     }
   };
 
-  const handleFieldChange = useCallback((field: string, value: any) => {
-    setFormData(prev => {
-      const updated = { ...prev };
-      setByPath(updated, field, value);
-      return updated;
-    });
+const handleFieldChange = useCallback((field: string, value: any) => {
+  // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
+  if (
+    field.toLowerCase().includes("date") ||
+    field.toLowerCase().includes("due")
+  ) {
+    value = normalizeDate(value);
+  }
 
-    if (validationErrors.length > 0) {
-      validateForm();
-    }
-  }, [validationErrors]);
+  setFormData(prev => {
+    const updated = { ...prev };
+    setByPath(updated, field, value);
+    return updated;
+  });
+
+  if (validationErrors.length > 0) {
+    validateForm();
+  }
+}, [validationErrors]);
+
 
   const getFieldError = (value: any): boolean => {
     if (validationErrors.length === 0) return false;
