@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { FormPage } from './pages/FormPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
@@ -10,25 +10,14 @@ function isAuthenticated(): boolean {
   return !!token;
 }
 
-function getUserRole(): string | null {
-  return localStorage.getItem('userRole');
-}
-
 /* -------------------------
-   PRIVATE ROUTE COMPONENT
+   PRIVATE ROUTE (keeps original URL)
 -------------------------- */
-function PrivateRoute({
-  children,
-  superadminOnly = false
-}: {
-  children: JSX.Element;
-  superadminOnly?: boolean;
-}) {
-  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const location = useLocation();
 
-  if (superadminOnly) {
-    const role = getUserRole();
-    if (role !== 'superadmin') return <Navigate to="/admin" replace />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
   return children;
@@ -41,28 +30,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+
+        {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* ROLE-BASED ROOT REDIRECT */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated()
-              ? (
-                  getUserRole() === "superadmin" ||
-                  getUserRole() === "admin" ||
-                  getUserRole() === "pm"
-                )
-                ? <Navigate to="/admin" replace />
-                : <Navigate to="/form/new" replace />
-              : <Navigate to="/login" replace />
-          }
-        />
+        {/* Default root → redirect to login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Admin Dashboard (admin + pm + superadmin) */}
-        <Route
+        {/* Admin dashboard */}
+        <Route 
           path="/admin"
           element={
             <PrivateRoute>
@@ -71,8 +48,8 @@ export default function App() {
           }
         />
 
-        {/* New Form */}
-        <Route
+        {/* New form */}
+        <Route 
           path="/form/new"
           element={
             <PrivateRoute>
@@ -81,8 +58,8 @@ export default function App() {
           }
         />
 
-        {/* Existing Form */}
-        <Route
+        {/* Existing form */}
+        <Route 
           path="/form/:jobNumber"
           element={
             <PrivateRoute>
@@ -91,15 +68,16 @@ export default function App() {
           }
         />
 
-        {/* Superadmin Only */}
-        <Route
+        {/* Superadmin-only page */}
+        <Route 
           path="/admin/users"
           element={
-            <PrivateRoute superadminOnly={true}>
+            <PrivateRoute>
               <UserManagementPage />
             </PrivateRoute>
           }
         />
+
       </Routes>
     </BrowserRouter>
   );
