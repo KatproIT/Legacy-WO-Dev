@@ -561,7 +561,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               )}
               {formData.id && (formData as any).http_post_sent && (
                 <span className="px-2 py-1 sm:px-4 sm:py-2 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm font-semibold rounded-lg">
-                  ✓ <span className="hidden sm:inline">Submitted to Power Automate</span>
+                  ✓ <span className="hidden sm:inline">WO Submitted</span>
                   <span className="sm:hidden">Submitted</span>
                 </span>
               )}
