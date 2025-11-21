@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const API =
   (import.meta.env.VITE_API_URL &&
     (import.meta.env.VITE_API_URL as string).trim()) ||
-  "/api";
+  "https://legacy-wo-backend-agefgdh7eec7esag.southindia-01.azurewebsites.net/api";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -73,7 +73,6 @@ export default function ForgotPassword() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               User Email
@@ -88,7 +87,6 @@ export default function ForgotPassword() {
             />
           </div>
 
-          {/* New Password */}
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               New Password
@@ -103,7 +101,6 @@ export default function ForgotPassword() {
             />
           </div>
 
-          {/* Superadmin Password */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Super-Admin Master Password
@@ -118,7 +115,6 @@ export default function ForgotPassword() {
             />
           </div>
 
-          {/* Reset Password Button */}
           <button
             type="submit"
             disabled={loading}
@@ -128,7 +124,6 @@ export default function ForgotPassword() {
           </button>
         </form>
 
-        {/* Back to login */}
         <div className="text-center mt-4">
           <button
             onClick={() => navigate("/login")}
