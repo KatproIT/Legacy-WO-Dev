@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API =
-  (import.meta.env.VITE_API_URL &&
-    (import.meta.env.VITE_API_URL as string).trim()) ||
-  "legacywobe.azurewebsites.net/api";
+const API = "https://legacywobe.azurewebsites.net/api";
+
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
