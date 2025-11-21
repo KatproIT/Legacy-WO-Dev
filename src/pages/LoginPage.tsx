@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const API =
   (import.meta.env.VITE_API_URL &&
@@ -8,6 +8,7 @@ const API =
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +40,10 @@ export default function LoginPage() {
       localStorage.setItem("userEmail", data.user.email);
       localStorage.setItem("userRole", data.user.role || "user");
 
-      navigate("/admin", { replace: true });
+      // Redirect to original page OR admin fallback
+      const redirectPath = (location.state as any)?.from || "/admin";
+      navigate(redirectPath, { replace: true });
+
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
