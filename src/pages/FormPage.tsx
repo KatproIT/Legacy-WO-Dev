@@ -19,16 +19,10 @@ import { validateLoadBankReport, validateServiceReport } from '../utils/formVali
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
-/**
- * API base URL (trim and fallback)
- */
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
   'https://legacywobe.azurewebsites.net/api';
 
-/**
- * Reserved top-level keys which should remain outside `data` column when writing to backend
- */
 const RESERVED_TOP_LEVEL_KEYS = new Set([
   'id',
   'job_po_number',
@@ -81,6 +75,15 @@ function unpackForm(raw: any): FormSubmission {
 
   const merged = deepMerge(base, dataPart);
   delete (merged as any).data;
+
+  // FIX: Convert ISO date to yyyy-MM-dd for html input
+  if (merged.date && typeof merged.date === 'string') {
+    merged.date = merged.date.substring(0, 10);
+  }
+  if (merged.next_inspection_due && typeof merged.next_inspection_due === 'string') {
+    merged.next_inspection_due = merged.next_inspection_due.substring(0, 10);
+  }
+
   return merged as FormSubmission;
 }
 
@@ -158,15 +161,18 @@ export function FormPage() {
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
 
-  // Initialize user info from localStorage and load form if needed
+  // ✔ FIX: prevent navigate inside rendering
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail');
+    if (!email) navigate('/login');
+  }, [navigate]);
+
+  // Initialize user info and load form
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     const role = localStorage.getItem('userRole');
-    if (!email) {
-      // Not logged in — redirect to login
-      navigate('/login');
-      return;
-    }
+    if (!email) return;
+
     setUserEmail(email);
     setUserRole(role);
 
@@ -175,25 +181,19 @@ export function FormPage() {
     setIsUserPM(isPMRole);
     setIsUserTechnician(isTech);
 
-    if (email) {
-      // If opening an existing form, load it
-      if (jobNumber && jobNumber !== 'new') {
-        loadFormData(jobNumber, email, role);
-        setIsNewForm(false);
-      } else {
-        setIsNewForm(true);
-        setIsReadOnly(false);
-        // if creating new and technician, prefill technician fields
-        if (isTech) {
-          const techName = extractNameFromEmail(email);
-          setFormData(prev => ({ ...prev, technician: techName, submitted_by_email: email }));
-        }
+    if (jobNumber && jobNumber !== 'new') {
+      loadFormData(jobNumber, email, role);
+      setIsNewForm(false);
+    } else {
+      setIsNewForm(true);
+      setIsReadOnly(false);
+      if (isTech) {
+        const techName = extractNameFromEmail(email);
+        setFormData(prev => ({ ...prev, technician: techName, submitted_by_email: email }));
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobNumber, navigate]);
+  }, [jobNumber]);
 
-  // ---------- Load form ----------
   const loadFormData = async (jobNum: string, email?: string | null, role?: string | null) => {
     try {
       setLoading(true);
@@ -206,10 +206,7 @@ export function FormPage() {
           return;
         }
         if (res.status === 401) {
-          // Unauthorized — probably token expired
-          localStorage.removeItem('token');
-          localStorage.removeItem('userEmail');
-          localStorage.removeItem('userRole');
+          localStorage.clear();
           navigate('/login');
           return;
         }
@@ -219,26 +216,20 @@ export function FormPage() {
       const raw = await res.json();
       const unpacked = unpackForm(raw);
 
-      // If user is a technician, override some fields
-      const roleToCheck = role || localStorage.getItem('userRole');
-      const emailToCheck = email || localStorage.getItem('userEmail');
-      if (roleToCheck === 'technician' && emailToCheck) {
-        const technicianName = extractNameFromEmail(emailToCheck);
-        unpacked.technician = technicianName;
-        unpacked.submitted_by_email = emailToCheck;
+      if (role === 'technician' && email) {
+        unpacked.technician = extractNameFromEmail(email);
+        unpacked.submitted_by_email = email;
       }
 
       setFormData(unpacked);
-      setIsReadOnly(Boolean((raw as any).is_rejected || (raw as any).is_forwarded));
+      setIsReadOnly(Boolean(raw.is_rejected || raw.is_forwarded));
     } catch (error) {
-      console.error('Error loading form:', error);
       showToast('Error loading form', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  // ---------- Validation ----------
   const validateForm = (): boolean => {
     const errors: string[] = [];
 
@@ -262,7 +253,6 @@ export function FormPage() {
     return errors.length === 0;
   };
 
-  // ---------- Save (create or update) ----------
   const handleSaveForm = async () => {
     if (!validateForm()) {
       showToast('Please complete all required fields', 'error');
@@ -286,12 +276,7 @@ export function FormPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
         });
-
-        if (!res.ok) {
-          const txt = await res.text();
-          throw new Error(txt || 'Failed to update');
-        }
-
+        if (!res.ok) throw new Error('Failed to update');
         savedData = await res.json();
       } else {
         const res = await authFetch(`${API}/forms`, {
@@ -299,18 +284,12 @@ export function FormPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
         });
-
         if (res.status === 409) {
-          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists. Please use a different number.`, 'error');
+          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists.`, 'error');
           setSaving(false);
           return;
         }
-
-        if (!res.ok) {
-          const txt = await res.text();
-          throw new Error(txt || 'Failed to create');
-        }
-
+        if (!res.ok) throw new Error('Failed to create');
         savedData = await res.json();
       }
 
@@ -318,21 +297,19 @@ export function FormPage() {
       setFormData(unpacked);
 
       if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${(unpacked as FormSubmission).job_po_number}`, { replace: true });
+        navigate(`/form/${unpacked.job_po_number}`, { replace: true });
       }
 
       setIsReadOnly(true);
       showToast('Form saved successfully!', 'success');
     } catch (error) {
-      console.error('Error saving form:', error);
       showToast('Error saving form', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  // ---------- Submit flow ----------
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!validateForm()) {
       showToast('Please complete all required fields', 'error');
       return;
@@ -344,7 +321,7 @@ export function FormPage() {
       message: 'Are you sure you want to submit this form?.',
       type: 'warning',
       onConfirm: async () => {
-        setConfirmDialog({ ...confirmDialog, isOpen: false });
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
         await performSubmit();
       }
     });
@@ -385,7 +362,7 @@ export function FormPage() {
         });
 
         if (res.status === 409) {
-          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists. Please use a different number.`, 'error');
+          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists.`, 'error');
           setSaving(false);
           return;
         }
@@ -394,7 +371,6 @@ export function FormPage() {
         setIsNewForm(false);
       }
 
-      // call backend workflow submit
       const wf = await authFetch(`${API}/workflow/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -405,7 +381,6 @@ export function FormPage() {
         console.error('Workflow submit failed', await wf.text());
       }
 
-      // Refresh saved data
       if (savedData) {
         const refreshRes = await authFetch(`${API}/forms/${savedData.id}`);
         if (refreshRes.ok) {
@@ -422,14 +397,12 @@ export function FormPage() {
       showToast('WO submitted successfully', 'success');
       setIsReadOnly(true);
     } catch (error) {
-      console.error('Error submitting form:', error);
       showToast('Error submitting form', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  // ---------- Reject ----------
   const handleReject = async (note: string) => {
     try {
       setSaving(true);
@@ -455,20 +428,16 @@ export function FormPage() {
         }
       }
 
-      // Persist any changes
       await handleSaveForm();
-
       setIsReadOnly(true);
       showToast('Form rejected successfully', 'success');
     } catch (error) {
-      console.error('Error rejecting form:', error);
       showToast('Error rejecting form', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  // ---------- Forward ----------
   const handleForward = async (technicianEmail: string) => {
     try {
       setSaving(true);
@@ -485,7 +454,6 @@ export function FormPage() {
         throw new Error('Forward failed');
       }
 
-      // Refresh form
       if (formData.id) {
         const refreshRes = await authFetch(`${API}/forms/${formData.id}`);
         if (refreshRes.ok) {
@@ -499,14 +467,12 @@ export function FormPage() {
       setIsReadOnly(true);
       showToast('Form forwarded successfully', 'success');
     } catch (error) {
-      console.error('Error forwarding form:', error);
       showToast('Error forwarding form', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  // ---------- Helpers ----------
   const handleFieldChange = useCallback((field: string, value: any) => {
     setFormData(prev => {
       const updated = { ...prev };
@@ -517,7 +483,6 @@ export function FormPage() {
     if (validationErrors.length > 0) {
       validateForm();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validationErrors]);
 
   const getFieldError = (value: any): boolean => {
@@ -542,18 +507,11 @@ export function FormPage() {
       type: 'info',
       onConfirm: () => {
         setIsReadOnly(false);
-        setConfirmDialog({ ...confirmDialog, isOpen: false });
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
         showToast('Edit mode enabled', 'success');
       }
     });
   };
-
-  // ---------- UI ----------
-  if (!userEmail) {
-    // Fallback: if userEmail is missing redirect to login
-    navigate('/login');
-    return null;
-  }
 
   if (loading) {
     return (
@@ -657,12 +615,18 @@ export function FormPage() {
       </div>
 
       {toast && (
-        <div className={`fixed top-4 right-4 sm:top-6 sm:right-6 px-4 py-3 sm:px-6 sm:py-4 rounded-lg sm:rounded-xl shadow-2xl z-50 flex items-center gap-2 sm:gap-3 border-l-4 no-print max-w-[calc(100%-2rem)] sm:max-w-md ${
-          toast.type === 'success'
-            ? 'bg-green-50 text-green-800 border-green-500'
-            : 'bg-red-50 text-red-800 border-red-500'
-        }`}>
-          {toast.type === 'success' ? <CheckCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" /> : <AlertCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" />}
+        <div
+          className={`fixed top-4 right-4 sm:top-6 sm:right-6 px-4 py-3 sm:px-6 sm:py-4 rounded-lg sm:rounded-xl shadow-2xl z-50 flex items-center gap-2 sm:gap-3 border-l-4 no-print max-w-[calc(100%-2rem)] sm:max-w-md ${
+            toast.type === 'success'
+              ? 'bg-green-50 text-green-800 border-green-500'
+              : 'bg-red-50 text-red-800 border-red-500'
+          }`}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" />
+          ) : (
+            <AlertCircle size={18} className="sm:w-[22px] sm:h-[22px] flex-shrink-0" />
+          )}
           <span className="font-medium text-sm sm:text-base">{toast.message}</span>
         </div>
       )}
@@ -686,7 +650,8 @@ export function FormPage() {
                 </ul>
                 {validationErrors.length > 5 && (
                   <p className="text-amber-700 text-sm mt-2 font-medium">
-                    ... and {validationErrors.length - 5} more field{validationErrors.length - 5 !== 1 ? 's' : ''}
+                    ... and {validationErrors.length - 5} more field
+                    {validationErrors.length - 5 !== 1 ? 's' : ''}
                   </p>
                 )}
               </div>
@@ -784,17 +749,11 @@ export function FormPage() {
       />
 
       {showRejectModal && (
-        <RejectModal
-          onClose={() => setShowRejectModal(false)}
-          onSubmit={handleReject}
-        />
+        <RejectModal onClose={() => setShowRejectModal(false)} onSubmit={handleReject} />
       )}
 
       {showForwardModal && (
-        <ForwardModal
-          onClose={() => setShowForwardModal(false)}
-          onSubmit={handleForward}
-        />
+        <ForwardModal onClose={() => setShowForwardModal(false)} onSubmit={handleForward} />
       )}
     </div>
   );
