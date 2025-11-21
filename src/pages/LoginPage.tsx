@@ -35,12 +35,12 @@ export default function LoginPage() {
 
       const data = await res.json();
 
-      // Save authentication info
+      // Save auth info
       localStorage.setItem("token", data.token);
       localStorage.setItem("userEmail", data.user.email);
       localStorage.setItem("userRole", data.user.role || "user");
 
-      // Redirect to original page OR admin fallback
+      // Redirect back to the page user tried to open
       const redirectPath = (location.state as any)?.from || "/admin";
       navigate(redirectPath, { replace: true });
 

@@ -11,15 +11,15 @@ function isAuthenticated(): boolean {
 }
 
 /* -------------------------
-   PRIVATE ROUTE (keeps original URL)
+   PRIVATE ROUTE (Remembers original URL)
 -------------------------- */
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const location = useLocation();
 
   if (!isAuthenticated()) {
+    // Redirect to login and remember where the user was going
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
-
   return children;
 }
 
@@ -35,11 +35,11 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Default root → redirect to login */}
+        {/* Default root redirects to login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Admin dashboard */}
-        <Route 
+        {/* Admin Dashboard */}
+        <Route
           path="/admin"
           element={
             <PrivateRoute>
@@ -48,8 +48,8 @@ export default function App() {
           }
         />
 
-        {/* New form */}
-        <Route 
+        {/* New Form */}
+        <Route
           path="/form/new"
           element={
             <PrivateRoute>
@@ -58,8 +58,8 @@ export default function App() {
           }
         />
 
-        {/* Existing form */}
-        <Route 
+        {/* Existing Form */}
+        <Route
           path="/form/:jobNumber"
           element={
             <PrivateRoute>
@@ -69,7 +69,7 @@ export default function App() {
         />
 
         {/* Superadmin-only page */}
-        <Route 
+        <Route
           path="/admin/users"
           element={
             <PrivateRoute>
