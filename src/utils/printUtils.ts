@@ -1,3 +1,5 @@
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { FormSubmission } from '../types/form';
 
 export function hasAdditionalATSData(formData: FormSubmission): boolean {
@@ -42,11 +44,13 @@ export async function generatePDF(
   }
 ) {
   try {
+    // Hide UI elements
     const elementsToHide = document.querySelectorAll('.no-print');
     elementsToHide.forEach(el => {
       (el as HTMLElement).style.display = 'none';
     });
 
+    // Hide financial data if customer copy
     if (!options.includeFinancialData) {
       const financialSections = [
         '[data-section="parts-supplies"]',
@@ -63,6 +67,7 @@ export async function generatePDF(
       });
     }
 
+    // Hide empty Additional ATS section
     if (!hasAdditionalATSData(formData)) {
       const atsSection = document.querySelector('[data-section="additional-ats"]');
       if (atsSection) {
@@ -70,6 +75,7 @@ export async function generatePDF(
       }
     }
 
+    // Hide empty Load Bank section
     if (!hasLoadBankData(formData)) {
       const loadBankSection = document.querySelector('[data-section="load-bank"]');
       if (loadBankSection) {
@@ -77,31 +83,39 @@ export async function generatePDF(
       }
     }
 
-    // Programmatically expand all collapsible sections by clicking the headers
+    // Force expand all collapsible sections by clicking ALL section headers
     const sectionHeaders = document.querySelectorAll('.section-header');
     const clickedHeaders: HTMLElement[] = [];
 
     sectionHeaders.forEach(header => {
+      // Click every section header to ensure they're expanded
+      (header as HTMLElement).click();
+      clickedHeaders.push(header as HTMLElement);
+    });
+
+    // Wait for React to update DOM
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Click them ALL again to make sure they're expanded (toggle twice if needed)
+    sectionHeaders.forEach(header => {
       const parent = header.parentElement;
       if (parent) {
-        // Check if the section appears to be collapsed (look for chevron right icon or no visible content)
-        const chevronRight = header.querySelector('[data-lucide="chevron-right"]') ||
-                            header.textContent?.includes('›');
+        // Check if still collapsed by looking for content
         const hasVisibleContent = Array.from(parent.children).some(child =>
           child !== header &&
-          (child as HTMLElement).offsetHeight > 0
+          (child as HTMLElement).offsetHeight > 0 &&
+          (child as HTMLElement).style.display !== 'none'
         );
 
-        // If collapsed (has chevron right OR no visible content), click to expand
-        if (chevronRight || !hasVisibleContent) {
+        // If no visible content, click again
+        if (!hasVisibleContent) {
           (header as HTMLElement).click();
-          clickedHeaders.push(header as HTMLElement);
         }
       }
     });
 
-    // Wait a moment for React to update the DOM after clicks
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Wait again
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const formContainer = document.querySelector('.print-container');
     if (!formContainer) {
@@ -112,12 +126,16 @@ export async function generatePDF(
       scale: 2,
       useCORS: true,
       logging: false,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      width: formContainer.scrollWidth,
+      height: formContainer.scrollHeight,
+      windowWidth: formContainer.scrollWidth,
+      windowHeight: formContainer.scrollHeight
     });
 
     const imgWidth = 210;
     const pageHeight = 297;
-    const headerHeight = 25;
+    const headerHeight = 30;
     const footerHeight = 15;
     const contentHeight = pageHeight - headerHeight - footerHeight;
 
@@ -126,9 +144,12 @@ export async function generatePDF(
 
     const pdf = new jsPDF('p', 'mm', 'a4');
     let position = headerHeight;
+    let currentPage = 1;
 
-    await addHeaderToPDF(pdf, headerHeight);
+    // Add header to first page
+    await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
+    // Add first page content
     pdf.addImage(
       canvas.toDataURL('image/png'),
       'PNG',
@@ -140,10 +161,15 @@ export async function generatePDF(
 
     heightLeft -= contentHeight;
 
+    // Add additional pages if needed
     while (heightLeft > 0) {
       position = heightLeft - imgHeight + headerHeight;
       pdf.addPage();
-      await addHeaderToPDF(pdf, headerHeight);
+      currentPage++;
+
+      // Add header to each page
+      await addCustomHeaderToPDF(pdf, formData, headerHeight);
+
       pdf.addImage(
         canvas.toDataURL('image/png'),
         'PNG',
@@ -158,10 +184,11 @@ export async function generatePDF(
     // Add footer only on the last page
     const pageCount = pdf.getNumberOfPages();
     pdf.setPage(pageCount);
-    await addFooterToPDF(pdf, pageHeight - footerHeight, pageCount, pageCount);
+    await addFooterToPDF(pdf, pageHeight - footerHeight, pageCount);
 
     pdf.save(options.filename);
 
+    // Restore everything
     elementsToHide.forEach(el => {
       (el as HTMLElement).style.display = '';
     });
@@ -192,9 +219,20 @@ export async function generatePDF(
       (loadBankSection as HTMLElement).style.display = '';
     }
 
-    // Restore collapsed sections by clicking the headers again
+    // Restore collapsed sections by clicking headers again
     clickedHeaders.forEach(header => {
-      header.click();
+      const parent = header.parentElement;
+      if (parent) {
+        // Check if it was originally collapsed by looking at the current state
+        // If we expanded it, collapse it back
+        const hasVisibleContent = Array.from(parent.children).some(child =>
+          child !== header &&
+          (child as HTMLElement).offsetHeight > 0
+        );
+        if (hasVisibleContent) {
+          (header as HTMLElement).click();
+        }
+      }
     });
 
     return true;
@@ -204,18 +242,44 @@ export async function generatePDF(
   }
 }
 
-async function addHeaderToPDF(pdf: jsPDF, height: number) {
+async function addCustomHeaderToPDF(pdf: jsPDF, formData: FormSubmission, height: number) {
   try {
-    const headerImg = await loadImage('/image.png');
-    const imgWidth = 210;
-    const imgHeight = (headerImg.height * imgWidth) / headerImg.width;
-    pdf.addImage(headerImg, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, height));
+    // Load the new logo
+    const logoImg = await loadImage('/image copy copy.png');
+
+    // Add logo on the left
+    const logoHeight = 15;
+    const logoWidth = (logoImg.width * logoHeight) / logoImg.height;
+    pdf.addImage(logoImg, 'PNG', 10, 5, logoWidth, logoHeight);
+
+    // Add Job No and Date on the right
+    pdf.setFontSize(10);
+    pdf.setTextColor(60, 60, 60);
+    pdf.setFont('helvetica', 'bold');
+
+    const jobNo = formData.job_po_number || 'N/A';
+    const date = formData.date || 'N/A';
+
+    pdf.text('Job No:', 145, 10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(jobNo, 165, 10);
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Date:', 145, 16);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(date, 165, 16);
+
+    // Add separator line
+    pdf.setDrawColor(200, 200, 200);
+    pdf.setLineWidth(0.5);
+    pdf.line(10, height - 2, 200, height - 2);
+
   } catch (error) {
     console.error('Error adding header:', error);
   }
 }
 
-async function addFooterToPDF(pdf: jsPDF, yPosition: number, pageNum: number, totalPages: number) {
+async function addFooterToPDF(pdf: jsPDF, yPosition: number, pageNum: number) {
   try {
     pdf.setDrawColor(200, 200, 200);
     pdf.setLineWidth(0.5);
@@ -224,7 +288,7 @@ async function addFooterToPDF(pdf: jsPDF, yPosition: number, pageNum: number, to
     pdf.setFontSize(9);
     pdf.setTextColor(100, 100, 100);
     pdf.text(
-      `Page ${pageNum} of ${totalPages}`,
+      `Page ${pageNum}`,
       105,
       yPosition + 8,
       { align: 'center' }
