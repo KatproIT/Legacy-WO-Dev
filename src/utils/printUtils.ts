@@ -44,25 +44,38 @@ export async function generatePDF(
   }
 ) {
   try {
-    // Step 1: Expand all sections by clicking headers
+    // Step 1: Track which sections are collapsed and expand ALL of them
     const sectionHeaders = document.querySelectorAll('.section-header');
-    const headersToRestore: HTMLElement[] = [];
+    const collapsedHeaders: HTMLElement[] = [];
 
+    // Identify collapsed sections BEFORE clicking
     sectionHeaders.forEach(header => {
       const parent = header.parentElement;
       if (parent) {
-        // Check if section is collapsed by looking for ChevronRight icon
-        const isCollapsed = header.querySelector('[data-lucide="chevron-right"]') !== null;
+        // Check if content is visible
+        const contentElements = Array.from(parent.children).filter((child, index) =>
+          index > 0 && child instanceof HTMLElement
+        );
 
-        if (isCollapsed) {
-          headersToRestore.push(header as HTMLElement);
-          (header as HTMLElement).click();
+        const hasVisibleContent = contentElements.some(child => {
+          const style = window.getComputedStyle(child as HTMLElement);
+          return style.display !== 'none' && (child as HTMLElement).offsetHeight > 0;
+        });
+
+        // If no visible content, section is collapsed
+        if (!hasVisibleContent) {
+          collapsedHeaders.push(header as HTMLElement);
         }
       }
     });
 
-    // Wait for sections to expand
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Click all collapsed headers to expand them
+    collapsedHeaders.forEach(header => {
+      header.click();
+    });
+
+    // Wait for expansion animations
+    await new Promise(resolve => setTimeout(resolve, 400));
 
     // Step 2: Hide UI elements
     const elementsToHide = document.querySelectorAll('.no-print');
@@ -204,25 +217,15 @@ export async function generatePDF(
       hiddenLoadBankSection.style.display = '';
     }
 
-    // Restore collapsed sections by clicking headers again
+    // Restore collapsed sections by clicking only the headers that were originally collapsed
     await new Promise(resolve => setTimeout(resolve, 100));
-    headersToRestore.forEach(header => {
+    collapsedHeaders.forEach(header => {
       header.click();
     });
 
     return true;
   } catch (error) {
     console.error('Error generating PDF:', error);
-
-    // Emergency restore: try to collapse sections back
-    const sectionHeaders = document.querySelectorAll('.section-header');
-    sectionHeaders.forEach(header => {
-      const chevronDown = header.querySelector('[data-lucide="chevron-down"]');
-      if (chevronDown) {
-        (header as HTMLElement).click();
-      }
-    });
-
     throw error;
   }
 }
