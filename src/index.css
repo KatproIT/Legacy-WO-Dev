@@ -115,21 +115,7 @@
     print-color-adjust: exact;
   }
 }
-/* ---------------------------------------------------------------------------
-   index.css additions (copy these into your project's index.css)
-   --------------------------------------------------------------------------- */
-
-/* Print helpers: ensure all sections are visible and expanded when printing */
-/* Paste the following into your index.css or global stylesheet */
-
-/* ---------- Print layout ---------- */
-/* show everything under .print-container during print */
 @media print {
-  body {
-    -webkit-print-color-adjust: exact;
-  }
-
-  /* Make sure no interactive elements hide content */
   .print-container * {
     display: block !important;
     visibility: visible !important;
@@ -137,77 +123,13 @@
     height: auto !important;
   }
 
-  /* Show tab contents during print */
+  /* Show all tabs during print */
   .print-all-tabs {
     display: block !important;
   }
 
-  /* Hide UI-only elements */
+  /* Hide the react-tab buttons */
   .no-print {
     display: none !important;
   }
-
-  /* Standardize page margins */
-  @page {
-    size: auto;
-    margin: 18mm;
-  }
-
-  /* Header for printed pages (logo only) */
-  .print-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
-    padding: 8px 0;
-    background: white;
-    z-index: 9999;
-  }
-
-  /* Footer area (will print at bottom of page) */
-  .print-container {
-    page-break-inside: avoid;
-  }
-
-  footer, .global-footer, .print-footer, .printable-footer {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: white;
-    padding: 8px 0;
-    z-index: 9999;
-  }
-
-  /* attempt CSS counters for page numbers — support varies */
-  .pageNumber::after {
-    content: counter(page);
-  }
-  .totalPages::after {
-    content: counter(pages);
-  }
 }
-
-/* ---------- Customer Copy Mode ---------- */
-/* When body.customer-copy is set, hide sensitive sections */
-body.customer-copy #parts-supplies-section {
-  display: none !important;
-  visibility: hidden !important;
-}
-
-/* The three requested pieces live inside WorkLogSection — hide the whole worklog wrapper as a fallback */
-body.customer-copy #worklog-section {
-  display: none !important;
-  visibility: hidden !important;
-}
-
-/* If you want more granular control later, add ids inside WorkLogSection for the subparts
-   and hide them individually instead of entire worklog-section. */
-
-/* ---------- Cosmetic: ensure footer visible on screen */
-.wysiwyg-footer {
-  width: 100%;
-}
-
-/* End of stylesheet additions */
