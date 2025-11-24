@@ -1,5 +1,3 @@
-
-import jsPDF from 'jspdf';
 import { FormSubmission } from '../types/form';
 
 export function hasAdditionalATSData(formData: FormSubmission): boolean {
