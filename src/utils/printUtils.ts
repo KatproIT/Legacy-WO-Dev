@@ -46,11 +46,14 @@ export async function generatePDF(
   try {
     // Hide UI elements
     const elementsToHide = document.querySelectorAll('.no-print');
+    const hiddenElements: HTMLElement[] = [];
     elementsToHide.forEach(el => {
+      hiddenElements.push(el as HTMLElement);
       (el as HTMLElement).style.display = 'none';
     });
 
     // Hide financial data if customer copy
+    const hiddenFinancialSections: HTMLElement[] = [];
     if (!options.includeFinancialData) {
       const financialSections = [
         '[data-section="parts-supplies"]',
@@ -62,75 +65,71 @@ export async function generatePDF(
       financialSections.forEach(selector => {
         const section = document.querySelector(selector);
         if (section) {
+          hiddenFinancialSections.push(section as HTMLElement);
           (section as HTMLElement).style.display = 'none';
         }
       });
     }
 
     // Hide empty Additional ATS section
+    let hiddenATSSection: HTMLElement | null = null;
     if (!hasAdditionalATSData(formData)) {
       const atsSection = document.querySelector('[data-section="additional-ats"]');
       if (atsSection) {
-        (atsSection as HTMLElement).style.display = 'none';
+        hiddenATSSection = atsSection as HTMLElement;
+        hiddenATSSection.style.display = 'none';
       }
     }
 
     // Hide empty Load Bank section
+    let hiddenLoadBankSection: HTMLElement | null = null;
     if (!hasLoadBankData(formData)) {
       const loadBankSection = document.querySelector('[data-section="load-bank"]');
       if (loadBankSection) {
-        (loadBankSection as HTMLElement).style.display = 'none';
+        hiddenLoadBankSection = loadBankSection as HTMLElement;
+        hiddenLoadBankSection.style.display = 'none';
       }
     }
 
-    // Force expand all collapsible sections by clicking ALL section headers
-    const sectionHeaders = document.querySelectorAll('.section-header');
-    const clickedHeaders: HTMLElement[] = [];
+    // Store original styles and force expand all sections using CSS
+    const styleOverrides: Array<{ element: HTMLElement; originalDisplay: string }> = [];
 
-    sectionHeaders.forEach(header => {
-      // Click every section header to ensure they're expanded
-      (header as HTMLElement).click();
-      clickedHeaders.push(header as HTMLElement);
-    });
-
-    // Wait for React to update DOM
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    // Click them ALL again to make sure they're expanded (toggle twice if needed)
-    sectionHeaders.forEach(header => {
-      const parent = header.parentElement;
-      if (parent) {
-        // Check if still collapsed by looking for content
-        const hasVisibleContent = Array.from(parent.children).some(child =>
-          child !== header &&
-          (child as HTMLElement).offsetHeight > 0 &&
-          (child as HTMLElement).style.display !== 'none'
-        );
-
-        // If no visible content, click again
-        if (!hasVisibleContent) {
-          (header as HTMLElement).click();
+    // Find all section cards and their content
+    const sectionCards = document.querySelectorAll('.section-card');
+    sectionCards.forEach(card => {
+      // Find all children of section-card that might be hidden
+      const children = Array.from(card.children);
+      children.forEach((child, index) => {
+        // Skip the header (usually first child)
+        if (index > 0 && child instanceof HTMLElement) {
+          const computedStyle = window.getComputedStyle(child);
+          if (computedStyle.display === 'none' || child.classList.contains('hidden')) {
+            styleOverrides.push({
+              element: child,
+              originalDisplay: child.style.display
+            });
+            child.style.display = 'block';
+            child.classList.remove('hidden');
+          }
         }
-      }
+      });
     });
 
-    // Wait again
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait for layout to settle
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const formContainer = document.querySelector('.print-container');
     if (!formContainer) {
       throw new Error('Form container not found');
     }
 
+    // Use lower scale for smaller file size but still good quality
     const canvas = await html2canvas(formContainer as HTMLElement, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      width: formContainer.scrollWidth,
-      height: formContainer.scrollHeight,
-      windowWidth: formContainer.scrollWidth,
-      windowHeight: formContainer.scrollHeight
+      removeContainer: false
     });
 
     const imgWidth = 210;
@@ -142,21 +141,23 @@ export async function generatePDF(
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF('p', 'mm', 'a4', true);
     let position = headerHeight;
-    let currentPage = 1;
 
     // Add header to first page
     await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
-    // Add first page content
+    // Add first page content with JPEG compression for smaller size
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
     pdf.addImage(
-      canvas.toDataURL('image/png'),
-      'PNG',
+      imgData,
+      'JPEG',
       0,
       position,
       imgWidth,
-      imgHeight
+      imgHeight,
+      undefined,
+      'FAST'
     );
 
     heightLeft -= contentHeight;
@@ -165,18 +166,19 @@ export async function generatePDF(
     while (heightLeft > 0) {
       position = heightLeft - imgHeight + headerHeight;
       pdf.addPage();
-      currentPage++;
 
       // Add header to each page
       await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
       pdf.addImage(
-        canvas.toDataURL('image/png'),
-        'PNG',
+        imgData,
+        'JPEG',
         0,
         position,
         imgWidth,
-        imgHeight
+        imgHeight,
+        undefined,
+        'FAST'
       );
       heightLeft -= contentHeight;
     }
@@ -189,49 +191,29 @@ export async function generatePDF(
     pdf.save(options.filename);
 
     // Restore everything
-    elementsToHide.forEach(el => {
-      (el as HTMLElement).style.display = '';
+    hiddenElements.forEach(el => {
+      el.style.display = '';
     });
 
-    if (!options.includeFinancialData) {
-      const financialSections = [
-        '[data-section="parts-supplies"]',
-        '[data-section="time-on-job"]',
-        '[data-section="additional-charges"]',
-        '[data-section="totals"]'
-      ];
+    hiddenFinancialSections.forEach(section => {
+      section.style.display = '';
+    });
 
-      financialSections.forEach(selector => {
-        const section = document.querySelector(selector);
-        if (section) {
-          (section as HTMLElement).style.display = '';
-        }
-      });
+    if (hiddenATSSection) {
+      hiddenATSSection.style.display = '';
     }
 
-    const atsSection = document.querySelector('[data-section="additional-ats"]');
-    if (atsSection) {
-      (atsSection as HTMLElement).style.display = '';
+    if (hiddenLoadBankSection) {
+      hiddenLoadBankSection.style.display = '';
     }
 
-    const loadBankSection = document.querySelector('[data-section="load-bank"]');
-    if (loadBankSection) {
-      (loadBankSection as HTMLElement).style.display = '';
-    }
-
-    // Restore collapsed sections by clicking headers again
-    clickedHeaders.forEach(header => {
-      const parent = header.parentElement;
-      if (parent) {
-        // Check if it was originally collapsed by looking at the current state
-        // If we expanded it, collapse it back
-        const hasVisibleContent = Array.from(parent.children).some(child =>
-          child !== header &&
-          (child as HTMLElement).offsetHeight > 0
-        );
-        if (hasVisibleContent) {
-          (header as HTMLElement).click();
-        }
+    // Restore original display styles
+    styleOverrides.forEach(({ element, originalDisplay }) => {
+      if (originalDisplay) {
+        element.style.display = originalDisplay;
+      } else {
+        element.style.display = '';
+        element.classList.add('hidden');
       }
     });
 
