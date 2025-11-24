@@ -141,19 +141,23 @@ export async function generatePDF(
       removeContainer: false
     });
 
-    // Step 7: Create PDF with custom header and footer
-    const imgWidth = 210;
-    const pageHeight = 297;
-    const headerHeight = 25;
-    const footerHeight = 15;
-    const contentHeight = pageHeight - headerHeight - footerHeight;
-    const margin = 10;
+    // Step 7: Create PDF with proper margins and spacing
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297; // A4 height in mm
+    const headerHeight = 28; // Space for header
+    const footerHeight = 18; // Space for footer
+    const topMargin = 8; // Extra space between header and content
+    const bottomMargin = 8; // Extra space between content and footer
+    const leftRightMargin = 12; // Side margins
 
-    const imgHeight = (canvas.height * (imgWidth - 2 * margin)) / canvas.width;
+    const contentAreaHeight = pageHeight - headerHeight - footerHeight - topMargin - bottomMargin;
+    const contentAreaWidth = imgWidth - (2 * leftRightMargin);
+
+    const imgHeight = (canvas.height * contentAreaWidth) / canvas.width;
     let heightLeft = imgHeight;
 
     const pdf = new jsPDF('p', 'mm', 'a4', true);
-    let position = headerHeight;
+    let position = headerHeight + topMargin; // Start after header + top margin
 
     // Add header to first page
     await addCustomHeaderToPDF(pdf, formData, headerHeight);
@@ -163,19 +167,19 @@ export async function generatePDF(
     pdf.addImage(
       imgData,
       'JPEG',
-      margin,
+      leftRightMargin,
       position,
-      imgWidth - 2 * margin,
+      contentAreaWidth,
       imgHeight,
       undefined,
       'FAST'
     );
 
-    heightLeft -= contentHeight;
+    heightLeft -= contentAreaHeight;
 
     // Add additional pages if needed
     while (heightLeft > 0) {
-      position = heightLeft - imgHeight + headerHeight;
+      position = heightLeft - imgHeight + headerHeight + topMargin;
       pdf.addPage();
 
       await addCustomHeaderToPDF(pdf, formData, headerHeight);
@@ -183,14 +187,14 @@ export async function generatePDF(
       pdf.addImage(
         imgData,
         'JPEG',
-        margin,
+        leftRightMargin,
         position,
-        imgWidth - 2 * margin,
+        contentAreaWidth,
         imgHeight,
         undefined,
         'FAST'
       );
-      heightLeft -= contentHeight;
+      heightLeft -= contentAreaHeight;
     }
 
     // Add footer only on the last page
