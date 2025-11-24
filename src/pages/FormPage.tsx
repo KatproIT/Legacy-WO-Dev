@@ -1,6 +1,4 @@
-// FormPage.tsx
-// Fully merged version with print + customer copy + header/footer
-
+// src/pages/FormPage.tsx
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
@@ -49,14 +47,14 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'forwarded_to_email',
   'workflow_timestamp'
 ]);
-
 function normalizeDate(val: any) {
   if (!val) return val;
-  if (typeof val === 'string' && val.includes('T')) {
+  if (typeof val === "string" && val.includes("T")) {
     return val.substring(0, 10);
   }
   return val;
 }
+
 
 function deepMerge(target: any, source: any) {
   if (!source) return target;
@@ -155,7 +153,13 @@ export function FormPage() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isNewForm, setIsNewForm] = useState(true);
-  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', message: '', onConfirm: () => {}, type: undefined as any });
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    type?: 'warning' | 'info' | 'danger';
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -165,7 +169,7 @@ export function FormPage() {
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
 
-  // prevent navigate inside rendering
+  // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     if (!email) navigate('/login');
@@ -480,22 +484,26 @@ export function FormPage() {
     }
   };
 
-  const handleFieldChange = useCallback((field: string, value: any) => {
-    // Normalize ISO datetime to yyyy-MM-dd for date inputs
-    if (field.toLowerCase().includes('date') || field.toLowerCase().includes('due')) {
-      value = normalizeDate(value);
-    }
+const handleFieldChange = useCallback((field: string, value: any) => {
+  // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
+  if (
+    field.toLowerCase().includes("date") ||
+    field.toLowerCase().includes("due")
+  ) {
+    value = normalizeDate(value);
+  }
 
-    setFormData(prev => {
-      const updated = { ...prev };
-      setByPath(updated, field, value);
-      return updated;
-    });
+  setFormData(prev => {
+    const updated = { ...prev };
+    setByPath(updated, field, value);
+    return updated;
+  });
 
-    if (validationErrors.length > 0) {
-      validateForm();
-    }
-  }, [validationErrors]);
+  if (validationErrors.length > 0) {
+    validateForm();
+  }
+}, [validationErrors]);
+
 
   const getFieldError = (value: any): boolean => {
     if (validationErrors.length === 0) return false;
@@ -508,20 +516,7 @@ export function FormPage() {
   };
 
   const handlePrint = () => {
-    // show all tabs in print
-    document.body.classList.remove('customer-copy');
     window.print();
-  };
-
-  const handlePrintCustomerCopy = () => {
-    document.body.classList.add('customer-copy');
-    // small delay to allow class to take effect
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => {
-        document.body.classList.remove('customer-copy');
-      }, 500);
-    }, 200);
   };
 
   const handleEnableEdit = () => {
@@ -538,21 +533,6 @@ export function FormPage() {
     });
   };
 
-  // helpers to decide whether ATS / Load Bank have data
-  const hasATSData = () => {
-    const ats = (formData as any).additional_ats || {};
-    if (!ats) return false;
-    if (Array.isArray(ats) && ats.length > 0) return true;
-    return Object.values(ats).some(v => (v !== null && v !== undefined && v !== ''));
-  };
-
-  const hasLoadBankData = () => {
-    const lb = (formData as any).load_bank_report || {};
-    if (!lb) return false;
-    if (Array.isArray(lb) && lb.length > 0) return true;
-    return Object.values(lb).some(v => (v !== null && v !== undefined && v !== ''));
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -563,7 +543,6 @@ export function FormPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Top bar with logo and actions */}
       <div className="bg-white shadow-lg border-b border-gray-200 no-print">
         <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -587,7 +566,6 @@ export function FormPage() {
                 </span>
               )}
             </div>
-
             <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={handlePrint}
@@ -595,14 +573,6 @@ export function FormPage() {
               >
                 <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="text-sm sm:text-base">Print</span>
-              </button>
-
-              <button
-                onClick={handlePrintCustomerCopy}
-                className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
-              >
-                <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-sm sm:text-base">Customer Copy</span>
               </button>
 
               {isUserPM && !isReadOnly && formData.id && (
@@ -748,52 +718,40 @@ export function FormPage() {
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-
-              {/* Wrap DynamicTablesSection so we can hide it in Customer Copy */}
-              <div id="parts-supplies-section">
-                <DynamicTablesSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              </div>
-
-              {/* WorkLog is wrapped so we can hide its parts for customer copy */}
-              <div id="worklog-section">
-                <WorkLogSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              </div>
+              <DynamicTablesSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
+              <WorkLogSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
             </div>
           </div>
 
-          <div className={activeTab !== 1 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+          <div className={activeTab !== 1 ? 'hidden print:block' : ''}>
             <div className="section-card">
-              {hasATSData() && (
-                <AdditionalATSSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              )}
+              <AdditionalATSSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
             </div>
           </div>
 
-          <div className={activeTab !== 2 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+          <div className={activeTab !== 2 ? 'hidden print:block' : ''}>
             <div className="section-card">
-              {hasLoadBankData() && (
-                <LoadBankReportSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              )}
+              <LoadBankReportSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
             </div>
           </div>
         </div>
@@ -817,35 +775,6 @@ export function FormPage() {
       {showForwardModal && (
         <ForwardModal onClose={() => setShowForwardModal(false)} onSubmit={handleForward} />
       )}
-
-      {/* Global Footer - always visible on page and printed */}
-      <div className="w-full mt-10 py-6 bg-gray-50 text-center border-t border-gray-300 print:block">
-        <img src="/image.png" alt="Company Logo" className="h-12 mx-auto mb-3" />
-
-        <p className="text-sm text-gray-700 leading-tight">
-          Legacy Power Systems<br />
-          123 Placeholder Street, City, State 00000<br />
-          Phone: (000) 000-0000 • Email: info@example.com
-        </p>
-
-        <p className="text-xs text-gray-500 mt-2 print:block">
-          Page <span className="pageNumber"></span> of <span className="totalPages"></span>
-        </p>
-      </div>
-
-      {/* small script to attempt setting page numbers in the footer for modern browsers */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        function updatePageNumbers() {
-          // Modern browsers don't expose total page count to script reliably.
-          // We'll set current page via CSS counter where supported, and leave fallbacks for PDF viewers.
-          const pageEls = document.querySelectorAll('.pageNumber');
-          const totalEls = document.querySelectorAll('.totalPages');
-          pageEls.forEach(el => { if (el) el.textContent = ''; });
-          totalEls.forEach(el => { if (el) el.textContent = ''; });
-        }
-        window.addEventListener('beforeprint', updatePageNumbers);
-        window.addEventListener('afterprint', updatePageNumbers);
-      `}} />
     </div>
   );
 }
