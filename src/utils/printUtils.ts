@@ -77,7 +77,22 @@ export async function generatePDF(
     // Wait for expansion animations
     await new Promise(resolve => setTimeout(resolve, 400));
 
-    // Step 2: Hide UI elements
+    // Step 2: Force show all tab content sections for printing
+    const tabSections = document.querySelectorAll('[data-section="additional-ats"], [data-section="load-bank"]');
+    const originalTabClasses: Array<{ element: HTMLElement; hadHidden: boolean }> = [];
+
+    tabSections.forEach(section => {
+      if (section instanceof HTMLElement) {
+        const hadHidden = section.classList.contains('hidden');
+        originalTabClasses.push({ element: section, hadHidden });
+        section.classList.remove('hidden');
+        section.style.display = 'block';
+      }
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Step 3: Hide UI elements
     const elementsToHide = document.querySelectorAll('.no-print');
     const hiddenElements: HTMLElement[] = [];
     elementsToHide.forEach(el => {
@@ -85,7 +100,7 @@ export async function generatePDF(
       (el as HTMLElement).style.display = 'none';
     });
 
-    // Step 3: Hide financial data if customer copy
+    // Step 4: Hide financial data if customer copy
     const hiddenFinancialSections: HTMLElement[] = [];
     if (!options.includeFinancialData) {
       const financialSections = [
@@ -104,7 +119,7 @@ export async function generatePDF(
       });
     }
 
-    // Step 4: Hide empty Additional ATS section
+    // Step 5: Hide empty Additional ATS section
     let hiddenATSSection: HTMLElement | null = null;
     if (!hasAdditionalATSData(formData)) {
       const atsSection = document.querySelector('[data-section="additional-ats"]');
@@ -114,7 +129,7 @@ export async function generatePDF(
       }
     }
 
-    // Step 5: Hide empty Load Bank section
+    // Step 6: Hide empty Load Bank section
     let hiddenLoadBankSection: HTMLElement | null = null;
     if (!hasLoadBankData(formData)) {
       const loadBankSection = document.querySelector('[data-section="load-bank"]');
@@ -132,7 +147,7 @@ export async function generatePDF(
       throw new Error('Form container not found');
     }
 
-    // Step 6: Capture the form with html2canvas
+    // Step 7: Capture the form with html2canvas
     const canvas = await html2canvas(formContainer as HTMLElement, {
       scale: 1.5,
       useCORS: true,
@@ -141,7 +156,7 @@ export async function generatePDF(
       removeContainer: false
     });
 
-    // Step 7: Create PDF with proper margins and spacing
+    // Step 8: Create PDF with proper margins and spacing
     const imgWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
     const headerHeight = 28; // Space for header
@@ -164,6 +179,8 @@ export async function generatePDF(
 
     // Add first page content with JPEG compression
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    let currentPage = 1;
+
     pdf.addImage(
       imgData,
       'JPEG',
@@ -175,12 +192,16 @@ export async function generatePDF(
       'FAST'
     );
 
+    // Add footer to first page
+    await addFooterToPDF(pdf, pageHeight - footerHeight, currentPage);
+
     heightLeft -= contentAreaHeight;
 
     // Add additional pages if needed
     while (heightLeft > 0) {
       position = heightLeft - imgHeight + headerHeight + topMargin;
       pdf.addPage();
+      currentPage++;
 
       await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
@@ -194,17 +215,30 @@ export async function generatePDF(
         undefined,
         'FAST'
       );
+
+      // Add footer to each page
+      await addFooterToPDF(pdf, pageHeight - footerHeight, currentPage);
+
       heightLeft -= contentAreaHeight;
     }
 
-    // Add footer only on the last page
-    const pageCount = pdf.getNumberOfPages();
-    pdf.setPage(pageCount);
-    await addFooterToPDF(pdf, pageHeight - footerHeight, pageCount);
+    // Add final page with contact information image
+    pdf.addPage();
+    const contactImg = await loadImage('/image copy copy.png');
+    const contactImgHeight = 40; // Adjust as needed
+    const contactImgWidth = (contactImg.width * contactImgHeight) / contactImg.height;
+
+    // Center the contact image
+    const contactX = (imgWidth - contactImgWidth) / 2;
+    const contactY = headerHeight + topMargin + 20;
+
+    await addCustomHeaderToPDF(pdf, formData, headerHeight);
+    pdf.addImage(contactImg, 'PNG', contactX, contactY, contactImgWidth, contactImgHeight);
+    await addFooterToPDF(pdf, pageHeight - footerHeight, currentPage + 1);
 
     pdf.save(options.filename);
 
-    // Step 8: Restore everything
+    // Step 9: Restore everything
     hiddenElements.forEach(el => {
       el.style.display = '';
     });
@@ -220,6 +254,14 @@ export async function generatePDF(
     if (hiddenLoadBankSection) {
       hiddenLoadBankSection.style.display = '';
     }
+
+    // Restore tab section classes
+    originalTabClasses.forEach(({ element, hadHidden }) => {
+      if (hadHidden) {
+        element.classList.add('hidden');
+      }
+      element.style.display = '';
+    });
 
     // Restore collapsed sections by clicking only the headers that were originally collapsed
     await new Promise(resolve => setTimeout(resolve, 100));
