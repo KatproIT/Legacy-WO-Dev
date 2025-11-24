@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* -------------------------------------------------------
+   BASE LAYER
+------------------------------------------------------- */
 @layer base {
   body {
     @apply font-sans antialiased;
@@ -16,13 +19,20 @@
   }
 }
 
+/* -------------------------------------------------------
+   COMPONENTS LAYER
+------------------------------------------------------- */
 @layer components {
   .form-input {
-    @apply w-full px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-all text-base;
+    @apply w-full px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-300 rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+           disabled:bg-gray-50 disabled:text-gray-500 transition-all text-base;
   }
 
   .form-input-error {
-    @apply w-full px-3 py-2 sm:px-4 sm:py-2.5 border-2 border-red-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-all bg-red-50 text-base;
+    @apply w-full px-3 py-2 sm:px-4 sm:py-2.5 border-2 border-red-500 rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent 
+           disabled:bg-gray-50 disabled:text-gray-500 transition-all bg-red-50 text-base;
   }
 
   .form-label {
@@ -30,19 +40,28 @@
   }
 
   .btn-primary {
-    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 text-white font-medium rounded-lg 
+           hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+           focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed 
+           text-sm sm:text-base;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all text-sm sm:text-base;
+    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-gray-600 text-white font-medium rounded-lg 
+           hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 
+           focus:ring-offset-2 transition-all text-sm sm:text-base;
   }
 
   .btn-success {
-    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all text-sm sm:text-base;
+    @apply px-4 py-2 sm:px-6 sm:py-2.5 bg-green-600 text-white font-medium rounded-lg 
+           hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 
+           focus:ring-offset-2 transition-all text-sm sm:text-base;
   }
 
   .btn-danger {
-    @apply px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all text-sm sm:text-base;
+    @apply px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white font-medium rounded-lg 
+           hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 
+           focus:ring-offset-2 transition-all text-sm sm:text-base;
   }
 
   .section-card {
@@ -50,7 +69,8 @@
   }
 
   .section-header {
-    @apply text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6 pb-2 sm:pb-3 border-b-2 border-blue-600;
+    @apply text-base sm:text-lg font-bold text-gray-900 mb-4 sm:mb-6 pb-2 sm:pb-3 
+           border-b-2 border-blue-600;
   }
 
   .table-wrapper {
@@ -58,9 +78,29 @@
   }
 }
 
+/* -------------------------------------------------------
+   SCREENSHOT-BASED PDF SUPPORT (html2canvas + jsPDF)
+------------------------------------------------------- */
+.print-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Hide sections for Customer Copy PDF */
+body.customer-copy #parts-supplies-section,
+body.customer-copy #worklog-section {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* -------------------------------------------------------
+   PRINT MODE (APPLIES ONLY TO BROWSER PRINT, NOT PDF)
+------------------------------------------------------- */
 @media print {
   body {
     background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .no-print {
@@ -72,6 +112,19 @@
     padding: 0 !important;
   }
 
+  .print-container * {
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    opacity: 1 !important;
+  }
+
+  /* Show all tab content while printing */
+  .print-all-tabs {
+    display: block !important;
+  }
+
+  /* Improve printed card look */
   .section-card {
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
@@ -91,12 +144,12 @@
   table {
     page-break-inside: auto;
   }
-
   tr {
     page-break-inside: avoid;
     page-break-after: auto;
   }
 
+  /* Form inputs print nicely */
   .form-input, input, select, textarea {
     border: 1px solid #d1d5db !important;
     background: white !important;
@@ -109,27 +162,21 @@
     margin-bottom: 0.25rem !important;
   }
 
-  /* Make sure colors print */
-  * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  @page {
+    size: auto;
+    margin: 18mm; /* good spacing for your PDF footer */
+  }
+
+  /* Page numbering (works in most PDF viewers) */
+  .pageNumber::after {
+    content: counter(page);
+  }
+  .totalPages::after {
+    content: counter(pages);
   }
 }
-@media print {
-  .print-container * {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-  }
 
-  /* Show all tabs during print */
-  .print-all-tabs {
-    display: block !important;
-  }
-
-  /* Hide the react-tab buttons */
-  .no-print {
-    display: none !important;
-  }
+/* Footer always visible */
+.wysiwyg-footer {
+  width: 100%;
 }

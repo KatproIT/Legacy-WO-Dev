@@ -19,6 +19,9 @@ import { validateLoadBankReport, validateServiceReport } from '../utils/formVali
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
   'https://legacywobe.azurewebsites.net/api';
@@ -47,6 +50,7 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'forwarded_to_email',
   'workflow_timestamp'
 ]);
+
 function normalizeDate(val: any) {
   if (!val) return val;
   if (typeof val === "string" && val.includes("T")) {
@@ -54,7 +58,6 @@ function normalizeDate(val: any) {
   }
   return val;
 }
-
 
 function deepMerge(target: any, source: any) {
   if (!source) return target;
@@ -393,7 +396,7 @@ export function FormPage() {
       }
 
       if (savedData) {
-        const refreshRes = await authFetch(`${API}/forms/${savedData.id}`);
+        const refreshRes = await authFetch(`${API}/forms/${savedData.id}`); 
         if (refreshRes.ok) {
           const refreshedRaw = await refreshRes.json();
           const refreshed = unpackForm(refreshedRaw);
@@ -484,25 +487,25 @@ export function FormPage() {
     }
   };
 
-const handleFieldChange = useCallback((field: string, value: any) => {
-  // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
-  if (
-    field.toLowerCase().includes("date") ||
-    field.toLowerCase().includes("due")
-  ) {
-    value = normalizeDate(value);
-  }
+  const handleFieldChange = useCallback((field: string, value: any) => {
+    // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
+    if (
+      field.toLowerCase().includes("date") ||
+      field.toLowerCase().includes("due")
+    ) {
+      value = normalizeDate(value);
+    }
 
-  setFormData(prev => {
-    const updated = { ...prev };
-    setByPath(updated, field, value);
-    return updated;
-  });
+    setFormData(prev => {
+      const updated = { ...prev };
+      setByPath(updated, field, value);
+      return updated;
+    });
 
-  if (validationErrors.length > 0) {
-    validateForm();
-  }
-}, [validationErrors]);
+    if (validationErrors.length > 0) {
+      validateForm();
+    }
+  }, [validationErrors]);
 
 
   const getFieldError = (value: any): boolean => {
@@ -515,8 +518,105 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handlePrint = () => {
-    window.print();
+  // ---------- Helpers for ATS / Load Bank visibility ----------
+  const hasATSData = () => {
+    const ats = (formData as any).additional_ats || {};
+    if (!ats) return false;
+    if (Array.isArray(ats) && ats.length > 0) return true;
+    return Object.values(ats).some(v => (v !== null && v !== undefined && v !== ''));
+  };
+
+  const hasLoadBankData = () => {
+    const lb = (formData as any).load_bank_report || {};
+    if (!lb) return false;
+    if (Array.isArray(lb) && lb.length > 0) return true;
+    return Object.values(lb).some(v => (v !== null && v !== undefined && v !== ''));
+  };
+
+  // ---------- PDF Generation (screenshot -> PDF) ----------
+  // isCustomerCopy = true hides the parts/supplies and worklog sections via CSS class
+  const generatePDF = async (isCustomerCopy = false) => {
+    try {
+      // Toggle customer copy classes
+      if (isCustomerCopy) {
+        document.body.classList.add('customer-copy');
+      } else {
+        document.body.classList.remove('customer-copy');
+      }
+
+      // target the print container (the main content area)
+      const element = document.querySelector('.print-container') as HTMLElement | null;
+      if (!element) {
+        showToast('Cannot find printable content', 'error');
+        return;
+      }
+
+      // Wait for layout / repaint after toggling class (small delay)
+      await new Promise(res => setTimeout(res, 150));
+
+      // Use html2canvas to render the element to canvas (high DPI)
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+
+      // Create PDF: A4 portrait in mm
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // Canvas dims in px
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      // Convert px to mm at 96 DPI: mm = px * 25.4 / 96
+      const pxToMm = (px: number) => (px * 25.4) / 96;
+
+      const imgWidthMm = pxToMm(imgWidth);
+      const imgHeightMm = pxToMm(imgHeight);
+
+      // Fit the width to PDF width and calculate height
+      const ratio = imgWidthMm / pdfWidth;
+      const fittedHeight = imgHeightMm / ratio;
+
+      if (fittedHeight <= pdfHeight) {
+        // Single page
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, fittedHeight);
+      } else {
+        // Multiple pages: slice canvas vertically per PDF page height (in px)
+        const pageHeightPx = Math.round((pdfHeight * 96) / 25.4 * ratio); // convert page height mm back to px (scaled)
+        let position = 0;
+        while (position < imgHeight) {
+          // create a temporary canvas to hold the page slice
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = imgWidth;
+          pageCanvas.height = Math.min(pageHeightPx, imgHeight - position);
+          const ctx = pageCanvas.getContext('2d')!;
+          ctx.drawImage(canvas, 0, position, imgWidth, pageCanvas.height, 0, 0, imgWidth, pageCanvas.height);
+          const pageData = pageCanvas.toDataURL('image/png');
+
+          const pageHeightMm = pxToMm(pageCanvas.height) / ratio;
+
+          if (position > 0) pdf.addPage();
+          pdf.addImage(pageData, 'PNG', 0, 0, pdfWidth, pageHeightMm);
+
+          position += pageHeightPx;
+        }
+      }
+
+      const filename = isCustomerCopy ? `${(formData.job_po_number || 'Customer_Copy')}.pdf` : `${(formData.job_po_number || 'WorkOrder')}.pdf`;
+      pdf.save(filename);
+    } catch (err) {
+      console.error('PDF generation failed', err);
+      showToast('PDF generation failed', 'error');
+    } finally {
+      // cleanup
+      document.body.classList.remove('customer-copy');
+    }
   };
 
   const handleEnableEdit = () => {
@@ -567,12 +667,21 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               )}
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+              {/* Replace native print with screenshot PDF exports */}
               <button
-                onClick={handlePrint}
+                onClick={() => generatePDF(false)}
                 className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
               >
                 <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-sm sm:text-base">Print</span>
+                <span className="text-sm sm:text-base">Download PDF</span>
+              </button>
+
+              <button
+                onClick={() => generatePDF(true)}
+                className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
+              >
+                <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-sm sm:text-base">Customer Copy</span>
               </button>
 
               {isUserPM && !isReadOnly && formData.id && (
@@ -718,40 +827,52 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
               />
-              <DynamicTablesSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
-              <WorkLogSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
+
+              {/* PARTS & SUPPLIES USED (DynamicTablesSection) — wrapped so customer-copy can hide it */}
+              <div id="parts-supplies-section">
+                <DynamicTablesSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              </div>
+
+              {/* Work log wrapper includes TIME ON JOB, ADDITIONAL CHARGES, TOTALS */}
+              <div id="worklog-section">
+                <WorkLogSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              </div>
             </div>
           </div>
 
-          <div className={activeTab !== 1 ? 'hidden print:block' : ''}>
+          <div className={activeTab !== 1 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
             <div className="section-card">
-              <AdditionalATSSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
+              {hasATSData() && (
+                <AdditionalATSSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              )}
             </div>
           </div>
 
-          <div className={activeTab !== 2 ? 'hidden print:block' : ''}>
+          <div className={activeTab !== 2 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
             <div className="section-card">
-              <LoadBankReportSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
+              {hasLoadBankData() && (
+                <LoadBankReportSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -775,6 +896,21 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       {showForwardModal && (
         <ForwardModal onClose={() => setShowForwardModal(false)} onSubmit={handleForward} />
       )}
+
+      {/* Global Footer - always visible on page and printed */}
+      <div className="w-full mt-10 py-6 bg-gray-50 text-center border-t border-gray-300 print:block">
+        <img src="/image.png" alt="Company Logo" className="h-12 mx-auto mb-3" />
+
+        <p className="text-sm text-gray-700 leading-tight">
+          Legacy Power Systems<br />
+          123 Placeholder Street, City, State 00000<br />
+          Phone: (000) 000-0000 • Email: info@example.com
+        </p>
+
+        <p className="text-xs text-gray-500 mt-2 print:block">
+          Page <span className="pageNumber"></span> of <span className="totalPages"></span>
+        </p>
+      </div>
     </div>
   );
 }
