@@ -44,7 +44,27 @@ export async function generatePDF(
   }
 ) {
   try {
-    // Hide UI elements
+    // Step 1: Expand all sections by clicking headers
+    const sectionHeaders = document.querySelectorAll('.section-header');
+    const headersToRestore: HTMLElement[] = [];
+
+    sectionHeaders.forEach(header => {
+      const parent = header.parentElement;
+      if (parent) {
+        // Check if section is collapsed by looking for ChevronRight icon
+        const isCollapsed = header.querySelector('[data-lucide="chevron-right"]') !== null;
+
+        if (isCollapsed) {
+          headersToRestore.push(header as HTMLElement);
+          (header as HTMLElement).click();
+        }
+      }
+    });
+
+    // Wait for sections to expand
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // Step 2: Hide UI elements
     const elementsToHide = document.querySelectorAll('.no-print');
     const hiddenElements: HTMLElement[] = [];
     elementsToHide.forEach(el => {
@@ -52,7 +72,7 @@ export async function generatePDF(
       (el as HTMLElement).style.display = 'none';
     });
 
-    // Hide financial data if customer copy
+    // Step 3: Hide financial data if customer copy
     const hiddenFinancialSections: HTMLElement[] = [];
     if (!options.includeFinancialData) {
       const financialSections = [
@@ -71,7 +91,7 @@ export async function generatePDF(
       });
     }
 
-    // Hide empty Additional ATS section
+    // Step 4: Hide empty Additional ATS section
     let hiddenATSSection: HTMLElement | null = null;
     if (!hasAdditionalATSData(formData)) {
       const atsSection = document.querySelector('[data-section="additional-ats"]');
@@ -81,7 +101,7 @@ export async function generatePDF(
       }
     }
 
-    // Hide empty Load Bank section
+    // Step 5: Hide empty Load Bank section
     let hiddenLoadBankSection: HTMLElement | null = null;
     if (!hasLoadBankData(formData)) {
       const loadBankSection = document.querySelector('[data-section="load-bank"]');
@@ -91,30 +111,6 @@ export async function generatePDF(
       }
     }
 
-    // Store original styles and force expand all sections using CSS
-    const styleOverrides: Array<{ element: HTMLElement; originalDisplay: string }> = [];
-
-    // Find all section cards and their content
-    const sectionCards = document.querySelectorAll('.section-card');
-    sectionCards.forEach(card => {
-      // Find all children of section-card that might be hidden
-      const children = Array.from(card.children);
-      children.forEach((child, index) => {
-        // Skip the header (usually first child)
-        if (index > 0 && child instanceof HTMLElement) {
-          const computedStyle = window.getComputedStyle(child);
-          if (computedStyle.display === 'none' || child.classList.contains('hidden')) {
-            styleOverrides.push({
-              element: child,
-              originalDisplay: child.style.display
-            });
-            child.style.display = 'block';
-            child.classList.remove('hidden');
-          }
-        }
-      });
-    });
-
     // Wait for layout to settle
     await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -123,7 +119,7 @@ export async function generatePDF(
       throw new Error('Form container not found');
     }
 
-    // Use lower scale for smaller file size but still good quality
+    // Step 6: Capture the form with html2canvas
     const canvas = await html2canvas(formContainer as HTMLElement, {
       scale: 1.5,
       useCORS: true,
@@ -132,13 +128,15 @@ export async function generatePDF(
       removeContainer: false
     });
 
+    // Step 7: Create PDF with custom header and footer
     const imgWidth = 210;
     const pageHeight = 297;
-    const headerHeight = 30;
+    const headerHeight = 25;
     const footerHeight = 15;
     const contentHeight = pageHeight - headerHeight - footerHeight;
+    const margin = 10;
 
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgHeight = (canvas.height * (imgWidth - 2 * margin)) / canvas.width;
     let heightLeft = imgHeight;
 
     const pdf = new jsPDF('p', 'mm', 'a4', true);
@@ -147,14 +145,14 @@ export async function generatePDF(
     // Add header to first page
     await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
-    // Add first page content with JPEG compression for smaller size
+    // Add first page content with JPEG compression
     const imgData = canvas.toDataURL('image/jpeg', 0.85);
     pdf.addImage(
       imgData,
       'JPEG',
-      0,
+      margin,
       position,
-      imgWidth,
+      imgWidth - 2 * margin,
       imgHeight,
       undefined,
       'FAST'
@@ -167,15 +165,14 @@ export async function generatePDF(
       position = heightLeft - imgHeight + headerHeight;
       pdf.addPage();
 
-      // Add header to each page
       await addCustomHeaderToPDF(pdf, formData, headerHeight);
 
       pdf.addImage(
         imgData,
         'JPEG',
-        0,
+        margin,
         position,
-        imgWidth,
+        imgWidth - 2 * margin,
         imgHeight,
         undefined,
         'FAST'
@@ -190,7 +187,7 @@ export async function generatePDF(
 
     pdf.save(options.filename);
 
-    // Restore everything
+    // Step 8: Restore everything
     hiddenElements.forEach(el => {
       el.style.display = '';
     });
@@ -207,53 +204,55 @@ export async function generatePDF(
       hiddenLoadBankSection.style.display = '';
     }
 
-    // Restore original display styles
-    styleOverrides.forEach(({ element, originalDisplay }) => {
-      if (originalDisplay) {
-        element.style.display = originalDisplay;
-      } else {
-        element.style.display = '';
-        element.classList.add('hidden');
-      }
+    // Restore collapsed sections by clicking headers again
+    await new Promise(resolve => setTimeout(resolve, 100));
+    headersToRestore.forEach(header => {
+      header.click();
     });
 
     return true;
   } catch (error) {
     console.error('Error generating PDF:', error);
+
+    // Emergency restore: try to collapse sections back
+    const sectionHeaders = document.querySelectorAll('.section-header');
+    sectionHeaders.forEach(header => {
+      const chevronDown = header.querySelector('[data-lucide="chevron-down"]');
+      if (chevronDown) {
+        (header as HTMLElement).click();
+      }
+    });
+
     throw error;
   }
 }
 
 async function addCustomHeaderToPDF(pdf: jsPDF, formData: FormSubmission, height: number) {
   try {
-    // Load the new logo
-    const logoImg = await loadImage('/image copy copy.png');
+    // Load the logo
+    const logoImg = await loadImage('/image copy.png');
 
-    // Add logo on the left
-    const logoHeight = 15;
+    // Add logo on the left - adjusted size
+    const logoHeight = 12;
     const logoWidth = (logoImg.width * logoHeight) / logoImg.height;
-    pdf.addImage(logoImg, 'PNG', 10, 5, logoWidth, logoHeight);
+    pdf.addImage(logoImg, 'PNG', 10, 6, logoWidth, logoHeight);
 
     // Add Job No and Date on the right
     pdf.setFontSize(10);
-    pdf.setTextColor(60, 60, 60);
+    pdf.setTextColor(40, 40, 40);
     pdf.setFont('helvetica', 'bold');
 
     const jobNo = formData.job_po_number || 'N/A';
     const date = formData.date || 'N/A';
 
-    pdf.text('Job No:', 145, 10);
+    // Right-aligned labels and values
+    pdf.text('Job No:', 155, 10);
     pdf.setFont('helvetica', 'normal');
-    pdf.text(jobNo, 165, 10);
-
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Date:', 145, 16);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(date, 165, 16);
+    pdf.text(jobNo, 155, 15);
 
     // Add separator line
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.5);
+    pdf.setDrawColor(220, 220, 220);
+    pdf.setLineWidth(0.3);
     pdf.line(10, height - 2, 200, height - 2);
 
   } catch (error) {
@@ -263,23 +262,24 @@ async function addCustomHeaderToPDF(pdf: jsPDF, formData: FormSubmission, height
 
 async function addFooterToPDF(pdf: jsPDF, yPosition: number, pageNum: number) {
   try {
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.5);
+    pdf.setDrawColor(220, 220, 220);
+    pdf.setLineWidth(0.3);
     pdf.line(10, yPosition, 200, yPosition);
 
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setTextColor(100, 100, 100);
-    pdf.text(
-      `Page ${pageNum}`,
-      105,
-      yPosition + 8,
-      { align: 'center' }
-    );
 
     pdf.text(
       'Legacy Power Systems - An Ontivity Company',
       105,
-      yPosition + 12,
+      yPosition + 6,
+      { align: 'center' }
+    );
+
+    pdf.text(
+      `Page ${pageNum}`,
+      105,
+      yPosition + 10,
       { align: 'center' }
     );
   } catch (error) {
