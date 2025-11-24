@@ -285,7 +285,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { field: 'hoses_belts_cooling_fins', label: 'HOSES / BELTS / COOLING FINS' },
               { field: 'block_heater_status', label: 'BLOCK HEATER STATUS' },
@@ -307,27 +307,17 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON' },
               { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED' },
             ].map(({ field, label }) => (
-              <div key={field} className="col-span-2">
-                <label className="form-label text-xs">{label}</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={(formData as any)[`${field}_text`] || ''}
-                    onChange={(e) => onChange(`${field}_text`, e.target.value)}
-                    disabled={readOnly}
-                    placeholder="Notes..."
-                    className="form-input flex-[65]"
-                  />
-                  <select
-                    value={(formData as any)[field] || ''}
-                    onChange={(e) => onChange(field, e.target.value)}
-                    disabled={readOnly}
-                    className="form-input flex-[35]"
-                  >
-                    <option value="">STATUS</option>
-                    {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                </div>
+              <div key={field}>
+                <label className="form-label text-sm">{label}</label>
+                <select
+                  value={(formData as any)[field] || ''}
+                  onChange={(e) => onChange(field, e.target.value)}
+                  disabled={readOnly}
+                  className="form-input"
+                >
+                  <option value="">SELECT STATUS</option>
+                  {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
               </div>
             ))}
           </div>
