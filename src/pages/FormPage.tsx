@@ -53,7 +53,7 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
 
 function normalizeDate(val: any) {
   if (!val) return val;
-  if (typeof val === "string" && val.includes("T")) {
+  if (typeof val === 'string' && val.includes('T')) {
     return val.substring(0, 10);
   }
   return val;
@@ -87,7 +87,6 @@ function unpackForm(raw: any): FormSubmission {
   const merged = deepMerge(base, dataPart);
   delete (merged as any).data;
 
-  // FIX: Convert ISO date to yyyy-MM-dd for html input
   if (merged.date && typeof merged.date === 'string') {
     merged.date = merged.date.substring(0, 10);
   }
@@ -172,7 +171,7 @@ export function FormPage() {
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
 
-  // ✔ FIX: prevent navigate inside rendering
+  // prevent navigate inside rendering
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     if (!email) navigate('/login');
@@ -396,7 +395,7 @@ export function FormPage() {
       }
 
       if (savedData) {
-        const refreshRes = await authFetch(`${API}/forms/${savedData.id}`); 
+        const refreshRes = await authFetch(`${API}/forms/${savedData.id}`);
         if (refreshRes.ok) {
           const refreshedRaw = await refreshRes.json();
           const refreshed = unpackForm(refreshedRaw);
@@ -488,10 +487,9 @@ export function FormPage() {
   };
 
   const handleFieldChange = useCallback((field: string, value: any) => {
-    // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
     if (
-      field.toLowerCase().includes("date") ||
-      field.toLowerCase().includes("due")
+      field.toLowerCase().includes('date') ||
+      field.toLowerCase().includes('due')
     ) {
       value = normalizeDate(value);
     }
@@ -507,7 +505,6 @@ export function FormPage() {
     }
   }, [validationErrors]);
 
-
   const getFieldError = (value: any): boolean => {
     if (validationErrors.length === 0) return false;
     return !value || value === '' || (Array.isArray(value) && value.length === 0);
@@ -518,7 +515,7 @@ export function FormPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // ---------- Helpers for ATS / Load Bank visibility ----------
+  // helpers for ATS / Load Bank presence
   const hasATSData = () => {
     const ats = (formData as any).additional_ats || {};
     if (!ats) return false;
@@ -533,88 +530,96 @@ export function FormPage() {
     return Object.values(lb).some(v => (v !== null && v !== undefined && v !== ''));
   };
 
-  // ---------- PDF Generation (screenshot -> PDF) ----------
-  // isCustomerCopy = true hides the parts/supplies and worklog sections via CSS class
+  // ---------------- PDF Generation ----------------
+  // Expand all tabs for PDF by adding the `expand-all-tabs` class to body.
+  // Also toggle `customer-copy` when generating customer copy.
   const generatePDF = async (isCustomerCopy = false) => {
     try {
-      // Toggle customer copy classes
+      // Prepare DOM classes
       if (isCustomerCopy) {
         document.body.classList.add('customer-copy');
       } else {
         document.body.classList.remove('customer-copy');
       }
 
-      // target the print container (the main content area)
+      // Force all hidden sections to show for PDF render
+      document.body.classList.add('expand-all-tabs');
+
+      // Ensure header/footer inside print-container will be captured:
+      // small delay to let DOM reflow
+      await new Promise(res => setTimeout(res, 180));
+
       const element = document.querySelector('.print-container') as HTMLElement | null;
       if (!element) {
-        showToast('Cannot find printable content', 'error');
+        showToast('Printable content not found', 'error');
         return;
       }
 
-      // Wait for layout / repaint after toggling class (small delay)
-      await new Promise(res => setTimeout(res, 150));
-
-      // Use html2canvas to render the element to canvas (high DPI)
+      // Use html2canvas to capture the element
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         windowWidth: document.documentElement.scrollWidth,
         windowHeight: document.documentElement.scrollHeight,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY
       });
 
       const imgData = canvas.toDataURL('image/png');
 
-      // Create PDF: A4 portrait in mm
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      // Canvas dims in px
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-
-      // Convert px to mm at 96 DPI: mm = px * 25.4 / 96
+      // convert px to mm (96 DPI baseline)
       const pxToMm = (px: number) => (px * 25.4) / 96;
+      const imgWidthMm = pxToMm(canvas.width);
+      const imgHeightMm = pxToMm(canvas.height);
 
-      const imgWidthMm = pxToMm(imgWidth);
-      const imgHeightMm = pxToMm(imgHeight);
-
-      // Fit the width to PDF width and calculate height
       const ratio = imgWidthMm / pdfWidth;
       const fittedHeight = imgHeightMm / ratio;
+
+      const job = (formData && (formData as any).job_po_number) ? String((formData as any).job_po_number).replace(/\s+/g, '_') : 'workorder';
+
+      const fileBase = isCustomerCopy ? `${job}-customer-copy` : `${job}-internal-copy`;
 
       if (fittedHeight <= pdfHeight) {
         // Single page
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, fittedHeight);
       } else {
-        // Multiple pages: slice canvas vertically per PDF page height (in px)
-        const pageHeightPx = Math.round((pdfHeight * 96) / 25.4 * ratio); // convert page height mm back to px (scaled)
+        // Multi-page: slice canvas vertically
+        // compute page height in px for slicing
+        // pageHeightMm = pdfHeight. Convert to px using reverse pxToMm: px = mm * 96 / 25.4
+        const pageHeightPx = Math.round((pdfHeight * 96) / 25.4 * ratio);
         let position = 0;
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+
         while (position < imgHeight) {
-          // create a temporary canvas to hold the page slice
+          const sliceHeight = Math.min(pageHeightPx, imgHeight - position);
           const pageCanvas = document.createElement('canvas');
           pageCanvas.width = imgWidth;
-          pageCanvas.height = Math.min(pageHeightPx, imgHeight - position);
+          pageCanvas.height = sliceHeight;
           const ctx = pageCanvas.getContext('2d')!;
-          ctx.drawImage(canvas, 0, position, imgWidth, pageCanvas.height, 0, 0, imgWidth, pageCanvas.height);
+          ctx.drawImage(canvas, 0, position, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
           const pageData = pageCanvas.toDataURL('image/png');
 
-          const pageHeightMm = pxToMm(pageCanvas.height) / ratio;
+          const pageHeightMm = pxToMm(sliceHeight) / ratio;
 
           if (position > 0) pdf.addPage();
           pdf.addImage(pageData, 'PNG', 0, 0, pdfWidth, pageHeightMm);
 
-          position += pageHeightPx;
+          position += sliceHeight;
         }
       }
 
-      const filename = isCustomerCopy ? `${(formData.job_po_number || 'Customer_Copy')}.pdf` : `${(formData.job_po_number || 'WorkOrder')}.pdf`;
-      pdf.save(filename);
+      pdf.save(`${fileBase}.pdf`);
     } catch (err) {
-      console.error('PDF generation failed', err);
-      showToast('PDF generation failed', 'error');
+      console.error('PDF generation error', err);
+      showToast('Failed to generate PDF', 'error');
     } finally {
-      // cleanup
+      // cleanup classes
+      document.body.classList.remove('expand-all-tabs');
       document.body.classList.remove('customer-copy');
     }
   };
@@ -643,6 +648,7 @@ export function FormPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* top-toolbar (no-print) remains outside screenshot area - it's not required in PDF */}
       <div className="bg-white shadow-lg border-b border-gray-200 no-print">
         <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -666,14 +672,15 @@ export function FormPage() {
                 </span>
               )}
             </div>
+
             <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
-              {/* Replace native print with screenshot PDF exports */}
+              {/* PDF buttons */}
               <button
                 onClick={() => generatePDF(false)}
                 className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
               >
                 <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-sm sm:text-base">Download PDF</span>
+                <span className="text-sm sm:text-base">Download PDF (Internal)</span>
               </button>
 
               <button
@@ -789,7 +796,20 @@ export function FormPage() {
         </div>
       )}
 
+      {/* MAIN printable container: header + content + footer are inside this so html2canvas captures them */}
       <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 print-container">
+        {/* HEADER (inside print container so captured by html2canvas) */}
+        <div className="w-full mb-4 print-header">
+          <div className="flex items-center justify-between">
+            <img src="/image.png" alt="Logo" className="h-16 object-contain" />
+            {/* top-right small metadata if desired */}
+            <div className="text-right text-sm text-gray-600">
+              <div>Job / PO #: {(formData as any).job_po_number || '-'}</div>
+              <div>Date: {formData.date || '-'}</div>
+            </div>
+          </div>
+        </div>
+
         <div className="no-print">
           <FormTabs
             activeTab={activeTab}
@@ -800,7 +820,8 @@ export function FormPage() {
         </div>
 
         <div className="mt-8">
-          <div className={activeTab !== 0 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+          {/* Tab 0 - Main sections */}
+          <div className={activeTab !== 0 ? 'hidden print-all-tabs pdf-show' : 'print-all-tabs pdf-show'}>
             <div className="space-y-6">
               <GeneralInfoSection
                 formData={formData}
@@ -828,7 +849,7 @@ export function FormPage() {
                 hasValidationErrors={validationErrors.length > 0}
               />
 
-              {/* PARTS & SUPPLIES USED (DynamicTablesSection) — wrapped so customer-copy can hide it */}
+              {/* PARTS & SUPPLIES USED (DynamicTablesSection) — can be hidden via CSS for customer-copy */}
               <div id="parts-supplies-section">
                 <DynamicTablesSection
                   formData={formData}
@@ -850,31 +871,53 @@ export function FormPage() {
             </div>
           </div>
 
-          <div className={activeTab !== 1 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+          {/* Tab 1 - Additional ATS */}
+          <div className={activeTab !== 1 ? 'hidden print-all-tabs pdf-show' : 'print-all-tabs pdf-show'}>
             <div className="section-card">
-              {hasATSData() && (
+              {/* Always render ATS for screenshot PDF; optionally hide if empty for browser print via CSS if needed */}
+              {hasATSData() ? (
                 <AdditionalATSSection
                   formData={formData}
                   onChange={handleFieldChange}
                   readOnly={isReadOnly}
                   hasValidationErrors={validationErrors.length > 0}
                 />
+              ) : (
+                <div className="text-gray-500 py-4 px-2">No Additional ATS data</div>
               )}
             </div>
           </div>
 
-          <div className={activeTab !== 2 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+          {/* Tab 2 - Load Bank Report */}
+          <div className={activeTab !== 2 ? 'hidden print-all-tabs pdf-show' : 'print-all-tabs pdf-show'}>
             <div className="section-card">
-              {hasLoadBankData() && (
+              {hasLoadBankData() ? (
                 <LoadBankReportSection
                   formData={formData}
                   onChange={handleFieldChange}
                   readOnly={isReadOnly}
                   hasValidationErrors={validationErrors.length > 0}
                 />
+              ) : (
+                <div className="text-gray-500 py-4 px-2">No Load Bank data</div>
               )}
             </div>
           </div>
+        </div>
+
+        {/* FOOTER (inside print-container so captured in screenshot) */}
+        <div className="w-full mt-10 py-6 bg-gray-50 text-center border-t border-gray-300 print:block">
+          <img src="/image.png" alt="Company Logo" className="h-12 mx-auto mb-3" />
+
+          <p className="text-sm text-gray-700 leading-tight">
+            Legacy Power Systems<br />
+            123 Placeholder Street, City, State 00000<br />
+            Phone: (000) 000-0000 • Email: info@example.com
+          </p>
+
+          <p className="text-xs text-gray-500 mt-2 print:block">
+            Page <span className="pageNumber"></span> of <span className="totalPages"></span>
+          </p>
         </div>
       </div>
 
@@ -896,21 +939,6 @@ export function FormPage() {
       {showForwardModal && (
         <ForwardModal onClose={() => setShowForwardModal(false)} onSubmit={handleForward} />
       )}
-
-      {/* Global Footer - always visible on page and printed */}
-      <div className="w-full mt-10 py-6 bg-gray-50 text-center border-t border-gray-300 print:block">
-        <img src="/image.png" alt="Company Logo" className="h-12 mx-auto mb-3" />
-
-        <p className="text-sm text-gray-700 leading-tight">
-          Legacy Power Systems<br />
-          123 Placeholder Street, City, State 00000<br />
-          Phone: (000) 000-0000 • Email: info@example.com
-        </p>
-
-        <p className="text-xs text-gray-500 mt-2 print:block">
-          Page <span className="pageNumber"></span> of <span className="totalPages"></span>
-        </p>
-      </div>
     </div>
   );
 }
