@@ -763,31 +763,27 @@ const handleFieldChange = useCallback((field: string, value: any) => {
             </div>
           </div>
 
-          {hasAdditionalATSData(formData) && (
-            <div className={activeTab !== 1 ? 'hidden print:block' : ''} data-section="additional-ats">
-              <div className="section-card">
-                <AdditionalATSSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              </div>
+          <div className={activeTab !== 1 ? 'hidden print:block' : ''} data-section="additional-ats">
+            <div className="section-card">
+              <AdditionalATSSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
             </div>
-          )}
+          </div>
 
-          {hasLoadBankData(formData) && (
-            <div className={activeTab !== 2 ? 'hidden print:block' : ''} data-section="load-bank">
-              <div className="section-card">
-                <LoadBankReportSection
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  readOnly={isReadOnly}
-                  hasValidationErrors={validationErrors.length > 0}
-                />
-              </div>
+          <div className={activeTab !== 2 ? 'hidden print:block' : ''} data-section="load-bank">
+            <div className="section-card">
+              <LoadBankReportSection
+                formData={formData}
+                onChange={handleFieldChange}
+                readOnly={isReadOnly}
+                hasValidationErrors={validationErrors.length > 0}
+              />
             </div>
-          )}
+          </div>
         </div>
       </div>
 

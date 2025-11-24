@@ -79,13 +79,31 @@ export async function generatePDF(
       }
     }
 
-    const collapsedSections = document.querySelectorAll('[data-collapsed="true"]');
-    collapsedSections.forEach(section => {
-      const content = section.querySelector('[data-collapse-content]');
-      if (content) {
-        (content as HTMLElement).classList.remove('hidden');
+    // Programmatically expand all collapsible sections by clicking the headers
+    const sectionHeaders = document.querySelectorAll('.section-header');
+    const clickedHeaders: HTMLElement[] = [];
+
+    sectionHeaders.forEach(header => {
+      const parent = header.parentElement;
+      if (parent) {
+        // Check if the section appears to be collapsed (look for chevron right icon or no visible content)
+        const chevronRight = header.querySelector('[data-lucide="chevron-right"]') ||
+                            header.textContent?.includes('›');
+        const hasVisibleContent = Array.from(parent.children).some(child =>
+          child !== header &&
+          (child as HTMLElement).offsetHeight > 0
+        );
+
+        // If collapsed (has chevron right OR no visible content), click to expand
+        if (chevronRight || !hasVisibleContent) {
+          (header as HTMLElement).click();
+          clickedHeaders.push(header as HTMLElement);
+        }
       }
     });
+
+    // Wait a moment for React to update the DOM after clicks
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const formContainer = document.querySelector('.print-container');
     if (!formContainer) {
@@ -139,11 +157,10 @@ export async function generatePDF(
       heightLeft -= contentHeight;
     }
 
+    // Add footer only on the last page
     const pageCount = pdf.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      pdf.setPage(i);
-      await addFooterToPDF(pdf, pageHeight - footerHeight, i, pageCount);
-    }
+    pdf.setPage(pageCount);
+    await addFooterToPDF(pdf, pageHeight - footerHeight, pageCount, pageCount);
 
     pdf.save(options.filename);
 
@@ -176,6 +193,11 @@ export async function generatePDF(
     if (loadBankSection) {
       (loadBankSection as HTMLElement).style.display = '';
     }
+
+    // Restore collapsed sections by clicking the headers again
+    clickedHeaders.forEach(header => {
+      header.click();
+    });
 
     return true;
   } catch (error) {
