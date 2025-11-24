@@ -16,8 +16,9 @@ import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
+import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
@@ -515,8 +516,30 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    try {
+      const filename = `Work_Order_${formData.job_po_number || 'draft'}.pdf`;
+      await generatePDF(formData, {
+        includeFinancialData: true,
+        filename
+      });
+    } catch (error) {
+      showToast('Error generating PDF', 'error');
+      console.error(error);
+    }
+  };
+
+  const handleCustomerCopy = async () => {
+    try {
+      const filename = `Work_Order_${formData.job_po_number || 'draft'}_Customer_Copy.pdf`;
+      await generatePDF(formData, {
+        includeFinancialData: false,
+        filename
+      });
+    } catch (error) {
+      showToast('Error generating Customer Copy', 'error');
+      console.error(error);
+    }
   };
 
   const handleEnableEdit = () => {
@@ -573,6 +596,13 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               >
                 <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="text-sm sm:text-base">Print</span>
+              </button>
+              <button
+                onClick={handleCustomerCopy}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+              >
+                <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-sm sm:text-base">Customer Copy</span>
               </button>
 
               {isUserPM && !isReadOnly && formData.id && (
@@ -733,27 +763,31 @@ const handleFieldChange = useCallback((field: string, value: any) => {
             </div>
           </div>
 
-          <div className={activeTab !== 1 ? 'hidden print:block' : ''}>
-            <div className="section-card">
-              <AdditionalATSSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
+          {hasAdditionalATSData(formData) && (
+            <div className={activeTab !== 1 ? 'hidden print:block' : ''} data-section="additional-ats">
+              <div className="section-card">
+                <AdditionalATSSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className={activeTab !== 2 ? 'hidden print:block' : ''}>
-            <div className="section-card">
-              <LoadBankReportSection
-                formData={formData}
-                onChange={handleFieldChange}
-                readOnly={isReadOnly}
-                hasValidationErrors={validationErrors.length > 0}
-              />
+          {hasLoadBankData(formData) && (
+            <div className={activeTab !== 2 ? 'hidden print:block' : ''} data-section="load-bank">
+              <div className="section-card">
+                <LoadBankReportSection
+                  formData={formData}
+                  onChange={handleFieldChange}
+                  readOnly={isReadOnly}
+                  hasValidationErrors={validationErrors.length > 0}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
