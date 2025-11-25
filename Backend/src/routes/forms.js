@@ -3,14 +3,15 @@ const router = express.Router();
 const db = require('../db');
 const { v4: uuidv4 } = require('uuid');
 
-// list all forms (admin)
+// list all forms (admin) - exclude drafts
 router.get('/', async (req, res, next) => {
   try {
     const q = `
-      SELECT id, job_po_number, technician, status, http_post_sent, 
-             is_rejected, is_forwarded, submitted_by_email, 
+      SELECT id, job_po_number, technician, status, http_post_sent,
+             is_rejected, is_forwarded, submitted_by_email,
              created_at, updated_at, data
       FROM form_submissions
+      WHERE is_draft = false OR is_draft IS NULL
       ORDER BY created_at DESC
     `;
     const result = await db.query(q);
