@@ -47,7 +47,10 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'is_forwarded',
   'rejection_note',
   'forwarded_to_email',
-  'workflow_timestamp'
+  'workflow_timestamp',
+  'submitted_by_email',
+  'is_draft',
+  'is_first_submission'
 ]);
 function normalizeDate(val: any) {
   if (!val) return val;
@@ -618,7 +621,6 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       setIsNewForm(false);
       setIsReadOnly(false);
 
-      navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
       setShowDraftsModal(false);
       showToast('Draft loaded successfully', 'success');
     } catch (error) {
@@ -728,18 +730,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 </button>
               ) : (
                 <>
-                  {formData.id && (
-                    <button
-                      onClick={handleSaveForm}
-                      disabled={saving || isReadOnly}
-                      className="btn-primary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
-                    >
-                      <Save size={16} className="sm:w-[18px] sm:h-[18px]" />
-                      <span className="text-sm sm:text-base">{saving ? 'Saving...' : 'Save Form'}</span>
-                    </button>
-                  )}
-
-                  {!formData.id && !((formData as any).http_post_sent) && (
+                  {!((formData as any).http_post_sent) && (
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
