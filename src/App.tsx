@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+// src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { FormPage } from './pages/FormPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
@@ -6,37 +7,48 @@ import ForgotPassword from './pages/ForgotPassword';
 import UserManagementPage from './pages/UserManagementPage';
 
 function isAuthenticated(): boolean {
-  const token = localStorage.getItem('token');
-  return !!token;
+  return Boolean(localStorage.getItem('token'));
 }
 
-/* -------------------------
-   PRIVATE ROUTE (Remembers original URL)
--------------------------- */
-function PrivateRoute({ children }: { children: JSX.Element }) {
-  const location = useLocation();
+function getUserRole(): string | null {
+  return localStorage.getItem('userRole');
+}
 
-  if (!isAuthenticated()) {
-    // Redirect to login and remember where the user was going
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+function PrivateRoute({
+  children,
+  superadminOnly = false
+}: {
+  children: JSX.Element;
+  superadminOnly?: boolean;
+}) {
+  const isAuth = isAuthenticated();
+  if (!isAuth) return <Navigate to="/login" replace />;
+
+  if (superadminOnly) {
+    const role = getUserRole();
+    if (role !== 'superadmin') return <Navigate to="/admin" replace />;
   }
+
   return children;
 }
 
-/* -------------------------
-          APP ROUTES
--------------------------- */
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Default root redirects to login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Root redirect */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated()
+              ? <Navigate to="/admin" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
 
         {/* Admin Dashboard */}
         <Route
@@ -48,7 +60,7 @@ export default function App() {
           }
         />
 
-        {/* New Form */}
+        {/* Create new form */}
         <Route
           path="/form/new"
           element={
@@ -58,7 +70,7 @@ export default function App() {
           }
         />
 
-        {/* Existing Form with unique ID */}
+        {/* View existing form - NEW FINAL ROUTE */}
         <Route
           path="/form/:uniqueId/:jobNumber"
           element={
@@ -68,16 +80,18 @@ export default function App() {
           }
         />
 
-        {/* Superadmin-only page */}
+        {/* Superadmin-only user management page */}
         <Route
           path="/admin/users"
           element={
-            <PrivateRoute>
+            <PrivateRoute superadminOnly={true}>
               <UserManagementPage />
             </PrivateRoute>
           }
         />
 
+        {/* Fallback for any unknown route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
