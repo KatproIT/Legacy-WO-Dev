@@ -1,4 +1,22 @@
 {
+  "routes": [
+    {
+      "route": "/form/*",
+      "serve": "/index.html"
+    },
+    {
+      "route": "/admin/*",
+      "serve": "/index.html"
+    },
+    {
+      "route": "/login",
+      "serve": "/index.html"
+    },
+    {
+      "route": "/forgot-password",
+      "serve": "/index.html"
+    }
+  ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
