@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { sendPowerAutomateRequest } = require('../utils/powerAutomate');
+const { sendPowerAutomateRequest, sendRejectNotification, sendForwardNotification } = require('../utils/powerAutomate');
 
 // submit (trigger Power Automate + mark submitted)
 router.post('/submit', async (req, res, next) => {
@@ -47,6 +47,13 @@ router.post('/reject', async (req, res, next) => {
       [id, note]
     );
 
+    // Send Power Automate notification
+    try {
+      await sendRejectNotification(id, note);
+    } catch (paErr) {
+      console.error('Power Automate reject failed:', paErr.message || paErr);
+    }
+
     res.json({ ok: true });
 
   } catch (err) { next(err); }
@@ -64,6 +71,13 @@ router.post('/forward', async (req, res, next) => {
       'UPDATE form_submissions SET is_forwarded = true, forwarded_to_email = $2, workflow_timestamp = now() WHERE id = $1',
       [id, to]
     );
+
+    // Send Power Automate notification
+    try {
+      await sendForwardNotification(id, to);
+    } catch (paErr) {
+      console.error('Power Automate forward failed:', paErr.message || paErr);
+    }
 
     res.json({ ok: true });
 

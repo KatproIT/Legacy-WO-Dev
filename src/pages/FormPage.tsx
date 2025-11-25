@@ -14,9 +14,10 @@ import { LoadBankReportSection } from '../components/LoadBankReportSection';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
+import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -140,7 +141,7 @@ function setByPath(obj: any, path: string, value: any) {
 }
 
 export function FormPage() {
-  const { jobNumber } = useParams();
+  const { uniqueId, jobNumber } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormSubmission>({
@@ -169,6 +170,7 @@ export function FormPage() {
   const [isUserTechnician, setIsUserTechnician] = useState(false);
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
+  const [showDraftsModal, setShowDraftsModal] = useState(false);
 
   // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
@@ -190,8 +192,8 @@ export function FormPage() {
     setIsUserPM(isPMRole);
     setIsUserTechnician(isTech);
 
-    if (jobNumber && jobNumber !== 'new') {
-      loadFormData(jobNumber, email, role);
+    if (uniqueId && uniqueId !== 'new') {
+      loadFormData(uniqueId, email, role);
       setIsNewForm(false);
     } else {
       setIsNewForm(true);
@@ -201,13 +203,13 @@ export function FormPage() {
         setFormData(prev => ({ ...prev, technician: techName, submitted_by_email: email }));
       }
     }
-  }, [jobNumber]);
+  }, [uniqueId]);
 
-  const loadFormData = async (jobNum: string, email?: string | null, role?: string | null) => {
+  const loadFormData = async (formId: string, email?: string | null, role?: string | null) => {
     try {
       setLoading(true);
 
-      const res = await authFetch(`${API}/forms/job/${encodeURIComponent(jobNum)}`, { cache: 'no-store' });
+      const res = await authFetch(`${API}/forms/${encodeURIComponent(formId)}`, { cache: 'no-store' });
       if (!res.ok) {
         if (res.status === 404) {
           showToast('Form not found', 'error');
@@ -296,11 +298,6 @@ export function FormPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionPayload)
         });
-        if (res.status === 409) {
-          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists.`, 'error');
-          setSaving(false);
-          return;
-        }
         if (!res.ok) throw new Error('Failed to create');
         savedData = await res.json();
       }
@@ -308,8 +305,8 @@ export function FormPage() {
       const unpacked = unpackForm(savedData);
       setFormData(unpacked);
 
-      if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${unpacked.job_po_number}`, { replace: true });
+      if (!uniqueId || uniqueId === 'new') {
+        navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
       }
 
       setIsReadOnly(true);
@@ -373,11 +370,6 @@ export function FormPage() {
           body: JSON.stringify(submissionPayload)
         });
 
-        if (res.status === 409) {
-          showToast(`Job/PO # "${submissionPayload.job_po_number}" already exists.`, 'error');
-          setSaving(false);
-          return;
-        }
         if (!res.ok) throw new Error('Failed to create before submit');
         savedData = await res.json();
         setIsNewForm(false);
@@ -556,6 +548,89 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     });
   };
 
+  const handleSaveDraft = async () => {
+    if (!formData.job_po_number?.trim()) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Save as Draft?',
+        message: 'Do you want to save this as a draft? The Job/PO Number field is required for drafts.',
+        type: 'warning',
+        onConfirm: () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+        }
+      });
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const submissionPayload = packForm({
+        ...formData,
+        status: 'draft',
+        is_draft: true,
+        submitted_by_email: userEmail || (formData as any).submitted_by_email
+      });
+
+      let savedData: any = null;
+
+      if (formData.id) {
+        const res = await authFetch(`${API}/forms/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionPayload)
+        });
+        if (!res.ok) throw new Error('Failed to update draft');
+        savedData = await res.json();
+      } else {
+        const res = await authFetch(`${API}/forms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionPayload)
+        });
+        if (!res.ok) throw new Error('Failed to create draft');
+        savedData = await res.json();
+      }
+
+      const unpacked = unpackForm(savedData);
+      setFormData(unpacked);
+
+      if (!uniqueId || uniqueId === 'new') {
+        navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
+      }
+
+      showToast('Draft saved! All saved drafts are available in the My Drafts button.', 'success');
+    } catch (error) {
+      showToast('Error saving draft', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLoadDraft = async (draftId: string) => {
+    try {
+      setLoading(true);
+      const res = await authFetch(`${API}/forms/${draftId}`);
+      if (!res.ok) {
+        throw new Error('Failed to load draft');
+      }
+
+      const raw = await res.json();
+      const unpacked = unpackForm(raw);
+      setFormData(unpacked);
+      setIsNewForm(false);
+      setIsReadOnly(false);
+
+      navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
+      setShowDraftsModal(false);
+      showToast('Draft loaded successfully', 'success');
+    } catch (error) {
+      showToast('Error loading draft', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -604,6 +679,26 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="text-sm sm:text-base">Customer Copy</span>
               </button>
+
+              {!isReadOnly && (
+                <>
+                  <button
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center disabled:opacity-50"
+                  >
+                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <span className="text-sm sm:text-base">Save Draft</span>
+                  </button>
+                  <button
+                    onClick={() => setShowDraftsModal(true)}
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+                  >
+                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <span className="text-sm sm:text-base">My Drafts</span>
+                  </button>
+                </>
+              )}
 
               {isUserPM && !isReadOnly && formData.id && (
                 <>
@@ -805,6 +900,13 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       {showForwardModal && (
         <ForwardModal onClose={() => setShowForwardModal(false)} onSubmit={handleForward} />
       )}
+
+      <DraftsModal
+        isOpen={showDraftsModal}
+        onClose={() => setShowDraftsModal(false)}
+        onLoadDraft={handleLoadDraft}
+        userEmail={userEmail || ''}
+      />
     </div>
   );
 }

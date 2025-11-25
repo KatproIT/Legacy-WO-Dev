@@ -179,7 +179,7 @@ export function AdminDashboard() {
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => navigate(`/form/${submission.job_po_number}`)}
+                        onClick={() => navigate(`/form/${submission.id}/${submission.job_po_number}`)}
                         className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1.5"
                       >
                         <ExternalLink size={14} />
@@ -240,7 +240,7 @@ export function AdminDashboard() {
                         <td className="px-6 py-4 text-center">
                           <div className="flex justify-center gap-2">
                             <button
-                              onClick={() => navigate(`/form/${submission.job_po_number}`)}
+                              onClick={() => navigate(`/form/${submission.id}/${submission.job_po_number}`)}
                               className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700"
                             >
                               <ExternalLink size={16} />

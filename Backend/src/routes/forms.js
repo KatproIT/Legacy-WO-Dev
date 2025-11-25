@@ -25,6 +25,32 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// get drafts by user email
+router.get('/drafts', async (req, res, next) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ message: 'Email parameter required' });
+    }
+
+    const result = await db.query(
+      `SELECT id, job_po_number, customer, created_at
+       FROM form_submissions
+       WHERE submitted_by_email = $1 AND is_draft = true
+       ORDER BY created_at DESC`,
+      [email]
+    );
+
+    res.set({
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+
+    res.json(result.rows);
+  } catch (err) { next(err); }
+});
+
 // get form by job_po_number
 router.get('/job/:jobNumber', async (req, res, next) => {
   try {
@@ -76,13 +102,6 @@ router.post('/', async (req, res, next) => {
     if (!payload.job_po_number)
       return res.status(400).json({ message: 'job_po_number required' });
 
-    const dup = await db.query(
-      'SELECT id FROM form_submissions WHERE job_po_number = $1',
-      [payload.job_po_number]
-    );
-    if (dup.rows.length)
-      return res.status(409).json({ message: `Job/PO # "${payload.job_po_number}" already exists.` });
-
     const id = uuidv4();
 
     const insert = `
@@ -91,8 +110,8 @@ router.post('/', async (req, res, next) => {
         site_name, site_address, type_of_service,
         contact_name, contact_phone, contact_email,
         next_inspection_due,
-        date, status, data
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+        date, status, is_draft, data
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING *;
     `;
 
@@ -111,6 +130,7 @@ router.post('/', async (req, res, next) => {
       payload.next_inspection_due || null,
       payload.date || null,
       payload.status || 'draft',
+      payload.is_draft !== undefined ? payload.is_draft : false,
       payload.data || {}
     ];
 
@@ -140,7 +160,8 @@ router.put('/:id', async (req, res, next) => {
         next_inspection_due = COALESCE($12, next_inspection_due),
         date = COALESCE($13, date),
         status = COALESCE($14, status),
-        data = $15
+        is_draft = COALESCE($15, is_draft),
+        data = $16
       WHERE id = $1
       RETURNING *;
     `;
@@ -160,6 +181,7 @@ router.put('/:id', async (req, res, next) => {
       payload.next_inspection_due || null,
       payload.date || null,
       payload.status || null,
+      payload.is_draft !== undefined ? payload.is_draft : null,
       payload.data || {}
     ];
 

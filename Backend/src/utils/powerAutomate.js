@@ -18,7 +18,9 @@ async function sendPowerAutomateRequest(dataRow) {
     date: dataRow.data?.date || dataRow.date || null,
     jobNumber: dataRow.job_po_number || dataRow.data?.job_po_number || null,
     technician: dataRow.technician || dataRow.data?.technician || null,
-    editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.job_po_number}`
+    customer: dataRow.customer || dataRow.data?.customer || null,
+    formUniqueId: dataRow.id || null,
+    editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.id}/${dataRow.job_po_number}`
   };
 
   try {
@@ -42,4 +44,72 @@ async function sendPowerAutomateRequest(dataRow) {
   }
 }
 
-module.exports = { sendPowerAutomateRequest };
+/**
+ * Sends a reject notification to Power Automate.
+ */
+async function sendRejectNotification(formId, note) {
+  if (!PA_REJECT) {
+    console.error("REJECT_URL is not set");
+    return false;
+  }
+
+  const payload = {
+    formUniqueId: formId,
+    rejectionNote: note
+  };
+
+  try {
+    const res = await fetch(PA_REJECT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Power Automate reject error:", text);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Power Automate reject failed:", err.message);
+    return false;
+  }
+}
+
+/**
+ * Sends a forward notification to Power Automate.
+ */
+async function sendForwardNotification(formId, toEmail) {
+  if (!PA_FORWARD) {
+    console.error("FORWARD_URL is not set");
+    return false;
+  }
+
+  const payload = {
+    formUniqueId: formId,
+    forwardedTo: toEmail
+  };
+
+  try {
+    const res = await fetch(PA_FORWARD, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Power Automate forward error:", text);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Power Automate forward failed:", err.message);
+    return false;
+  }
+}
+
+module.exports = { sendPowerAutomateRequest, sendRejectNotification, sendForwardNotification };
