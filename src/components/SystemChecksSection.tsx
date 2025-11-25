@@ -10,7 +10,11 @@ interface SystemChecksSectionProps {
 }
 
 const statusOptions = ['GOOD', 'REPLACED', 'SEE NOTES', 'N/A'];
-const tempOptions = ['30°F', '25°F', '20°F', '15°F', '10°F', '5°F', '0°F', '-5°F'];
+const coolantLevelOptions = ['ADDED', 'FULL'];
+const tempOptions = [
+  '-50°F', '-45°F', '-40°F', '-35°F', '-30°F', '-25°F', '-20°F', '-15°F', '-10°F', '-5°F',
+  '0°F', '5°F', '10°F', '15°F', '20°F'
+];
 
 export function SystemChecksSection({ formData, onChange, readOnly }: SystemChecksSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -257,13 +261,15 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
           <div className="mb-3">
             <label className="form-label">COOLANT LEVEL / PROTECTION <span className="text-red-600">*</span></label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <input
-                type="text"
+              <select
                 value={formData.coolant_level_field1 || ''}
                 onChange={(e) => onChange('coolant_level_field1', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
-              />
+              >
+                <option value="">SELECT LEVEL</option>
+                {coolantLevelOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
               <select
                 value={formData.coolant_level_field2 || ''}
                 onChange={(e) => onChange('coolant_level_field2', e.target.value)}

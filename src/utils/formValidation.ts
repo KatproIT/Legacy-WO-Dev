@@ -25,8 +25,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.site_address) errors.push('Site Address is required');
   if (!formData.type_of_service) errors.push('Type of Service is required');
   if (!formData.contact_name) errors.push('Contact Name is required');
-  if (!formData.contact_phone) errors.push('Contact Phone is required');
-  if (!formData.contact_email) errors.push('Contact Email is required');
   if (!formData.next_inspection_due) errors.push('Next Inspection Due is required');
 
   if (!formData.equipment_generator?.make) errors.push('Generator Make is required');
