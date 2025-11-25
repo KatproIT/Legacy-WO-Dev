@@ -47,14 +47,17 @@ async function sendPowerAutomateRequest(dataRow) {
 /**
  * Sends a reject notification to Power Automate.
  */
-async function sendRejectNotification(formId, note) {
+async function sendRejectNotification(formData, note) {
   if (!PA_REJECT) {
     console.error("REJECT_URL is not set");
     return false;
   }
 
   const payload = {
-    formUniqueId: formId,
+    formUniqueId: formData.id || null,
+    jobNumber: formData.job_po_number || formData.data?.job_po_number || null,
+    technician: formData.technician || formData.data?.technician || null,
+    customer: formData.customer || formData.data?.customer || null,
     rejectionNote: note
   };
 
@@ -81,14 +84,17 @@ async function sendRejectNotification(formId, note) {
 /**
  * Sends a forward notification to Power Automate.
  */
-async function sendForwardNotification(formId, toEmail) {
+async function sendForwardNotification(formData, toEmail) {
   if (!PA_FORWARD) {
     console.error("FORWARD_URL is not set");
     return false;
   }
 
   const payload = {
-    formUniqueId: formId,
+    formUniqueId: formData.id || null,
+    jobNumber: formData.job_po_number || formData.data?.job_po_number || null,
+    technician: formData.technician || formData.data?.technician || null,
+    customer: formData.customer || formData.data?.customer || null,
     forwardedTo: toEmail
   };
 

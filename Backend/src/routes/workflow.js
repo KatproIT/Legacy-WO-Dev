@@ -42,6 +42,13 @@ router.post('/reject', async (req, res, next) => {
     if (!id || !note)
       return res.status(400).json({ message: 'id and note required' });
 
+    // Get form data before updating
+    const formResult = await db.query('SELECT * FROM form_submissions WHERE id = $1', [id]);
+    if (formResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
+    const formData = formResult.rows[0];
+
     await db.query(
       'UPDATE form_submissions SET is_rejected = true, rejection_note = $2, workflow_timestamp = now() WHERE id = $1',
       [id, note]
@@ -49,7 +56,7 @@ router.post('/reject', async (req, res, next) => {
 
     // Send Power Automate notification
     try {
-      await sendRejectNotification(id, note);
+      await sendRejectNotification(formData, note);
     } catch (paErr) {
       console.error('Power Automate reject failed:', paErr.message || paErr);
     }
@@ -67,6 +74,13 @@ router.post('/forward', async (req, res, next) => {
     if (!id || !to)
       return res.status(400).json({ message: 'id and to required' });
 
+    // Get form data before updating
+    const formResult = await db.query('SELECT * FROM form_submissions WHERE id = $1', [id]);
+    if (formResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
+    const formData = formResult.rows[0];
+
     await db.query(
       'UPDATE form_submissions SET is_forwarded = true, forwarded_to_email = $2, workflow_timestamp = now() WHERE id = $1',
       [id, to]
@@ -74,7 +88,7 @@ router.post('/forward', async (req, res, next) => {
 
     // Send Power Automate notification
     try {
-      await sendForwardNotification(id, to);
+      await sendForwardNotification(formData, to);
     } catch (paErr) {
       console.error('Power Automate forward failed:', paErr.message || paErr);
     }
