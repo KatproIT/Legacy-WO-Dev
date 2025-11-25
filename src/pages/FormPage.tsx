@@ -348,6 +348,7 @@ export function FormPage() {
       const submissionPayload = packForm({
         ...formData,
         status: 'submitted',
+        is_draft: false,
         submitted_at: new Date().toISOString(),
         submitted_by_email: userEmail || (formData as any).submitted_by_email
       });
@@ -394,8 +395,8 @@ export function FormPage() {
         }
       }
 
-      if (!jobNumber || jobNumber === 'new') {
-        navigate(`/form/${savedData!.job_po_number}`, { replace: true });
+      if (!uniqueId || uniqueId === 'new') {
+        navigate(`/form/${savedData!.id}/${savedData!.job_po_number}`, { replace: true });
       }
 
       showToast('WO submitted successfully', 'success');
@@ -594,10 +595,6 @@ const handleFieldChange = useCallback((field: string, value: any) => {
 
       const unpacked = unpackForm(savedData);
       setFormData(unpacked);
-
-      if (!uniqueId || uniqueId === 'new') {
-        navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
-      }
 
       showToast('Draft saved! All saved drafts are available in the My Drafts button.', 'success');
     } catch (error) {
