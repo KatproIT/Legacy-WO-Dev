@@ -214,4 +214,18 @@ router.delete(
   }
 );
 
+/* ---------------------------
+   GET ALL TECHNICIANS
+---------------------------- */
+router.get('/technicians', authMiddleware, async (req, res, next) => {
+  try {
+    const r = await db.query(
+      "SELECT id, email FROM users WHERE role = 'technician' ORDER BY email"
+    );
+    res.json(r.rows || []);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

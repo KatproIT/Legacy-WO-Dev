@@ -1,16 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { getAllTechnicians } from '../utils/userRoles';
+import { extractNameFromEmail } from '../utils/userRoles';
+import { authFetch } from '../utils/authFetch';
+
+const API =
+  (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
+  'https://legacywobe.azurewebsites.net/api';
 
 interface ForwardModalProps {
   onClose: () => void;
   onSubmit: (technicianEmail: string) => void;
 }
 
+interface Technician {
+  id: string;
+  email: string;
+}
+
 export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
   const [selectedTechnician, setSelectedTechnician] = useState('');
   const [error, setError] = useState('');
-  const technicians = getAllTechnicians();
+  const [technicians, setTechnicians] = useState<Array<{ email: string; name: string }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTechnicians = async () => {
+      try {
+        const res = await authFetch(`${API}/auth/technicians`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch technicians');
+        }
+        const data: Technician[] = await res.json();
+        const techList = data.map(tech => ({
+          email: tech.email,
+          name: extractNameFromEmail(tech.email)
+        }));
+        setTechnicians(techList);
+      } catch (err) {
+        console.error('Error fetching technicians:', err);
+        setError('Failed to load technicians');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTechnicians();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +90,11 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 autoFocus
+                disabled={loading}
               >
-                <option value="">Select a technician...</option>
+                <option value="">
+                  {loading ? 'Loading technicians...' : 'Select a technician...'}
+                </option>
                 {technicians.map((tech) => (
                   <option key={tech.email} value={tech.email}>
                     {tech.name}
