@@ -130,7 +130,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
           </div>
           <div>
             <label className="form-label">
-              CONTACT PHONE <span className="text-red-600">*</span>
+              CONTACT PHONE 
             </label>
             <input
               type="tel"
