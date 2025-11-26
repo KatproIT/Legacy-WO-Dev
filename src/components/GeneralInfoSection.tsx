@@ -105,7 +105,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
           </div>
           <div>
             <label className="form-label">
-              CONTACT NAME 
+              CONTACT NAME <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
@@ -155,7 +155,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
           </div>
           <div>
             <label className="form-label">
-              CONTACT EMAIL <span className="text-red-600">*</span>
+              CONTACT EMAIL 
             </label>
             <input
               type="email"
