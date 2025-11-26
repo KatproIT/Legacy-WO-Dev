@@ -94,28 +94,42 @@ body.customer-copy #worklog-section {
 }
 
 /* -------------------------------------------------------
-   PRINT MODE (APPLIES ONLY TO BROWSER PRINT, NOT PDF)
+   NATIVE BROWSER PRINT TO PDF
 ------------------------------------------------------- */
 @media print {
+  /* Page setup with margins for header/footer */
+  @page {
+    size: A4;
+    margin: 25mm 15mm 30mm 15mm; /* top, right, bottom, left */
+  }
+
   body {
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    margin: 0;
+    padding: 0;
   }
 
-  .no-print {
+  /* Hide non-printable elements */
+  .no-print,
+  button,
+  nav,
+  header:not(.print-header),
+  footer:not(.print-footer) {
     display: none !important;
   }
 
+  /* Print container */
   .print-container {
     max-width: 100% !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
 
+  /* Show all content */
   .print-container * {
-    display: block !important;
     visibility: visible !important;
-    height: auto !important;
     opacity: 1 !important;
   }
 
@@ -124,55 +138,151 @@ body.customer-copy #worklog-section {
     display: block !important;
   }
 
-  /* Improve printed card look */
+  /* Header on every page */
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20mm;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 15px;
+    border-bottom: 2px solid #e5e7eb;
+    background: white;
+    z-index: 9999;
+  }
+
+  .print-header img {
+    height: 40px;
+    width: auto;
+  }
+
+  .print-header-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #1f2937;
+  }
+
+  /* Footer on every page */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 25mm;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 15px;
+    border-top: 1px solid #e5e7eb;
+    background: white;
+    font-size: 9px;
+    color: #6b7280;
+    z-index: 9999;
+  }
+
+  .print-footer-content {
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .print-footer-page {
+    margin-top: 4px;
+    font-weight: bold;
+    font-size: 10px;
+  }
+
+  /* Main content area with proper spacing */
+  .print-content {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  /* Section cards */
   .section-card {
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
     border-radius: 0 !important;
     page-break-inside: avoid;
-    margin-bottom: 1rem;
+    margin-bottom: 12px !important;
+    padding: 12px !important;
   }
 
   .section-header {
     background-color: #f3f4f6 !important;
-    padding: 0.5rem !important;
+    padding: 8px !important;
+    margin-bottom: 10px !important;
     border-bottom: 2px solid #3b82f6 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    font-size: 13px !important;
+    font-weight: bold;
   }
 
+  /* Tables */
   table {
     page-break-inside: auto;
+    width: 100% !important;
+    border-collapse: collapse;
   }
+
   tr {
     page-break-inside: avoid;
     page-break-after: auto;
   }
 
-  /* Form inputs print nicely */
+  th, td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+  }
+
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: 600 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Form inputs */
   .form-input, input, select, textarea {
     border: 1px solid #d1d5db !important;
     background: white !important;
-    padding: 0.25rem 0.5rem !important;
-    font-size: 11px !important;
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Show select dropdown values */
+  select {
+    color: #000 !important;
   }
 
   .form-label {
-    font-size: 10px !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 9px !important;
+    margin-bottom: 3px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
   }
 
-  @page {
-    size: auto;
-    margin: 18mm; /* good spacing for your PDF footer */
+  /* Checkboxes */
+  input[type="checkbox"] {
+    width: 12px !important;
+    height: 12px !important;
+    border: 1px solid #6b7280 !important;
   }
 
-  /* Page numbering (works in most PDF viewers) */
-  .pageNumber::after {
-    content: counter(page);
+  /* Page breaks */
+  .page-break {
+    page-break-after: always;
   }
-  .totalPages::after {
-    content: counter(pages);
+
+  .avoid-break {
+    page-break-inside: avoid;
   }
 }
 
