@@ -22,7 +22,12 @@ function PrivateRoute({
   superadminOnly?: boolean;
 }) {
   const isAuth = isAuthenticated();
-  if (!isAuth) return <Navigate to="/login" replace />;
+  const location = window.location;
+
+  if (!isAuth) {
+    // Save the current path so we can redirect back after login
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
 
   if (superadminOnly) {
     const role = getUserRole();
