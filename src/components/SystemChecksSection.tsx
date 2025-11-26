@@ -307,9 +307,6 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               { field: 'enclosure_condition', label: 'ENCLOSURE CONDITION' },
               { field: 'ats_control_battery', label: 'ATS CONTROL BATTERY' },
               { field: 'ats_contactor', label: 'ATS CONTACTOR' },
-              { field: 'transfer_time', label: 'TRANSFER TIME' },
-              { field: 're_transfer_time', label: 'RE-TRANSFER TIME' },
-              { field: 'cooldown', label: 'COOLDOWN' },
               { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON' },
               { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED' },
             ].map(({ field, label }) => (
@@ -326,6 +323,39 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 </select>
               </div>
             ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className="form-label text-sm">TRANSFER TIME</label>
+              <input
+                type="time"
+                value={(formData as any).transfer_time || '00:00'}
+                onChange={(e) => onChange('transfer_time', e.target.value)}
+                disabled={readOnly}
+                className="form-input"
+              />
+            </div>
+            <div>
+              <label className="form-label text-sm">RE-TRANSFER TIME</label>
+              <input
+                type="time"
+                value={(formData as any).re_transfer_time || '00:00'}
+                onChange={(e) => onChange('re_transfer_time', e.target.value)}
+                disabled={readOnly}
+                className="form-input"
+              />
+            </div>
+            <div>
+              <label className="form-label text-sm">COOLDOWN</label>
+              <input
+                type="time"
+                value={(formData as any).cooldown || '00:00'}
+                onChange={(e) => onChange('cooldown', e.target.value)}
+                disabled={readOnly}
+                className="form-input"
+              />
+            </div>
           </div>
 
           <div className="mt-3">
