@@ -18,6 +18,7 @@ async function sendPowerAutomateRequest(dataRow) {
     date: dataRow.data?.date || dataRow.date || null,
     jobNumber: dataRow.job_po_number || dataRow.data?.job_po_number || null,
     technician: dataRow.technician || dataRow.data?.technician || null,
+    technicianEmail: dataRow.submitted_by_email || dataRow.data?.submitted_by_email || null,
     customer: dataRow.customer || dataRow.data?.customer || null,
     formUniqueId: dataRow.id || null,
     editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.id}/${dataRow.job_po_number}`
@@ -57,6 +58,7 @@ async function sendRejectNotification(formData, note) {
     formUniqueId: formData.id || null,
     jobNumber: formData.job_po_number || formData.data?.job_po_number || null,
     technician: formData.technician || formData.data?.technician || null,
+    technicianEmail: formData.submitted_by_email || formData.data?.submitted_by_email || null,
     customer: formData.customer || formData.data?.customer || null,
     rejectionNote: note
   };
@@ -94,6 +96,7 @@ async function sendForwardNotification(formData, toEmail) {
     formUniqueId: formData.id || null,
     jobNumber: formData.job_po_number || formData.data?.job_po_number || null,
     technician: formData.technician || formData.data?.technician || null,
+    technicianEmail: formData.submitted_by_email || formData.data?.submitted_by_email || null,
     customer: formData.customer || formData.data?.customer || null,
     forwardedTo: toEmail
   };
