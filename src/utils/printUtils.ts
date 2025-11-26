@@ -270,13 +270,14 @@ export async function generatePDF(
     pdf.save(options.filename);
 
     // Step 10: Restore select dropdowns
-    selectReplacements.forEach(({ select, replacement, parent, nextSibling }) => {
-      if (nextSibling) {
-        parent.insertBefore(select, nextSibling);
-      } else {
-        parent.appendChild(select);
+    selectReplacements.forEach(({ select, replacement, parent }) => {
+      try {
+        if (replacement.parentNode === parent) {
+          parent.replaceChild(select, replacement);
+        }
+      } catch (error) {
+        console.warn('Could not restore select element:', error);
       }
-      replacement.remove();
     });
 
     // Restore hidden elements
