@@ -568,6 +568,41 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     });
   };
 
+  const handleSaveChanges = async () => {
+    if (!formData.id) {
+      showToast('Cannot save changes without a form ID', 'error');
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const submissionPayload = packForm({
+        ...formData,
+        submitted_by_email: userEmail || (formData as any).submitted_by_email
+      });
+
+      const res = await authFetch(`${API}/forms/${formData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionPayload)
+      });
+
+      if (!res.ok) throw new Error('Failed to update form');
+      const savedData = await res.json();
+
+      const unpacked = unpackForm(savedData);
+      setFormData(unpacked);
+      setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
+
+      showToast('Changes saved successfully!', 'success');
+    } catch (error) {
+      showToast('Error saving changes', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveDraft = async () => {
     if (!formData.job_po_number?.trim()) {
       setConfirmDialog({
@@ -614,6 +649,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
 
       const unpacked = unpackForm(savedData);
       setFormData(unpacked);
+      setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
 
       showToast('Draft saved! All saved drafts are available in the My Drafts button.', 'success');
     } catch (error) {
@@ -870,7 +906,16 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 </button>
               ) : (
                 <>
-                  {!((formData as any).http_post_sent) && (
+                  {(formData as any).http_post_sent ? (
+                    <button
+                      onClick={handleSaveChanges}
+                      disabled={saving}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
+                    >
+                      <Save size={16} />
+                      <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                    </button>
+                  ) : (
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
