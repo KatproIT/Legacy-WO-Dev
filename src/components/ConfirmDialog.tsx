@@ -8,6 +8,8 @@ interface ConfirmDialogProps {
   cancelText?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  onDiscard?: () => void;
+  discardText?: string;
   type?: 'warning' | 'info' | 'danger';
 }
 
@@ -19,6 +21,8 @@ export function ConfirmDialog({
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
+  onDiscard,
+  discardText = 'No, Discard',
   type = 'warning'
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
@@ -79,18 +83,26 @@ export function ConfirmDialog({
             {message}
           </p>
 
-          <div className="flex gap-3">
-            <button
-              onClick={onCancel}
-              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-            >
-              {cancelText}
-            </button>
+          <div className="flex flex-col gap-3">
             <button
               onClick={onConfirm}
-              className={`flex-1 px-6 py-3 text-white font-semibold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${colors.button}`}
+              className={`w-full px-6 py-3 text-white font-semibold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${colors.button}`}
             >
               {confirmText}
+            </button>
+            {onDiscard && (
+              <button
+                onClick={onDiscard}
+                className="w-full px-6 py-3 bg-red-100 text-red-700 font-semibold rounded-lg hover:bg-red-200 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+              >
+                {discardText}
+              </button>
+            )}
+            <button
+              onClick={onCancel}
+              className="w-full px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+            >
+              {cancelText}
             </button>
           </div>
         </div>

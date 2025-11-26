@@ -17,7 +17,7 @@ import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -163,7 +163,10 @@ export function FormPage() {
     title: string;
     message: string;
     onConfirm: () => void;
+    onDiscard?: () => void;
     type?: 'warning' | 'info' | 'danger';
+    confirmText?: string;
+    discardText?: string;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -174,6 +177,8 @@ export function FormPage() {
   const [hasServiceReportErrors, setHasServiceReportErrors] = useState(false);
   const [hasLoadBankErrors, setHasLoadBankErrors] = useState(false);
   const [showDraftsModal, setShowDraftsModal] = useState(false);
+  const [initialFormData, setInitialFormData] = useState<FormSubmission | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
@@ -201,10 +206,17 @@ export function FormPage() {
     } else {
       setIsNewForm(true);
       setIsReadOnly(false);
+      const newFormData: FormSubmission = {
+        job_po_number: jobNumber || '',
+        status: 'submitted'
+      } as FormSubmission;
       if (isTech) {
         const techName = extractNameFromEmail(email);
-        setFormData(prev => ({ ...prev, technician: techName, submitted_by_email: email }));
+        newFormData.technician = techName;
+        newFormData.submitted_by_email = email;
       }
+      setFormData(newFormData);
+      setInitialFormData(JSON.parse(JSON.stringify(newFormData)));
     }
   }, [uniqueId]);
 
@@ -239,6 +251,7 @@ export function FormPage() {
       }
 
       setFormData(unpacked);
+      setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
       setIsReadOnly(Boolean(raw.is_rejected || raw.is_forwarded));
     } catch (error) {
       showToast('Error loading form', 'error');
@@ -618,6 +631,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       const raw = await res.json();
       const unpacked = unpackForm(raw);
       setFormData(unpacked);
+      setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
       setIsNewForm(false);
       setIsReadOnly(false);
 
@@ -630,6 +644,91 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     }
   };
 
+  // Track form changes
+  useEffect(() => {
+    if (!initialFormData) return;
+
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+    setHasUnsavedChanges(hasChanges);
+  }, [formData, initialFormData]);
+
+  const checkUnsavedChanges = (): { hasChanges: boolean; isDraft: boolean; hasNewData: boolean } => {
+    if (!initialFormData) {
+      return { hasChanges: false, isDraft: false, hasNewData: false };
+    }
+
+    const isDraft = (formData as any).is_draft === true;
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+
+    return {
+      hasChanges,
+      isDraft,
+      hasNewData: hasChanges && isDraft
+    };
+  };
+
+  const handleNewFormClick = () => {
+    const { hasChanges, isDraft } = checkUnsavedChanges();
+
+    // Case 1: Draft with no changes - go directly to new form
+    if (isDraft && !hasChanges) {
+      navigate('/form/new');
+      return;
+    }
+
+    // Case 2: Has unsaved changes (new form or draft with changes)
+    if (hasChanges) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Unsaved Changes',
+        message: 'You have unsaved changes. Would you like to save this as a draft before creating a new form?',
+        type: 'warning',
+        confirmText: 'Yes, Save as Draft',
+        discardText: 'No, Discard Changes',
+        onConfirm: async () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+          await handleSaveDraft();
+          navigate('/form/new');
+        },
+        onDiscard: () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+          navigate('/form/new');
+        }
+      });
+      return;
+    }
+
+    // Case 3: No changes, safe to navigate
+    navigate('/form/new');
+  };
+
+  const handleDashboardClick = () => {
+    const { hasChanges } = checkUnsavedChanges();
+
+    if (hasChanges && !isReadOnly) {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Unsaved Changes',
+        message: 'You have unsaved changes. Would you like to save this as a draft before leaving?',
+        type: 'warning',
+        confirmText: 'Yes, Save as Draft',
+        discardText: 'No, Discard Changes',
+        onConfirm: async () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+          await handleSaveDraft();
+          navigate('/');
+        },
+        onDiscard: () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+          navigate('/');
+        }
+      });
+      return;
+    }
+
+    navigate('/');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -640,93 +739,131 @@ const handleFieldChange = useCallback((field: string, value: any) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white shadow-lg border-b border-gray-200 no-print">
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-6">
+      <div className="bg-white shadow-md border-b border-gray-200 no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top Row: Logo and Navigation */}
+          <div className="flex items-center justify-between py-4 border-b border-gray-100">
+            <div className="flex items-center gap-6">
               <img
                 src="/image.png"
                 alt="Legacy Power Systems"
-                className="h-12 sm:h-20 object-contain"
+                className="h-14 sm:h-16 object-contain"
               />
-              {isReadOnly && (
-                <span className="px-2 py-1 sm:px-4 sm:py-2 bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-semibold rounded-lg flex items-center gap-1 sm:gap-2">
-                  <Lock size={14} className="sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Read-Only Mode</span>
-                  <span className="sm:hidden">Read-Only</span>
-                </span>
-              )}
-              {formData.id && (formData as any).http_post_sent && (
-                <span className="px-2 py-1 sm:px-4 sm:py-2 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm font-semibold rounded-lg">
-                  ✓ <span className="hidden sm:inline">Submitted to Power Automate</span>
-                  <span className="sm:hidden">Submitted</span>
-                </span>
-              )}
+              <div className="flex items-center gap-3">
+                {isReadOnly && (
+                  <span className="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <Lock size={14} />
+                    <span className="hidden sm:inline">Read-Only</span>
+                  </span>
+                )}
+                {formData.id && (formData as any).http_post_sent && (
+                  <span className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <CheckCircle size={14} />
+                    <span className="hidden sm:inline">Submitted</span>
+                  </span>
+                )}
+                {hasUnsavedChanges && !isReadOnly && (
+                  <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold rounded-md">
+                    Unsaved Changes
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDashboardClick}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium flex items-center gap-2 text-sm"
+              >
+                <Home size={18} />
+                <span className="hidden sm:inline">Dashboard</span>
+              </button>
+              <button
+                onClick={handleNewFormClick}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">New Form</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Row: Actions */}
+          <div className="py-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Print & Export */}
               <button
                 onClick={handlePrint}
-                className="btn-secondary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
+                className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
               >
-                <Printer size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-sm sm:text-base">Print</span>
+                <Printer size={16} />
+                <span>Print</span>
               </button>
               <button
                 onClick={handleCustomerCopy}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+                className="px-3 py-1.5 text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
               >
-                <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-sm sm:text-base">Customer Copy</span>
+                <Download size={16} />
+                <span>Customer Copy</span>
               </button>
 
+              {/* Divider */}
+              <div className="h-6 w-px bg-gray-300 mx-1"></div>
+
+              {/* Draft Actions */}
               {!isReadOnly && (
                 <>
                   <button
                     onClick={handleSaveDraft}
                     disabled={saving}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center disabled:opacity-50"
+                    className="px-3 py-1.5 text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm disabled:opacity-50"
                   >
-                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" />
-                    <span className="text-sm sm:text-base">Save Draft</span>
+                    <Save size={16} />
+                    <span>Save Draft</span>
                   </button>
                   <button
                     onClick={() => setShowDraftsModal(true)}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+                    className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
-                    <FileText size={16} className="sm:w-[18px] sm:h-[18px]" />
-                    <span className="text-sm sm:text-base">My Drafts</span>
+                    <FileText size={16} />
+                    <span>My Drafts</span>
                   </button>
                 </>
               )}
 
+              {/* PM Actions */}
               {isUserPM && !isReadOnly && formData.id && (
                 <>
+                  <div className="h-6 w-px bg-gray-300 mx-1"></div>
                   <button
                     onClick={() => setShowRejectModal(true)}
                     disabled={saving}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+                    className="px-3 py-1.5 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
-                    <XCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
-                    Reject
+                    <XCircle size={16} />
+                    <span>Reject</span>
                   </button>
                   <button
                     onClick={() => setShowForwardModal(true)}
                     disabled={saving}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-initial justify-center"
+                    className="px-3 py-1.5 text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
-                    <Forward size={16} className="sm:w-[18px] sm:h-[18px]" />
-                    Forward
+                    <Forward size={16} />
+                    <span>Forward</span>
                   </button>
                 </>
               )}
 
+              {/* Spacer */}
+              <div className="flex-1"></div>
+
+              {/* Primary Actions */}
               {isReadOnly ? (
                 <button
                   onClick={handleEnableEdit}
-                  className="btn-primary flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
                 >
-                  <Edit size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  <span className="text-sm sm:text-base">Enable Edit</span>
+                  <Edit size={16} />
+                  <span>Enable Edit</span>
                 </button>
               ) : (
                 <>
@@ -734,10 +871,10 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
-                      className="btn-success flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial justify-center"
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
                     >
-                      <CheckCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
-                      <span className="text-sm sm:text-base">{saving ? 'Submitting...' : 'Submit Work Order'}</span>
+                      <CheckCircle size={16} />
+                      <span>{saving ? 'Submitting...' : 'Submit Work Order'}</span>
                     </button>
                   )}
                 </>
@@ -877,7 +1014,9 @@ const handleFieldChange = useCallback((field: string, value: any) => {
         type={confirmDialog.type}
         onConfirm={confirmDialog.onConfirm}
         onCancel={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
-        confirmText="Confirm"
+        onDiscard={confirmDialog.onDiscard}
+        confirmText={confirmDialog.confirmText || "Confirm"}
+        discardText={confirmDialog.discardText}
         cancelText="Cancel"
       />
 
