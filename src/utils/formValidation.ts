@@ -94,9 +94,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     'enclosure_condition',
     'ats_control_battery',
     'ats_contactor',
-    'transfer_time',
-    're_transfer_time',
-    'cooldown',
     'unit_in_auto_breakers_on',
     'recommend_generator_be_replaced'
   ];
@@ -104,6 +101,20 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   systemCheckFields.forEach((field) => {
     if (!(formData as any)[field]) {
       errors.push(`System check field is required`);
+    }
+  });
+
+  // Time fields validation - these are now time inputs instead of dropdowns
+  const timeFields = [
+    { field: 'transfer_time', label: 'Transfer Time' },
+    { field: 're_transfer_time', label: 'Re-Transfer Time' },
+    { field: 'cooldown', label: 'Cooldown' }
+  ];
+
+  timeFields.forEach(({ field, label }) => {
+    const value = (formData as any)[field];
+    if (!value || value === '') {
+      errors.push(`${label} is required`);
     }
   });
 

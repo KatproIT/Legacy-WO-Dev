@@ -208,7 +208,10 @@ export function FormPage() {
       setIsReadOnly(false);
       const newFormData: FormSubmission = {
         job_po_number: jobNumber || '',
-        status: 'submitted'
+        status: 'submitted',
+        transfer_time: '00:00',
+        re_transfer_time: '00:00',
+        cooldown: '00:00'
       } as FormSubmission;
       if (isTech) {
         const techName = extractNameFromEmail(email);
