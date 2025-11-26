@@ -44,7 +44,7 @@ export async function generatePDF(
   }
 ) {
   try {
-    // Step 1: Track which sections are collapsed and expand ALL of them
+    // Step 1: Expand all collapsed sections
     const sectionHeaders = document.querySelectorAll('.section-header');
     const collapsedHeaders: HTMLElement[] = [];
 
@@ -134,150 +134,152 @@ export async function generatePDF(
       }
     }
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Step 7: Fix select/dropdown rendering - convert to text
+    const allSelects = document.querySelectorAll('.print-container select');
+    const selectReplacements: Array<{ select: HTMLSelectElement; replacement: HTMLElement; parent: Node; nextSibling: Node | null }> = [];
+
+    allSelects.forEach(select => {
+      const selectEl = select as HTMLSelectElement;
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      const textValue = selectedOption ? selectedOption.text : selectEl.value || '';
+
+      const replacement = document.createElement('div');
+      replacement.className = selectEl.className;
+      replacement.style.cssText = window.getComputedStyle(selectEl).cssText;
+      replacement.style.appearance = 'none';
+      replacement.style.border = '1px solid #d1d5db';
+      replacement.style.padding = '0.5rem 0.75rem';
+      replacement.style.borderRadius = '0.375rem';
+      replacement.style.backgroundColor = '#ffffff';
+      replacement.textContent = textValue;
+
+      const parent = selectEl.parentNode;
+      const nextSibling = selectEl.nextSibling;
+
+      if (parent) {
+        parent.replaceChild(replacement, selectEl);
+        selectReplacements.push({ select: selectEl, replacement, parent, nextSibling });
+      }
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     const formContainer = document.querySelector('.print-container');
     if (!formContainer) {
       throw new Error('Form container not found');
     }
 
-    // Step 7: Capture the form with html2canvas
+    // Step 8: Capture with high quality settings
     const canvas = await html2canvas(formContainer as HTMLElement, {
-      scale: 2,
+      scale: 2.5,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
       removeContainer: false,
-      windowWidth: 1200,
-      width: (formContainer as HTMLElement).scrollWidth,
-      height: (formContainer as HTMLElement).scrollHeight
+      windowWidth: 1400,
+      allowTaint: false,
+      foreignObjectRendering: false
     });
 
-    // Step 8: Create PDF with proper page layout
+    // Step 9: Create PDF with fixed layout
     const pdf = new jsPDF('p', 'mm', 'a4', true);
-    const pageWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
+    const pageWidth = 210;
+    const pageHeight = 297;
 
-    // Load header and footer images
+    // Load images
     const headerImg = await loadImage('/image copy.png');
     const footerImg = await loadImage('/image copy copy copy.png');
 
-    // Calculate dimensions
-    const headerHeight = 25;
-    const footerHeight = 35;
-    const marginTop = 5;
-    const marginBottom = 5;
-    const marginLeft = 10;
-    const marginRight = 10;
+    // Define layout constants
+    const HEADER_HEIGHT = 22;
+    const FOOTER_HEIGHT = 32;
+    const MARGIN_TOP = 3;
+    const MARGIN_BOTTOM = 3;
+    const MARGIN_LEFT = 8;
+    const MARGIN_RIGHT = 8;
 
-    const contentAreaTop = headerHeight + marginTop;
-    const contentAreaBottom = pageHeight - footerHeight - marginBottom;
-    const contentAreaHeight = contentAreaBottom - contentAreaTop;
-    const contentAreaWidth = pageWidth - marginLeft - marginRight;
+    const CONTENT_START_Y = HEADER_HEIGHT + MARGIN_TOP;
+    const CONTENT_END_Y = pageHeight - FOOTER_HEIGHT - MARGIN_BOTTOM;
+    const CONTENT_HEIGHT = CONTENT_END_Y - CONTENT_START_Y;
+    const CONTENT_WIDTH = pageWidth - MARGIN_LEFT - MARGIN_RIGHT;
 
-    // Convert canvas to image data
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
-    const imgWidth = contentAreaWidth;
-    const imgHeight = (canvas.height * contentAreaWidth) / canvas.width;
+    // Calculate image dimensions
+    const imgWidth = CONTENT_WIDTH;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-    // Calculate how many pages we need
-    let remainingHeight = imgHeight;
-    let currentYPosition = 0;
-    let pageNumber = 1;
+    // Function to add header and footer
+    const addHeaderAndFooter = (pageNum: number) => {
+      // Header with logo
+      const logoHeight = 14;
+      const logoWidth = (headerImg.width * logoHeight) / headerImg.height;
+      pdf.addImage(headerImg, 'PNG', MARGIN_LEFT, 4, logoWidth, logoHeight, undefined, 'FAST');
 
-    // Function to add header and footer to current page
-    const addHeaderFooter = async (pageNum: number) => {
-      // Add header image (logo)
-      const headerImgHeight = 15;
-      const headerImgWidth = (headerImg.width * headerImgHeight) / headerImg.height;
-      pdf.addImage(headerImg, 'PNG', marginLeft, 5, headerImgWidth, headerImgHeight);
-
-      // Add job info to header
+      // Job number on right
       pdf.setFontSize(9);
-      pdf.setTextColor(40, 40, 40);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Job No:', pageWidth - 50, 10);
+      pdf.setTextColor(40, 40, 40);
+      pdf.text('Job No:', pageWidth - 45, 9);
       pdf.setFont('helvetica', 'normal');
-      pdf.text(formData.job_po_number || 'N/A', pageWidth - 50, 15);
+      pdf.text(formData.job_po_number || 'N/A', pageWidth - 45, 14);
 
-      // Add header line
+      // Header separator line
       pdf.setDrawColor(200, 200, 200);
-      pdf.setLineWidth(0.5);
-      pdf.line(marginLeft, headerHeight, pageWidth - marginRight, headerHeight);
+      pdf.setLineWidth(0.3);
+      pdf.line(MARGIN_LEFT, HEADER_HEIGHT, pageWidth - MARGIN_RIGHT, HEADER_HEIGHT);
 
-      // Add footer image
-      const footerImgHeight = 30;
-      const footerImgWidth = pageWidth - marginLeft - marginRight;
-      const footerY = contentAreaBottom + marginBottom;
-      pdf.addImage(footerImg, 'PNG', marginLeft, footerY, footerImgWidth, footerImgHeight);
+      // Footer with office locations
+      const footerImgWidth = CONTENT_WIDTH;
+      const footerImgHeight = (footerImg.height * footerImgWidth) / footerImg.width;
+      const actualFooterHeight = Math.min(footerImgHeight, FOOTER_HEIGHT);
+      const footerY = CONTENT_END_Y + MARGIN_BOTTOM;
 
-      // Add page number
+      pdf.addImage(footerImg, 'PNG', MARGIN_LEFT, footerY, footerImgWidth, actualFooterHeight, undefined, 'FAST');
+
+      // Page number
       pdf.setFontSize(8);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 3, { align: 'center' });
+      pdf.setTextColor(80, 80, 80);
+      pdf.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 2, { align: 'center' });
     };
 
+    // Calculate pages needed
+    let yPosition = 0;
+    let pageNumber = 1;
+
     // First page
-    await addHeaderFooter(pageNumber);
+    addHeaderAndFooter(pageNumber);
+    pdf.addImage(imgData, 'JPEG', MARGIN_LEFT, CONTENT_START_Y, imgWidth, imgHeight, undefined, 'FAST');
 
-    // Add content for first page
-    if (imgHeight <= contentAreaHeight) {
-      // Content fits on one page
-      pdf.addImage(
-        imgData,
-        'JPEG',
-        marginLeft,
-        contentAreaTop,
-        imgWidth,
-        imgHeight,
-        undefined,
-        'FAST'
-      );
-    } else {
-      // Content spans multiple pages
-      pdf.addImage(
-        imgData,
-        'JPEG',
-        marginLeft,
-        contentAreaTop,
-        imgWidth,
-        imgHeight,
-        undefined,
-        'FAST'
-      );
+    yPosition += CONTENT_HEIGHT;
 
-      remainingHeight -= contentAreaHeight;
-      currentYPosition = contentAreaHeight;
+    // Additional pages
+    while (yPosition < imgHeight) {
+      pdf.addPage();
+      pageNumber++;
+      addHeaderAndFooter(pageNumber);
 
-      // Add subsequent pages
-      while (remainingHeight > 0) {
-        pdf.addPage();
-        pageNumber++;
+      const sourceY = yPosition;
+      const yOffset = CONTENT_START_Y - sourceY;
 
-        await addHeaderFooter(pageNumber);
+      pdf.addImage(imgData, 'JPEG', MARGIN_LEFT, yOffset, imgWidth, imgHeight, undefined, 'FAST');
 
-        const yOffset = contentAreaTop - currentYPosition;
-
-        pdf.addImage(
-          imgData,
-          'JPEG',
-          marginLeft,
-          yOffset,
-          imgWidth,
-          imgHeight,
-          undefined,
-          'FAST'
-        );
-
-        currentYPosition += contentAreaHeight;
-        remainingHeight -= contentAreaHeight;
-      }
+      yPosition += CONTENT_HEIGHT;
     }
 
-    // Save the PDF
+    // Save PDF
     pdf.save(options.filename);
 
-    // Step 9: Restore everything
+    // Step 10: Restore select dropdowns
+    selectReplacements.forEach(({ select, replacement, parent, nextSibling }) => {
+      if (nextSibling) {
+        parent.insertBefore(select, nextSibling);
+      } else {
+        parent.appendChild(select);
+      }
+      replacement.remove();
+    });
+
+    // Restore hidden elements
     hiddenElements.forEach(el => {
       el.style.display = '';
     });
