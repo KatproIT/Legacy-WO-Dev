@@ -49,174 +49,199 @@ export async function generatePDF(
       throw new Error('Print container not found');
     }
 
-    // Store original state
-    const originalBodyClass = document.body.className;
-    const originalDisplay = (printContainer as HTMLElement).style.display;
+    // Clone the container to avoid messing with the actual DOM
+    const clonedContainer = printContainer.cloneNode(true) as HTMLElement;
+    clonedContainer.style.position = 'absolute';
+    clonedContainer.style.left = '-9999px';
+    clonedContainer.style.top = '0';
+    clonedContainer.style.width = '1200px';
+    clonedContainer.style.backgroundColor = '#ffffff';
+    document.body.appendChild(clonedContainer);
 
-    // Apply customer copy class if needed
+    // Remove all no-print elements from clone
+    const noPrintElements = clonedContainer.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => el.remove());
+
+    // Show ALL hidden elements in the clone
+    const hiddenElements = clonedContainer.querySelectorAll('.hidden');
+    hiddenElements.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.classList.remove('hidden');
+      htmlEl.style.display = 'block';
+      htmlEl.style.visibility = 'visible';
+      htmlEl.style.opacity = '1';
+    });
+
+    // Hide financial sections for customer copy
     if (!options.includeFinancialData) {
-      document.body.classList.add('customer-copy');
+      const financialSections = [
+        '[data-section="parts-supplies"]',
+        '[data-section="time-on-job"]',
+        '[data-section="additional-charges"]',
+        '[data-section="totals"]'
+      ];
+
+      financialSections.forEach(selector => {
+        const section = clonedContainer.querySelector(selector);
+        if (section) {
+          (section as HTMLElement).remove();
+        }
+      });
     }
 
     // Hide empty sections
-    const atsSection = document.querySelector('[data-section="additional-ats"]') as HTMLElement;
-    const loadBankSection = document.querySelector('[data-section="load-bank"]') as HTMLElement;
-    const originalATSDisplay = atsSection?.style.display;
-    const originalLoadBankDisplay = loadBankSection?.style.display;
+    const atsSection = clonedContainer.querySelector('[data-section="additional-ats"]');
+    const loadBankSection = clonedContainer.querySelector('[data-section="load-bank"]');
 
     if (atsSection && !hasAdditionalATSData(formData)) {
-      atsSection.style.display = 'none';
+      atsSection.remove();
     }
 
     if (loadBankSection && !hasLoadBankData(formData)) {
-      loadBankSection.style.display = 'none';
+      loadBankSection.remove();
     }
 
-    // Show all hidden sections temporarily
-    const hiddenElements: { element: HTMLElement; originalDisplay: string }[] = [];
-    const allHiddenElements = printContainer.querySelectorAll('.hidden');
+    // Wait for any images or fonts to load
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    allHiddenElements.forEach((el) => {
-      const htmlEl = el as HTMLElement;
-      // Skip if it's a financial section in customer copy mode
-      if (!options.includeFinancialData) {
-        const section = htmlEl.closest('[data-section]');
-        const sectionType = section?.getAttribute('data-section');
-        if (sectionType && ['parts-supplies', 'time-on-job', 'additional-charges', 'totals'].includes(sectionType)) {
-          return;
-        }
-      }
-
-      hiddenElements.push({ element: htmlEl, originalDisplay: htmlEl.style.display });
-      htmlEl.style.display = 'block';
-    });
-
-    // Hide no-print elements
-    const noPrintElements = document.querySelectorAll('.no-print');
-    noPrintElements.forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
-
-    // Wait for rendering
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    // Create canvas from content
-    const canvas = await html2canvas(printContainer as HTMLElement, {
-      scale: 2,
+    // Create canvas with optimized settings
+    const canvas = await html2canvas(clonedContainer, {
+      scale: 1.5, // Reduced from 2 for smaller file size
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
       windowWidth: 1200,
+      imageTimeout: 0,
+      removeContainer: false,
     });
 
-    // Calculate PDF dimensions
-    const imgWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    // Remove cloned container
+    document.body.removeChild(clonedContainer);
 
+    // PDF setup
     const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = 210; // A4 width in mm
+    const pageHeight = 297; // A4 height in mm
 
-    // Header and footer dimensions
     const headerHeight = 25;
     const footerHeight = 20;
-    const contentHeight = pageHeight - headerHeight - footerHeight;
+    const contentMargin = 10;
+    const availableHeight = pageHeight - headerHeight - footerHeight;
 
-    let heightLeft = imgHeight;
-    let position = 0;
-    let pageNumber = 1;
-
-    // Add logo for header
+    // Load logo
     const logo = new Image();
     logo.src = '/image.png';
     await new Promise((resolve) => {
       logo.onload = resolve;
       logo.onerror = resolve;
+      setTimeout(resolve, 1000); // Timeout after 1 second
     });
 
+    // Convert canvas to base64 with JPEG compression for smaller size
+    const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG with 85% quality instead of PNG
+
+    // Calculate content dimensions
+    const imgWidth = pageWidth - (contentMargin * 2);
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let currentY = 0;
+    let pageNumber = 1;
+
     // Function to add header
-    const addHeader = (pdf: jsPDF, pageNum: number) => {
+    const addHeader = (pdf: jsPDF) => {
       // Add logo
       try {
-        pdf.addImage(logo, 'PNG', 10, 5, 40, 15);
+        pdf.addImage(logo, 'PNG', contentMargin, 5, 40, 15);
       } catch (e) {
-        console.warn('Could not add logo to PDF');
+        console.warn('Could not add logo');
       }
 
       // Add job number
-      pdf.setFontSize(14);
+      pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(`Job #: ${formData.job_number || 'N/A'}`, 200, 15, { align: 'right' });
+      pdf.text(`Job #: ${formData.job_number || 'N/A'}`, pageWidth - contentMargin, 15, { align: 'right' });
 
-      // Add line
-      pdf.setLineWidth(0.5);
-      pdf.line(10, headerHeight, 200, headerHeight);
+      // Separator line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.3);
+      pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
     };
 
     // Function to add footer
-    const addFooter = (pdf: jsPDF, pageNum: number, totalPages: number) => {
+    const addFooter = (pdf: jsPDF, pageNum: number) => {
       const footerY = pageHeight - footerHeight + 5;
 
-      pdf.setFontSize(8);
+      // Separator line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.3);
+      pdf.line(contentMargin, footerY - 3, pageWidth - contentMargin, footerY - 3);
+
+      pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
 
       // Contact info
-      pdf.text('ORLANDO: 321-236-9400 | ORLANDO@LEGACYPS.COM', 105, footerY, { align: 'center' });
-      pdf.text('MIAMI: 305-817-4950 | MIAMI@LEGACYPS.COM', 105, footerY + 4, { align: 'center' });
-      pdf.text('WEST PALM BEACH: 561-429-5294 | WPB@LEGACYPS.COM', 105, footerY + 8, { align: 'center' });
+      pdf.text('ORLANDO: 321-236-9400 | ORLANDO@LEGACYPS.COM', pageWidth / 2, footerY + 2, { align: 'center' });
+      pdf.text('MIAMI: 305-817-4950 | MIAMI@LEGACYPS.COM', pageWidth / 2, footerY + 6, { align: 'center' });
+      pdf.text('WEST PALM BEACH: 561-429-5294 | WPB@LEGACYPS.COM', pageWidth / 2, footerY + 10, { align: 'center' });
 
       // Page number
-      pdf.setFontSize(10);
-      pdf.text(`Page ${pageNum}`, 200, pageHeight - 10, { align: 'right' });
-
-      // Add line
-      pdf.setLineWidth(0.5);
-      pdf.line(10, footerY - 5, 200, footerY - 5);
+      pdf.setFontSize(9);
+      pdf.text(`Page ${pageNum}`, pageWidth - contentMargin, pageHeight - 8, { align: 'right' });
     };
 
-    // Add first page with header and footer
-    addHeader(pdf, pageNumber);
+    // Add pages
+    while (currentY < imgHeight) {
+      if (pageNumber > 1) {
+        pdf.addPage();
+      }
 
-    const imgData = canvas.toDataURL('image/png');
-    pdf.addImage(imgData, 'PNG', 0, headerHeight, imgWidth, imgHeight);
+      // Add header and footer
+      addHeader(pdf);
+      addFooter(pdf, pageNumber);
 
-    addFooter(pdf, pageNumber, Math.ceil(imgHeight / contentHeight));
+      // Calculate how much content fits on this page
+      const remainingHeight = imgHeight - currentY;
+      const heightToAdd = Math.min(remainingHeight, availableHeight);
 
-    heightLeft -= contentHeight;
-    position = -contentHeight;
+      // Add content slice
+      const sourceY = (currentY / imgHeight) * canvas.height;
+      const sourceHeight = (heightToAdd / imgHeight) * canvas.height;
 
-    // Add additional pages if needed
-    while (heightLeft > 0) {
+      // Create a temporary canvas for this page slice
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = sourceHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      if (tempCtx) {
+        tempCtx.drawImage(
+          canvas,
+          0, sourceY,
+          canvas.width, sourceHeight,
+          0, 0,
+          canvas.width, sourceHeight
+        );
+
+        const sliceData = tempCanvas.toDataURL('image/jpeg', 0.85);
+        const sliceHeight = (sourceHeight * imgWidth) / canvas.width;
+
+        pdf.addImage(
+          sliceData,
+          'JPEG',
+          contentMargin,
+          headerHeight,
+          imgWidth,
+          sliceHeight
+        );
+      }
+
+      currentY += heightToAdd;
       pageNumber++;
-      pdf.addPage();
-      addHeader(pdf, pageNumber);
-      pdf.addImage(imgData, 'PNG', 0, position + headerHeight, imgWidth, imgHeight);
-      addFooter(pdf, pageNumber, Math.ceil(imgHeight / contentHeight));
-
-      heightLeft -= contentHeight;
-      position -= contentHeight;
     }
 
     // Save PDF
     pdf.save(options.filename);
-
-    // Restore original state
-    hiddenElements.forEach(({ element, originalDisplay }) => {
-      element.style.display = originalDisplay;
-    });
-
-    noPrintElements.forEach(el => {
-      (el as HTMLElement).style.display = '';
-    });
-
-    if (atsSection) {
-      atsSection.style.display = originalATSDisplay || '';
-    }
-
-    if (loadBankSection) {
-      loadBankSection.style.display = originalLoadBankDisplay || '';
-    }
-
-    document.body.className = originalBodyClass;
 
   } catch (error) {
     console.error('Error generating PDF:', error);
