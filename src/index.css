@@ -107,25 +107,43 @@
   color: #000 !important;
   background-color: #fff !important;
   font-size: 14px !important;
-  line-height: 1.6 !important;
-  padding: 10px 40px 10px 12px !important;
-  height: auto !important;
-  min-height: 42px !important;
-  display: block !important;
-  text-overflow: ellipsis;
-  white-space: normal;
-  word-wrap: break-word;
+  line-height: 1.8 !important;
+  padding: 12px 40px 12px 14px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
 }
 
-/* Ensure text in all form fields is clearly visible */
-.print-container input,
+/* Ensure text in all form fields is clearly visible and properly aligned */
+.print-container input[type="text"],
+.print-container input[type="date"],
+.print-container input[type="email"],
+.print-container input[type="tel"],
+.print-container input[type="number"],
+.print-container input[type="time"],
 .print-container textarea {
   color: #000 !important;
   background-color: #fff !important;
   border: 1px solid #d1d5db !important;
   font-size: 14px !important;
-  line-height: 1.5 !important;
-  padding: 10px 12px !important;
+  line-height: 1.8 !important;
+  padding: 12px 14px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
+.print-container textarea {
+  height: auto !important;
+  min-height: 80px !important;
+  align-items: flex-start !important;
+  padding-top: 12px !important;
 }
 
 /* Hide financial sections for Customer Copy - must be outside @media print to work in both screen and print */
