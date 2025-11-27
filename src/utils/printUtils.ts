@@ -95,27 +95,15 @@ export async function generatePDF(
     document.body.insertBefore(printHeader, document.body.firstChild);
     document.body.appendChild(printFooter);
 
-    // Expand all sections for printing
-    const sectionHeaders = document.querySelectorAll('.section-header');
-    const collapsedStates: { element: Element; nextSibling: Element | null }[] = [];
+    // Show all tab content sections (they use 'hidden' class)
+    const allTabSections = printContainer.querySelectorAll('div[class*="hidden"]');
+    const hiddenElements: { element: Element; originalClass: string }[] = [];
 
-    sectionHeaders.forEach(header => {
-      const nextElement = header.nextElementSibling;
-      if (nextElement && nextElement.classList.contains('hidden')) {
-        nextElement.classList.remove('hidden');
-        collapsedStates.push({ element: nextElement, nextSibling: nextElement });
-      }
-    });
-
-    // Show all tabs content
-    const tabPanels = document.querySelectorAll('[role="tabpanel"]');
-    const hiddenPanels: Element[] = [];
-
-    tabPanels.forEach(panel => {
-      if (panel.classList.contains('hidden')) {
-        panel.classList.remove('hidden');
-        panel.classList.add('print-all-tabs');
-        hiddenPanels.push(panel);
+    allTabSections.forEach(section => {
+      if (section.classList.contains('hidden')) {
+        const originalClass = section.className;
+        section.classList.remove('hidden');
+        hiddenElements.push({ element: section, originalClass });
       }
     });
 
@@ -139,15 +127,9 @@ export async function generatePDF(
         loadBankSection.classList.remove('empty-section');
       }
 
-      // Restore collapsed sections
-      collapsedStates.forEach(({ element }) => {
-        element.classList.add('hidden');
-      });
-
-      // Restore hidden tabs
-      hiddenPanels.forEach(panel => {
-        panel.classList.add('hidden');
-        panel.classList.remove('print-all-tabs');
+      // Restore hidden elements to their original classes
+      hiddenElements.forEach(({ element, originalClass }) => {
+        element.className = originalClass;
       });
 
       // Restore body class

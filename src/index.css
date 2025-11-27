@@ -86,20 +86,13 @@
   width: 100%;
 }
 
-/* Hide financial sections for Customer Copy */
+/* Hide financial sections for Customer Copy - must be outside @media print to work in both screen and print */
 body.customer-copy [data-section="parts-supplies"],
 body.customer-copy [data-section="time-on-job"],
 body.customer-copy [data-section="additional-charges"],
 body.customer-copy [data-section="totals"] {
   display: none !important;
-}
-
-/* Hide empty sections during print */
-@media print {
-  [data-section="additional-ats"].empty-section,
-  [data-section="load-bank"].empty-section {
-    display: none !important;
-  }
+  visibility: hidden !important;
 }
 
 /* -------------------------------------------------------
@@ -140,6 +133,13 @@ body.customer-copy [data-section="totals"] {
   .print-container * {
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  /* Force all tab sections to display during print */
+  .print-container > div > div.hidden,
+  .print-container [data-section].hidden {
+    display: block !important;
+    visibility: visible !important;
   }
 
   /* Show all tab content while printing */
@@ -292,6 +292,21 @@ body.customer-copy [data-section="totals"] {
 
   .avoid-break {
     page-break-inside: avoid;
+  }
+
+  /* Hide empty sections during print */
+  [data-section="additional-ats"].empty-section,
+  [data-section="load-bank"].empty-section {
+    display: none !important;
+  }
+
+  /* Customer copy overrides - highest priority */
+  body.customer-copy [data-section="parts-supplies"],
+  body.customer-copy [data-section="time-on-job"],
+  body.customer-copy [data-section="additional-charges"],
+  body.customer-copy [data-section="totals"] {
+    display: none !important;
+    visibility: hidden !important;
   }
 }
 
