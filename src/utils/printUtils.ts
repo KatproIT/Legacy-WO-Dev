@@ -49,26 +49,29 @@ export async function generatePDF(
       throw new Error('Print container not found');
     }
 
-    // First, expand all collapsed sections by clicking their headers
-    const collapsedHeaders = printContainer.querySelectorAll('.section-header.cursor-pointer');
+    // Expand ALL collapsible sections before capturing
+    const collapsibleHeaders = printContainer.querySelectorAll('.section-header.cursor-pointer');
 
-    collapsedHeaders.forEach((header) => {
-      // Check if next sibling is hidden (section is collapsed)
+    collapsibleHeaders.forEach((header) => {
       const parent = header.parentElement;
       if (parent) {
-        const contentDiv = Array.from(parent.children).find(child =>
-          child !== header && (child as HTMLElement).style.display !== 'none'
+        // Look for the content div which should be a sibling of the header
+        // If there are only 1 or 2 children in parent, section is likely collapsed
+        const children = Array.from(parent.children);
+        const hasContent = children.some(child =>
+          child !== header &&
+          child.querySelector('input, select, textarea, .grid')
         );
 
-        // If no visible content found, section is collapsed - click to expand
-        if (!contentDiv || contentDiv.children.length === 0) {
+        // If no form content found, section is collapsed - click to expand
+        if (!hasContent) {
           (header as HTMLElement).click();
         }
       }
     });
 
-    // Wait longer for sections to expand, render, and dropdowns to populate
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Wait for sections to expand and content to render fully
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Clone the container to avoid messing with the actual DOM
     const clonedContainer = printContainer.cloneNode(true) as HTMLElement;
