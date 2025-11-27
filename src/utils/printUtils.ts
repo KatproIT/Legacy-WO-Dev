@@ -73,7 +73,20 @@ export async function generatePDF(
     // Wait for sections to expand and content to render fully
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Clone the container to avoid messing with the actual DOM
+    // Extract all form values from the ORIGINAL (expanded) DOM
+    const originalSelects = printContainer.querySelectorAll('select');
+    const selectValues = Array.from(originalSelects).map(select => {
+      const selectedOption = select.options[select.selectedIndex];
+      return selectedOption ? selectedOption.text : '';
+    });
+
+    const originalInputs = printContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
+    const inputValues = Array.from(originalInputs).map(input => (input as HTMLInputElement).value || '');
+
+    const originalTextareas = printContainer.querySelectorAll('textarea');
+    const textareaValues = Array.from(originalTextareas).map(textarea => (textarea as HTMLTextAreaElement).value || '');
+
+    // NOW clone the container with all sections expanded
     const clonedContainer = printContainer.cloneNode(true) as HTMLElement;
     clonedContainer.style.position = 'absolute';
     clonedContainer.style.left = '-9999px';
@@ -96,17 +109,16 @@ export async function generatePDF(
       htmlEl.style.opacity = '1';
     });
 
-    // Convert all select dropdowns to show their selected text values
+    // Convert all select dropdowns using extracted values
     const selectElements = clonedContainer.querySelectorAll('select');
-    selectElements.forEach((select) => {
-      const selectedOption = select.options[select.selectedIndex];
-      const selectedText = selectedOption ? selectedOption.text : '';
+    selectElements.forEach((select, index) => {
+      const selectedText = selectValues[index] || '';
 
       // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.height = '48px';
+      replacement.style.height = '50px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
@@ -119,23 +131,23 @@ export async function generatePDF(
       span.style.paddingLeft = '14px';
       span.style.paddingRight = '14px';
       span.style.color = '#000';
-      span.style.fontSize = '14px';
+      span.style.fontSize = '15px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
       replacement.appendChild(span);
       select.parentNode?.replaceChild(replacement, select);
     });
 
-    // Convert all input fields to divs for perfect text centering
+    // Convert all input fields using extracted values
     const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
-    inputElements.forEach((input) => {
-      const inputValue = (input as HTMLInputElement).value || '';
+    inputElements.forEach((input, index) => {
+      const inputValue = inputValues[index] || '';
 
       // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.height = '48px';
+      replacement.style.height = '50px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
@@ -148,17 +160,17 @@ export async function generatePDF(
       span.style.paddingLeft = '14px';
       span.style.paddingRight = '14px';
       span.style.color = '#000';
-      span.style.fontSize = '14px';
+      span.style.fontSize = '15px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
     });
 
-    // Convert textareas to divs
+    // Convert textareas using extracted values
     const textareaElements = clonedContainer.querySelectorAll('textarea');
-    textareaElements.forEach((textarea) => {
-      const textareaValue = (textarea as HTMLTextAreaElement).value || '';
+    textareaElements.forEach((textarea, index) => {
+      const textareaValue = textareaValues[index] || '';
 
       // Create a div that looks like the textarea
       const replacement = document.createElement('div');
