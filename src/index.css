@@ -86,11 +86,20 @@
   width: 100%;
 }
 
-/* Hide sections for Customer Copy PDF */
-body.customer-copy #parts-supplies-section,
-body.customer-copy #worklog-section {
+/* Hide financial sections for Customer Copy */
+body.customer-copy [data-section="parts-supplies"],
+body.customer-copy [data-section="time-on-job"],
+body.customer-copy [data-section="additional-charges"],
+body.customer-copy [data-section="totals"] {
   display: none !important;
-  visibility: hidden !important;
+}
+
+/* Hide empty sections during print */
+@media print {
+  [data-section="additional-ats"].empty-section,
+  [data-section="load-bank"].empty-section {
+    display: none !important;
+  }
 }
 
 /* -------------------------------------------------------

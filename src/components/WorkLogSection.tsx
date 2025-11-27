@@ -82,7 +82,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="section-card">
+      <div className="section-card" data-section="time-on-job">
         <h2 className="section-header">
           TIME ON JOB
         </h2>
@@ -183,7 +183,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="section-card">
+        <div className="section-card" data-section="additional-charges">
           <div className="bg-blue-100 px-4 py-2 font-semibold border-b border-gray-300">
             ADDITIONAL CHARGES
           </div>
@@ -230,7 +230,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
           </div>
         </div>
 
-        <div className="section-card">
+        <div className="section-card" data-section="totals">
           <div className="bg-blue-100 px-4 py-2 font-semibold border-b border-gray-300">
             TOTALS
           </div>

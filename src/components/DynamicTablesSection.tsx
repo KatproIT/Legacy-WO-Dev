@@ -177,7 +177,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
         </div>
       </div>
 
-      <div className="bg-white border border-gray-300 shadow-sm">
+      <div className="bg-white border border-gray-300 shadow-sm" data-section="parts-supplies">
         <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           PARTS & SUPPLIES USED
         </div>

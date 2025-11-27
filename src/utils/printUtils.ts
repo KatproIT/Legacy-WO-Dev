@@ -55,6 +55,18 @@ export async function generatePDF(
       document.body.classList.add('customer-copy');
     }
 
+    // Mark empty sections to hide them during print
+    const atsSection = document.querySelector('[data-section="additional-ats"]');
+    const loadBankSection = document.querySelector('[data-section="load-bank"]');
+
+    if (atsSection && !hasAdditionalATSData(formData)) {
+      atsSection.classList.add('empty-section');
+    }
+
+    if (loadBankSection && !hasLoadBankData(formData)) {
+      loadBankSection.classList.add('empty-section');
+    }
+
     // Create print header
     const printHeader = document.createElement('div');
     printHeader.className = 'print-header';
@@ -118,6 +130,14 @@ export async function generatePDF(
       // Remove header and footer
       printHeader.remove();
       printFooter.remove();
+
+      // Remove empty-section markers
+      if (atsSection) {
+        atsSection.classList.remove('empty-section');
+      }
+      if (loadBankSection) {
+        loadBankSection.classList.remove('empty-section');
+      }
 
       // Restore collapsed sections
       collapsedStates.forEach(({ element }) => {
