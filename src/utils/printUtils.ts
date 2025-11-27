@@ -102,21 +102,72 @@ export async function generatePDF(
       // Create a div that looks like the select but shows the text
       const replacement = document.createElement('div');
       replacement.textContent = selectedText;
-      replacement.style.cssText = window.getComputedStyle(select).cssText;
-      replacement.style.padding = '13px 40px 13px 14px';
+      replacement.style.padding = '0 14px';
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.color = '#000';
       replacement.style.fontSize = '15px';
-      replacement.style.lineHeight = '24px';
+      replacement.style.lineHeight = '50px';
       replacement.style.height = '50px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'block';
       replacement.style.whiteSpace = 'nowrap';
       replacement.style.overflow = 'hidden';
       replacement.style.textOverflow = 'ellipsis';
+      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      replacement.style.verticalAlign = 'middle';
 
       select.parentNode?.replaceChild(replacement, select);
+    });
+
+    // Convert all input fields to divs for perfect text centering
+    const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
+    inputElements.forEach((input) => {
+      const inputValue = (input as HTMLInputElement).value || '';
+
+      // Create a div that looks like the input but with perfect centering
+      const replacement = document.createElement('div');
+      replacement.textContent = inputValue;
+      replacement.style.padding = '0 14px';
+      replacement.style.border = '1px solid #d1d5db';
+      replacement.style.backgroundColor = '#fff';
+      replacement.style.color = '#000';
+      replacement.style.fontSize = '15px';
+      replacement.style.lineHeight = '50px';
+      replacement.style.height = '50px';
+      replacement.style.boxSizing = 'border-box';
+      replacement.style.display = 'block';
+      replacement.style.whiteSpace = 'nowrap';
+      replacement.style.overflow = 'hidden';
+      replacement.style.textOverflow = 'ellipsis';
+      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      replacement.style.verticalAlign = 'middle';
+
+      input.parentNode?.replaceChild(replacement, input);
+    });
+
+    // Convert textareas to divs
+    const textareaElements = clonedContainer.querySelectorAll('textarea');
+    textareaElements.forEach((textarea) => {
+      const textareaValue = (textarea as HTMLTextAreaElement).value || '';
+
+      // Create a div that looks like the textarea
+      const replacement = document.createElement('div');
+      replacement.textContent = textareaValue;
+      replacement.style.padding = '14px';
+      replacement.style.border = '1px solid #d1d5db';
+      replacement.style.backgroundColor = '#fff';
+      replacement.style.color = '#000';
+      replacement.style.fontSize = '15px';
+      replacement.style.lineHeight = '1.5';
+      replacement.style.minHeight = '80px';
+      replacement.style.boxSizing = 'border-box';
+      replacement.style.display = 'block';
+      replacement.style.whiteSpace = 'pre-wrap';
+      replacement.style.wordWrap = 'break-word';
+      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+      textarea.parentNode?.replaceChild(replacement, textarea);
     });
 
     // Hide financial sections for customer copy
