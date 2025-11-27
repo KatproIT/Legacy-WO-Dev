@@ -11,6 +11,7 @@ interface Draft {
   job_po_number: string;
   customer: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface DraftsModalProps {
@@ -128,7 +129,7 @@ export function DraftsModal({ isOpen, onClose, onLoadDraft, userEmail }: DraftsM
                         Customer: {draft.customer || 'Not specified'}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Saved: {formatDate(draft.created_at)}
+                        Last saved: {formatDate(draft.updated_at)}
                       </p>
                     </div>
                     <div className="flex gap-2 ml-4">

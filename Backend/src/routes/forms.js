@@ -35,10 +35,10 @@ router.get('/drafts', async (req, res, next) => {
     }
 
     const result = await db.query(
-      `SELECT id, job_po_number, customer, created_at
+      `SELECT id, job_po_number, customer, created_at, updated_at
        FROM form_submissions
        WHERE submitted_by_email = $1 AND is_draft = true
-       ORDER BY created_at DESC`,
+       ORDER BY updated_at DESC`,
       [email]
     );
 
