@@ -106,15 +106,13 @@
   appearance: none;
   color: #000 !important;
   background-color: #fff !important;
-  font-size: 14px !important;
-  line-height: 1.8 !important;
-  padding: 12px 40px 12px 14px !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  display: flex !important;
-  align-items: center !important;
+  font-size: 15px !important;
+  line-height: 24px !important;
+  padding: 13px 40px 13px 14px !important;
+  height: 50px !important;
   box-sizing: border-box !important;
-  vertical-align: middle !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 400 !important;
 }
 
 /* Ensure text in all form fields is clearly visible and properly aligned */
@@ -123,27 +121,31 @@
 .print-container input[type="email"],
 .print-container input[type="tel"],
 .print-container input[type="number"],
-.print-container input[type="time"],
+.print-container input[type="time"] {
+  color: #000 !important;
+  background-color: #fff !important;
+  border: 1px solid #d1d5db !important;
+  font-size: 15px !important;
+  line-height: 24px !important;
+  padding: 13px 14px !important;
+  height: 50px !important;
+  box-sizing: border-box !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 400 !important;
+}
+
 .print-container textarea {
   color: #000 !important;
   background-color: #fff !important;
   border: 1px solid #d1d5db !important;
-  font-size: 14px !important;
-  line-height: 1.8 !important;
-  padding: 12px 14px !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  align-items: center !important;
-  vertical-align: middle !important;
-}
-
-.print-container textarea {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  padding: 14px !important;
   height: auto !important;
   min-height: 80px !important;
-  align-items: flex-start !important;
-  padding-top: 12px !important;
+  box-sizing: border-box !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 400 !important;
 }
 
 /* Hide financial sections for Customer Copy - must be outside @media print to work in both screen and print */

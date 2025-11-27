@@ -93,6 +93,32 @@ export async function generatePDF(
       htmlEl.style.opacity = '1';
     });
 
+    // Convert all select dropdowns to show their selected text values
+    const selectElements = clonedContainer.querySelectorAll('select');
+    selectElements.forEach((select) => {
+      const selectedOption = select.options[select.selectedIndex];
+      const selectedText = selectedOption ? selectedOption.text : '';
+
+      // Create a div that looks like the select but shows the text
+      const replacement = document.createElement('div');
+      replacement.textContent = selectedText;
+      replacement.style.cssText = window.getComputedStyle(select).cssText;
+      replacement.style.padding = '13px 40px 13px 14px';
+      replacement.style.border = '1px solid #d1d5db';
+      replacement.style.backgroundColor = '#fff';
+      replacement.style.color = '#000';
+      replacement.style.fontSize = '15px';
+      replacement.style.lineHeight = '24px';
+      replacement.style.height = '50px';
+      replacement.style.boxSizing = 'border-box';
+      replacement.style.display = 'block';
+      replacement.style.whiteSpace = 'nowrap';
+      replacement.style.overflow = 'hidden';
+      replacement.style.textOverflow = 'ellipsis';
+
+      select.parentNode?.replaceChild(replacement, select);
+    });
+
     // Hide financial sections for customer copy
     if (!options.includeFinancialData) {
       const financialSections = [
