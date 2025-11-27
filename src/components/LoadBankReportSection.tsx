@@ -196,32 +196,32 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
           No load bank test entries added. Click "Add Entry" to add one.
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto lg:overflow-visible">
           <table className="w-full border-collapse border border-gray-300 text-sm">
             <thead>
               <tr className="bg-gray-200">
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[90px]">TIME</th>
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[70px]">KW</th>
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[70px]">HERTZ</th>
-                <th colSpan={6} className="border border-gray-300 px-3 py-2 font-semibold">VOLTS</th>
-                <th colSpan={3} className="border border-gray-300 px-3 py-2 font-semibold">AMPS</th>
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[90px]">OIL PRESSURE</th>
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[90px]">WATER TEMP</th>
-                <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[110px]">BATT CHARGER VOLTAGE</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">TIME</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">KW</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">HZ</th>
+                <th colSpan={6} className="border border-gray-300 px-2 py-2 font-semibold text-xs">VOLTS</th>
+                <th colSpan={3} className="border border-gray-300 px-2 py-2 font-semibold text-xs">AMPS</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">OIL PSI</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">H2O °F</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">BATT V</th>
                 {!readOnly && (
-                  <th rowSpan={2} className="border border-gray-300 px-3 py-2 font-semibold min-w-[70px]">ACTION</th>
+                  <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">DEL</th>
                 )}
               </tr>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">A/B</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">B/C</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">C/A</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">A/N</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">B/N</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">C/N</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">A</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">B</th>
-                <th className="border border-gray-300 px-3 py-1 text-xs font-medium min-w-[70px]">C</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/B</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">B/C</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">C/A</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/N</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">B/N</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">C/N</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">B</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">C</th>
               </tr>
             </thead>
             <tbody>
@@ -233,7 +233,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.time || ''}
                       onChange={(e) => updateEntry(entry.id, 'time', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[90px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -242,7 +242,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.kw || ''}
                       onChange={(e) => updateEntry(entry.id, 'kw', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -251,7 +251,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.hertz || ''}
                       onChange={(e) => updateEntry(entry.id, 'hertz', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -260,7 +260,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.ab || ''}
                       onChange={(e) => updateEntry(entry.id, 'ab', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -269,7 +269,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.bc || ''}
                       onChange={(e) => updateEntry(entry.id, 'bc', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -278,7 +278,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.ca || ''}
                       onChange={(e) => updateEntry(entry.id, 'ca', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -287,7 +287,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.an || ''}
                       onChange={(e) => updateEntry(entry.id, 'an', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -296,7 +296,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.bn || ''}
                       onChange={(e) => updateEntry(entry.id, 'bn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -305,7 +305,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.cn || ''}
                       onChange={(e) => updateEntry(entry.id, 'cn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -314,7 +314,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_a || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_a', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -323,7 +323,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_b || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_b', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -332,7 +332,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_c || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_c', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[70px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -341,7 +341,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.oil_pressure || ''}
                       onChange={(e) => updateEntry(entry.id, 'oil_pressure', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[90px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -350,7 +350,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.water_temp || ''}
                       onChange={(e) => updateEntry(entry.id, 'water_temp', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[90px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -359,7 +359,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.batt_charger_voltage || ''}
                       onChange={(e) => updateEntry(entry.id, 'batt_charger_voltage', e.target.value)}
                       disabled={readOnly}
-                      className="w-full min-w-[110px] px-3 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm"
+                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   {!readOnly && (
@@ -369,7 +369,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                         onClick={() => removeEntry(entry.id)}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </td>
                   )}
