@@ -247,14 +247,24 @@ export async function generatePDF(
     const contentMargin = 10;
     const availableHeight = pageHeight - headerHeight - footerHeight;
 
-    // Load logo
+    // Load logo and footer image
     const logo = new Image();
     logo.src = '/image.png';
-    await new Promise((resolve) => {
-      logo.onload = resolve;
-      logo.onerror = resolve;
-      setTimeout(resolve, 1000); // Timeout after 1 second
-    });
+    const footerImage = new Image();
+    footerImage.src = '/image copy copy copy copy.png';
+
+    await Promise.all([
+      new Promise((resolve) => {
+        logo.onload = resolve;
+        logo.onerror = resolve;
+        setTimeout(resolve, 1000);
+      }),
+      new Promise((resolve) => {
+        footerImage.onload = resolve;
+        footerImage.onerror = resolve;
+        setTimeout(resolve, 1000);
+      })
+    ]);
 
     // Convert canvas to base64 with JPEG compression for smaller size
     const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG with 85% quality instead of PNG
@@ -278,7 +288,7 @@ export async function generatePDF(
       // Add job number
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(`Job #: ${formData.job_number || 'N/A'}`, pageWidth - contentMargin, 15, { align: 'right' });
+      pdf.text(`Job #: ${formData.job_po_number || 'N/A'}`, pageWidth - contentMargin, 15, { align: 'right' });
 
       // Separator line
       pdf.setDrawColor(200, 200, 200);
@@ -288,25 +298,32 @@ export async function generatePDF(
 
     // Function to add footer
     const addFooter = (pdf: jsPDF, pageNum: number) => {
-      const footerY = pageHeight - footerHeight + 5;
+      const footerY = pageHeight - footerHeight + 2;
 
       // Separator line
       pdf.setDrawColor(200, 200, 200);
       pdf.setLineWidth(0.3);
       pdf.line(contentMargin, footerY - 3, pageWidth - contentMargin, footerY - 3);
 
-      pdf.setFontSize(7);
+      // Add footer image (horizontal layout on left side)
+      try {
+        pdf.addImage(footerImage, 'PNG', contentMargin, footerY, 80, 15);
+      } catch (e) {
+        console.warn('Could not add footer image');
+      }
+
+      // Add footer image (vertical layout on right side)
+      try {
+        pdf.addImage(footerImage, 'PNG', pageWidth - contentMargin - 25, footerY, 25, 15);
+      } catch (e) {
+        console.warn('Could not add footer image vertical');
+      }
+
+      // Page number in the center bottom
+      pdf.setFontSize(9);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(60, 60, 60);
-
-      // Contact info
-      pdf.text('ORLANDO: 321-236-9400 | ORLANDO@LEGACYPS.COM', pageWidth / 2, footerY + 2, { align: 'center' });
-      pdf.text('MIAMI: 305-817-4950 | MIAMI@LEGACYPS.COM', pageWidth / 2, footerY + 6, { align: 'center' });
-      pdf.text('WEST PALM BEACH: 561-429-5294 | WPB@LEGACYPS.COM', pageWidth / 2, footerY + 10, { align: 'center' });
-
-      // Page number
-      pdf.setFontSize(9);
-      pdf.text(`Page ${pageNum}`, pageWidth - contentMargin, pageHeight - 8, { align: 'right' });
+      pdf.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
     };
 
     // Add pages
