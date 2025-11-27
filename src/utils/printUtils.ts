@@ -49,6 +49,29 @@ export async function generatePDF(
       throw new Error('Print container not found');
     }
 
+    // First, expand all collapsed sections by clicking their headers
+    const collapsedHeaders = printContainer.querySelectorAll('.section-header.cursor-pointer');
+    const sectionsToRestore: HTMLElement[] = [];
+
+    collapsedHeaders.forEach((header) => {
+      // Check if next sibling is hidden (section is collapsed)
+      const parent = header.parentElement;
+      if (parent) {
+        const contentDiv = Array.from(parent.children).find(child =>
+          child !== header && (child as HTMLElement).style.display !== 'none'
+        );
+
+        // If no visible content found, section is collapsed - click to expand
+        if (!contentDiv || contentDiv.children.length === 0) {
+          (header as HTMLElement).click();
+          sectionsToRestore.push(header as HTMLElement);
+        }
+      }
+    });
+
+    // Wait for sections to expand and render
+    await new Promise(resolve => setTimeout(resolve, 400));
+
     // Clone the container to avoid messing with the actual DOM
     const clonedContainer = printContainer.cloneNode(true) as HTMLElement;
     clonedContainer.style.position = 'absolute';
@@ -242,6 +265,13 @@ export async function generatePDF(
 
     // Save PDF
     pdf.save(options.filename);
+
+    // Restore collapsed sections after a brief delay
+    setTimeout(() => {
+      sectionsToRestore.forEach(header => {
+        header.click();
+      });
+    }, 500);
 
   } catch (error) {
     console.error('Error generating PDF:', error);
