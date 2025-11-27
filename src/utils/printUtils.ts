@@ -305,25 +305,34 @@ export async function generatePDF(
       pdf.setLineWidth(0.3);
       pdf.line(contentMargin, footerY - 3, pageWidth - contentMargin, footerY - 3);
 
-      // Add footer image (horizontal layout on left side)
-      try {
-        pdf.addImage(footerImage, 'PNG', contentMargin, footerY, 80, 15);
-      } catch (e) {
-        console.warn('Could not add footer image');
-      }
-
-      // Add footer image (vertical layout on right side)
-      try {
-        pdf.addImage(footerImage, 'PNG', pageWidth - contentMargin - 25, footerY, 25, 15);
-      } catch (e) {
-        console.warn('Could not add footer image vertical');
-      }
-
-      // Page number in the center bottom
-      pdf.setFontSize(9);
+      // Footer content with locations
+      pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(60, 60, 60);
-      pdf.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+      pdf.setTextColor(40, 40, 40);
+
+      const locations = [
+        { name: 'Western WA (Headquarters)', addr: '8102 Skansie Ave', city: 'Gig Harbor, WA 98332', phone: 'PH: (253) 858-0214' },
+        { name: 'Inland WA and RMR', addr: '1566 E. Weber Rd', city: 'Ritzville, WA 99169', phone: 'PH: (509) 659-4470' },
+        { name: 'Salem, OR', addr: '5873 State Street', city: 'Salem, OR', phone: 'PH: (541) 525-8140' },
+        { name: 'Three Forks, MT', addr: '1600 Bench RD', city: 'PO Box 648', phone: 'Three Forks, MT 59752' },
+        { name: 'Nampa, ID', addr: '2024 N Elder St', city: 'Nampa, ID', phone: 'PH: (208) 703-2183' }
+      ];
+
+      const colWidth = (pageWidth - (contentMargin * 2)) / 5;
+      let xPos = contentMargin;
+
+      locations.forEach((loc) => {
+        pdf.text(loc.name, xPos, footerY + 1);
+        pdf.text(loc.addr, xPos, footerY + 4);
+        pdf.text(loc.city, xPos, footerY + 7);
+        pdf.text(loc.phone, xPos, footerY + 10);
+        xPos += colWidth;
+      });
+
+      // Page number at bottom right
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`${pageNum} | Page`, pageWidth - contentMargin, pageHeight - 3, { align: 'right' });
     };
 
     // Add pages
