@@ -1,4 +1,6 @@
 import { FormSubmission } from '../types/form';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export function hasAdditionalATSData(formData: FormSubmission): boolean {
   const additionalATS = formData.additional_ats || [];
@@ -47,94 +49,174 @@ export async function generatePDF(
       throw new Error('Print container not found');
     }
 
-    // Store original body class
+    // Store original state
     const originalBodyClass = document.body.className;
+    const originalDisplay = (printContainer as HTMLElement).style.display;
 
-    // Add customer-copy class if financial data should be excluded
+    // Apply customer copy class if needed
     if (!options.includeFinancialData) {
       document.body.classList.add('customer-copy');
     }
 
-    // Mark empty sections to hide them during print
-    const atsSection = document.querySelector('[data-section="additional-ats"]');
-    const loadBankSection = document.querySelector('[data-section="load-bank"]');
+    // Hide empty sections
+    const atsSection = document.querySelector('[data-section="additional-ats"]') as HTMLElement;
+    const loadBankSection = document.querySelector('[data-section="load-bank"]') as HTMLElement;
+    const originalATSDisplay = atsSection?.style.display;
+    const originalLoadBankDisplay = loadBankSection?.style.display;
 
     if (atsSection && !hasAdditionalATSData(formData)) {
-      atsSection.classList.add('empty-section');
+      atsSection.style.display = 'none';
     }
 
     if (loadBankSection && !hasLoadBankData(formData)) {
-      loadBankSection.classList.add('empty-section');
+      loadBankSection.style.display = 'none';
     }
 
-    // Create print header
-    const printHeader = document.createElement('div');
-    printHeader.className = 'print-header';
-    printHeader.innerHTML = `
-      <img src="/image.png" alt="Legacy Logo" />
-      <div class="print-header-title">
-        Job #: ${formData.job_number || 'N/A'}
-      </div>
-    `;
+    // Show all hidden sections temporarily
+    const hiddenElements: { element: HTMLElement; originalDisplay: string }[] = [];
+    const allHiddenElements = printContainer.querySelectorAll('.hidden');
 
-    // Create print footer
-    const printFooter = document.createElement('div');
-    printFooter.className = 'print-footer';
-    printFooter.innerHTML = `
-      <div class="print-footer-content">
-        <div>ORLANDO: 321-236-9400 | ORLANDO@LEGACYPS.COM</div>
-        <div>MIAMI: 305-817-4950 | MIAMI@LEGACYPS.COM</div>
-        <div>WEST PALM BEACH: 561-429-5294 | WPB@LEGACYPS.COM</div>
-      </div>
-      <div class="print-footer-page">
-        Page <span class="pageNumber"></span>
-      </div>
-    `;
-
-    // Insert header and footer
-    document.body.insertBefore(printHeader, document.body.firstChild);
-    document.body.appendChild(printFooter);
-
-    // Show all tab content sections (they use 'hidden' class)
-    const allTabSections = printContainer.querySelectorAll('div[class*="hidden"]');
-    const hiddenElements: { element: Element; originalClass: string }[] = [];
-
-    allTabSections.forEach(section => {
-      if (section.classList.contains('hidden')) {
-        const originalClass = section.className;
-        section.classList.remove('hidden');
-        hiddenElements.push({ element: section, originalClass });
+    allHiddenElements.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      // Skip if it's a financial section in customer copy mode
+      if (!options.includeFinancialData) {
+        const section = htmlEl.closest('[data-section]');
+        const sectionType = section?.getAttribute('data-section');
+        if (sectionType && ['parts-supplies', 'time-on-job', 'additional-charges', 'totals'].includes(sectionType)) {
+          return;
+        }
       }
+
+      hiddenElements.push({ element: htmlEl, originalDisplay: htmlEl.style.display });
+      htmlEl.style.display = 'block';
     });
 
-    // Wait for images to load
+    // Hide no-print elements
+    const noPrintElements = document.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => {
+      (el as HTMLElement).style.display = 'none';
+    });
+
+    // Wait for rendering
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Trigger native browser print dialog
-    window.print();
+    // Create canvas from content
+    const canvas = await html2canvas(printContainer as HTMLElement, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+    });
 
-    // Cleanup after print dialog closes
-    setTimeout(() => {
-      // Remove header and footer
-      printHeader.remove();
-      printFooter.remove();
+    // Calculate PDF dimensions
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297; // A4 height in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Remove empty-section markers
-      if (atsSection) {
-        atsSection.classList.remove('empty-section');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // Header and footer dimensions
+    const headerHeight = 25;
+    const footerHeight = 20;
+    const contentHeight = pageHeight - headerHeight - footerHeight;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+    let pageNumber = 1;
+
+    // Add logo for header
+    const logo = new Image();
+    logo.src = '/image.png';
+    await new Promise((resolve) => {
+      logo.onload = resolve;
+      logo.onerror = resolve;
+    });
+
+    // Function to add header
+    const addHeader = (pdf: jsPDF, pageNum: number) => {
+      // Add logo
+      try {
+        pdf.addImage(logo, 'PNG', 10, 5, 40, 15);
+      } catch (e) {
+        console.warn('Could not add logo to PDF');
       }
-      if (loadBankSection) {
-        loadBankSection.classList.remove('empty-section');
-      }
 
-      // Restore hidden elements to their original classes
-      hiddenElements.forEach(({ element, originalClass }) => {
-        element.className = originalClass;
-      });
+      // Add job number
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Job #: ${formData.job_number || 'N/A'}`, 200, 15, { align: 'right' });
 
-      // Restore body class
-      document.body.className = originalBodyClass;
-    }, 500);
+      // Add line
+      pdf.setLineWidth(0.5);
+      pdf.line(10, headerHeight, 200, headerHeight);
+    };
+
+    // Function to add footer
+    const addFooter = (pdf: jsPDF, pageNum: number, totalPages: number) => {
+      const footerY = pageHeight - footerHeight + 5;
+
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+
+      // Contact info
+      pdf.text('ORLANDO: 321-236-9400 | ORLANDO@LEGACYPS.COM', 105, footerY, { align: 'center' });
+      pdf.text('MIAMI: 305-817-4950 | MIAMI@LEGACYPS.COM', 105, footerY + 4, { align: 'center' });
+      pdf.text('WEST PALM BEACH: 561-429-5294 | WPB@LEGACYPS.COM', 105, footerY + 8, { align: 'center' });
+
+      // Page number
+      pdf.setFontSize(10);
+      pdf.text(`Page ${pageNum}`, 200, pageHeight - 10, { align: 'right' });
+
+      // Add line
+      pdf.setLineWidth(0.5);
+      pdf.line(10, footerY - 5, 200, footerY - 5);
+    };
+
+    // Add first page with header and footer
+    addHeader(pdf, pageNumber);
+
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 0, headerHeight, imgWidth, imgHeight);
+
+    addFooter(pdf, pageNumber, Math.ceil(imgHeight / contentHeight));
+
+    heightLeft -= contentHeight;
+    position = -contentHeight;
+
+    // Add additional pages if needed
+    while (heightLeft > 0) {
+      pageNumber++;
+      pdf.addPage();
+      addHeader(pdf, pageNumber);
+      pdf.addImage(imgData, 'PNG', 0, position + headerHeight, imgWidth, imgHeight);
+      addFooter(pdf, pageNumber, Math.ceil(imgHeight / contentHeight));
+
+      heightLeft -= contentHeight;
+      position -= contentHeight;
+    }
+
+    // Save PDF
+    pdf.save(options.filename);
+
+    // Restore original state
+    hiddenElements.forEach(({ element, originalDisplay }) => {
+      element.style.display = originalDisplay;
+    });
+
+    noPrintElements.forEach(el => {
+      (el as HTMLElement).style.display = '';
+    });
+
+    if (atsSection) {
+      atsSection.style.display = originalATSDisplay || '';
+    }
+
+    if (loadBankSection) {
+      loadBankSection.style.display = originalLoadBankDisplay || '';
+    }
+
+    document.body.className = originalBodyClass;
 
   } catch (error) {
     console.error('Error generating PDF:', error);
