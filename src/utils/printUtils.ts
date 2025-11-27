@@ -99,24 +99,27 @@ export async function generatePDF(
       const selectedOption = select.options[select.selectedIndex];
       const selectedText = selectedOption ? selectedOption.text : '';
 
-      // Create a div that looks like the select but shows the text
+      // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
-      replacement.textContent = selectedText;
-      replacement.style.padding = '0 14px';
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.color = '#000';
-      replacement.style.fontSize = '15px';
-      replacement.style.lineHeight = '50px';
-      replacement.style.height = '50px';
+      replacement.style.height = '48px';
       replacement.style.boxSizing = 'border-box';
-      replacement.style.display = 'block';
-      replacement.style.whiteSpace = 'nowrap';
-      replacement.style.overflow = 'hidden';
-      replacement.style.textOverflow = 'ellipsis';
-      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      replacement.style.verticalAlign = 'middle';
+      replacement.style.display = 'table';
+      replacement.style.width = '100%';
 
+      // Create inner span with table-cell display for true vertical centering
+      const span = document.createElement('span');
+      span.textContent = selectedText;
+      span.style.display = 'table-cell';
+      span.style.verticalAlign = 'middle';
+      span.style.paddingLeft = '14px';
+      span.style.paddingRight = '14px';
+      span.style.color = '#000';
+      span.style.fontSize = '14px';
+      span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+      replacement.appendChild(span);
       select.parentNode?.replaceChild(replacement, select);
     });
 
@@ -125,24 +128,27 @@ export async function generatePDF(
     inputElements.forEach((input) => {
       const inputValue = (input as HTMLInputElement).value || '';
 
-      // Create a div that looks like the input but with perfect centering
+      // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
-      replacement.textContent = inputValue;
-      replacement.style.padding = '0 14px';
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.color = '#000';
-      replacement.style.fontSize = '15px';
-      replacement.style.lineHeight = '50px';
-      replacement.style.height = '50px';
+      replacement.style.height = '48px';
       replacement.style.boxSizing = 'border-box';
-      replacement.style.display = 'block';
-      replacement.style.whiteSpace = 'nowrap';
-      replacement.style.overflow = 'hidden';
-      replacement.style.textOverflow = 'ellipsis';
-      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      replacement.style.verticalAlign = 'middle';
+      replacement.style.display = 'table';
+      replacement.style.width = '100%';
 
+      // Create inner span with table-cell display for true vertical centering
+      const span = document.createElement('span');
+      span.textContent = inputValue;
+      span.style.display = 'table-cell';
+      span.style.verticalAlign = 'middle';
+      span.style.paddingLeft = '14px';
+      span.style.paddingRight = '14px';
+      span.style.color = '#000';
+      span.style.fontSize = '14px';
+      span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+      replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
     });
 
@@ -158,7 +164,7 @@ export async function generatePDF(
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.color = '#000';
-      replacement.style.fontSize = '15px';
+      replacement.style.fontSize = '14px';
       replacement.style.lineHeight = '1.5';
       replacement.style.minHeight = '80px';
       replacement.style.boxSizing = 'border-box';
