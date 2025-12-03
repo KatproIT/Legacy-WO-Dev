@@ -810,13 +810,6 @@ const handleFieldChange = useCallback((field: string, value: any) => {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={handleDashboardClick}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium flex items-center gap-2 text-sm"
-              >
-                <Home size={18} />
-      
-              </button>
-              <button
                 onClick={handleNewFormClick}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
               >
