@@ -989,7 +989,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
                 hasValidationErrors={validationErrors.length > 0}
-                isExistingForm={!isNewForm}
+                isExistingForm={(formData as any).http_post_sent === true}
               />
               <EquipmentDetailsSection
                 formData={formData}

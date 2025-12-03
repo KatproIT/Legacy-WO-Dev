@@ -10,6 +10,8 @@ interface GeneralInfoSectionProps {
 }
 
 export function GeneralInfoSection({ formData, onChange, readOnly, hasValidationErrors, isExistingForm = false }: GeneralInfoSectionProps) {
+  // Job number can be edited in drafts, but locked after submission
+  const isJobNumberLocked = readOnly || isExistingForm;
   return (
     <div className="section-card">
       <h2 className="section-header">
@@ -55,8 +57,8 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
 
                 onChange('job_po_number', formatted);
               }}
-              disabled={readOnly || isExistingForm}
-              className={getInputClass(formData.job_po_number, hasValidationErrors, readOnly || isExistingForm)}
+              disabled={isJobNumberLocked}
+              className={getInputClass(formData.job_po_number, hasValidationErrors, isJobNumberLocked)}
               placeholder="XX-XX-XXXX"
               maxLength={10}
               required
