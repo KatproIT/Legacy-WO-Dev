@@ -293,23 +293,23 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { field: 'hoses_belts_cooling_fins', label: 'HOSES / BELTS / COOLING FINS' },
-              { field: 'block_heater_status', label: 'BLOCK HEATER STATUS' },
-              { field: 'ignition_system_status', label: 'IGNITION SYSTEM STATUS' },
-              { field: 'governor_system', label: 'GOVERNOR SYSTEM' },
-              { field: 'fuel_system_day_tank', label: 'FUEL SYSTEM / DAY TANK' },
-              { field: 'fuel_line', label: 'FUEL LINE' },
-              { field: 'check_all_systems_for_leaks', label: 'CHECK ALL SYSTEMS FOR LEAKS' },
-              { field: 'exhaust_system', label: 'EXHAUST SYSTEM' },
-              { field: 'charging_starting_system', label: 'CHARGING / STARTING SYSTEM' },
-              { field: 'instruments_lamps_wiring', label: 'INSTRUMENTS / LAMPS / WIRING' },
-              { field: 'generator_controls_safeties', label: 'GENERATOR CONTROLS / SAFETIES' },
-              { field: 'enclosure_condition', label: 'ENCLOSURE CONDITION' },
-              { field: 'ats_control_battery', label: 'ATS CONTROL BATTERY' },
-              { field: 'ats_contactor', label: 'ATS CONTACTOR' },
-              { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON' },
-              { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED' },
-            ].map(({ field, label }) => (
+              { field: 'hoses_belts_cooling_fins', label: 'HOSES / BELTS / COOLING FINS', options: statusOptions },
+              { field: 'block_heater_status', label: 'BLOCK HEATER STATUS', options: statusOptions },
+              { field: 'ignition_system_status', label: 'IGNITION SYSTEM STATUS', options: statusOptions },
+              { field: 'governor_system', label: 'GOVERNOR SYSTEM', options: statusOptions },
+              { field: 'fuel_system_day_tank', label: 'FUEL SYSTEM / DAY TANK', options: statusOptions },
+              { field: 'fuel_line', label: 'FUEL LINE', options: statusOptions },
+              { field: 'check_all_systems_for_leaks', label: 'CHECK ALL SYSTEMS FOR LEAKS', options: statusOptions },
+              { field: 'exhaust_system', label: 'EXHAUST SYSTEM', options: statusOptions },
+              { field: 'charging_starting_system', label: 'CHARGING / STARTING SYSTEM', options: statusOptions },
+              { field: 'instruments_lamps_wiring', label: 'INSTRUMENTS / LAMPS / WIRING', options: statusOptions },
+              { field: 'generator_controls_safeties', label: 'GENERATOR CONTROLS / SAFETIES', options: statusOptions },
+              { field: 'enclosure_condition', label: 'ENCLOSURE CONDITION', options: statusOptions },
+              { field: 'ats_control_battery', label: 'ATS CONTROL BATTERY', options: statusOptions },
+              { field: 'ats_contactor', label: 'ATS CONTACTOR', options: statusOptions },
+              { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON', options: statusOptions },
+              { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED', options: ['YES', 'NO'] },
+            ].map(({ field, label, options }) => (
               <div key={field}>
                 <label className="form-label text-sm">{label}</label>
                 <select
@@ -318,8 +318,8 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   disabled={readOnly}
                   className="form-input"
                 >
-                  <option value="">SELECT STATUS</option>
-                  {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  <option value="">SELECT {field === 'recommend_generator_be_replaced' ? '' : 'STATUS'}</option>
+                  {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
             ))}
