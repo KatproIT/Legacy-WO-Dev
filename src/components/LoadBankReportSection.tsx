@@ -233,7 +233,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.time || ''}
                       onChange={(e) => updateEntry(entry.id, 'time', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -242,7 +242,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.kw || ''}
                       onChange={(e) => updateEntry(entry.id, 'kw', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -251,7 +251,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.hertz || ''}
                       onChange={(e) => updateEntry(entry.id, 'hertz', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -260,7 +260,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.ab || ''}
                       onChange={(e) => updateEntry(entry.id, 'ab', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -269,7 +269,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.bc || ''}
                       onChange={(e) => updateEntry(entry.id, 'bc', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -278,7 +278,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.ca || ''}
                       onChange={(e) => updateEntry(entry.id, 'ca', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -287,7 +287,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.an || ''}
                       onChange={(e) => updateEntry(entry.id, 'an', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -296,7 +296,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.bn || ''}
                       onChange={(e) => updateEntry(entry.id, 'bn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -305,7 +305,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.cn || ''}
                       onChange={(e) => updateEntry(entry.id, 'cn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -314,7 +314,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_a || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_a', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -323,7 +323,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_b || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_b', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -332,7 +332,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.amps_c || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_c', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -341,7 +341,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.oil_pressure || ''}
                       onChange={(e) => updateEntry(entry.id, 'oil_pressure', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -350,7 +350,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.water_temp || ''}
                       onChange={(e) => updateEntry(entry.id, 'water_temp', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -359,7 +359,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       value={entry.batt_charger_voltage || ''}
                       onChange={(e) => updateEntry(entry.id, 'batt_charger_voltage', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      className="w-full px-1 py-1 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
                     />
                   </td>
                   {!readOnly && (
