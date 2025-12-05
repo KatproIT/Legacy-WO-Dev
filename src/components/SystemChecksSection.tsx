@@ -330,7 +330,8 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <label className="form-label text-sm">TRANSFER TIME</label>
               <input
                 type="time"
-                value={(formData as any).transfer_time || '00:00'}
+                step="1"
+                value={(formData as any).transfer_time || '00:00:00'}
                 onChange={(e) => onChange('transfer_time', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
@@ -340,7 +341,8 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <label className="form-label text-sm">RE-TRANSFER TIME</label>
               <input
                 type="time"
-                value={(formData as any).re_transfer_time || '00:00'}
+                step="1"
+                value={(formData as any).re_transfer_time || '00:00:00'}
                 onChange={(e) => onChange('re_transfer_time', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
@@ -350,7 +352,8 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <label className="form-label text-sm">COOLDOWN</label>
               <input
                 type="time"
-                value={(formData as any).cooldown || '00:00'}
+                step="1"
+                value={(formData as any).cooldown || '00:00:00'}
                 onChange={(e) => onChange('cooldown', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
