@@ -213,7 +213,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                 )}
               </tr>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/B</th>
+                <th className="border border-gray-300 text-xs font-medium">A/B</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">B/C</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">C/A</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/N</th>
