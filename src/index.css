@@ -134,7 +134,7 @@
   font-weight: 400 !important;
 }
 
-/* Remove padding from inputs inside table cells */
+/* Remove padding from inputs inside table cells but keep background */
 .print-container table input[type="text"],
 .print-container table input[type="date"],
 .print-container table input[type="email"],
@@ -144,8 +144,11 @@
 .print-container table select,
 .print-container table textarea {
   padding: 0 !important;
-  height: auto !important;
+  height: 100% !important;
+  min-height: 30px !important;
   border: 0 !important;
+  background-color: #fff !important;
+  width: 100% !important;
 }
 
 .print-container textarea {
