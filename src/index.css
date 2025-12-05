@@ -134,6 +134,20 @@
   font-weight: 400 !important;
 }
 
+/* Remove padding from inputs inside table cells */
+.print-container table input[type="text"],
+.print-container table input[type="date"],
+.print-container table input[type="email"],
+.print-container table input[type="tel"],
+.print-container table input[type="number"],
+.print-container table input[type="time"],
+.print-container table select,
+.print-container table textarea {
+  padding: 0 !important;
+  height: auto !important;
+  border: 0 !important;
+}
+
 .print-container textarea {
   color: #000 !important;
   background-color: #fff !important;
