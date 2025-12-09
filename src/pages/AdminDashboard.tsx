@@ -125,24 +125,39 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-6">
+      <div className="bg-white shadow-md border-b-2 border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* Left Section - Logo */}
+            <div className="flex items-center gap-4">
               <img
                 src="/image.png"
                 alt="Legacy Power Systems"
-                className="h-12 sm:h-20 object-contain"
+                className="h-14 object-contain"
               />
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+              <div className="hidden sm:block w-px h-12 bg-gray-300"></div>
+              <div className="hidden sm:block">
+                <h1 className="text-2xl font-bold text-gray-900 leading-tight">Admin Dashboard</h1>
+                <p className="text-sm text-gray-500 leading-tight">Manage form submissions and reports</p>
+              </div>
             </div>
-            <button
-              onClick={() => navigate('/form/new')}
-              className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
-            >
-              <Plus size={18} className="sm:w-5 sm:h-5" />
-              New Form
-            </button>
+
+            {/* Mobile Title */}
+            <div className="sm:hidden flex-1 text-center">
+              <h1 className="text-lg font-bold text-gray-900">Dashboard</h1>
+            </div>
+
+            {/* Right Section - Action Button */}
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/form/new')}
+                className="btn-primary flex items-center gap-2 px-4 py-2.5"
+              >
+                <Plus size={20} />
+                <span className="hidden sm:inline">New Form</span>
+                <span className="sm:hidden">New</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
