@@ -242,8 +242,8 @@ export async function generatePDF(
     const pageWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
 
-    const headerHeight = 25;
-    const footerHeight = 20;
+    const headerHeight = 45; // Increased to accommodate locations
+    const footerHeight = 10; // Reduced, only for page number
     const contentMargin = 10;
     const availableHeight = pageHeight - headerHeight - footerHeight;
 
@@ -278,35 +278,24 @@ export async function generatePDF(
 
     // Function to add header
     const addHeader = (pdf: jsPDF) => {
-      // Add logo
+      // Add logo with proper aspect ratio
       try {
-        pdf.addImage(logo, 'PNG', contentMargin, 5, 40, 15);
+        const logoWidth = 35; // Target width in mm
+        const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
+        const logoHeight = logoWidth / logoAspectRatio;
+        pdf.addImage(logo, 'PNG', contentMargin, 5, logoWidth, logoHeight);
       } catch (e) {
         console.warn('Could not add logo');
       }
 
-      // Add job number
+      // Add job number on the right
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(`Job #: ${formData.job_po_number || 'N/A'}`, pageWidth - contentMargin, 15, { align: 'right' });
+      pdf.text(`Job #: ${formData.job_po_number || 'N/A'}`, pageWidth - contentMargin, 12, { align: 'right' });
 
-      // Separator line
-      pdf.setDrawColor(200, 200, 200);
-      pdf.setLineWidth(0.3);
-      pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
-    };
-
-    // Function to add footer
-    const addFooter = (pdf: jsPDF, pageNum: number) => {
-      const footerY = pageHeight - footerHeight + 2;
-
-      // Separator line
-      pdf.setDrawColor(200, 200, 200);
-      pdf.setLineWidth(0.3);
-      pdf.line(contentMargin, footerY - 3, pageWidth - contentMargin, footerY - 3);
-
-      // Footer content with locations
-      pdf.setFontSize(7);
+      // Add location information below logo and job number
+      const locationsStartY = 22;
+      pdf.setFontSize(6.5);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(40, 40, 40);
 
@@ -322,17 +311,33 @@ export async function generatePDF(
       let xPos = contentMargin;
 
       locations.forEach((loc) => {
-        pdf.text(loc.name, xPos, footerY + 1);
-        pdf.text(loc.addr, xPos, footerY + 4);
-        pdf.text(loc.city, xPos, footerY + 7);
-        pdf.text(loc.phone, xPos, footerY + 10);
+        pdf.text(loc.name, xPos, locationsStartY);
+        pdf.text(loc.addr, xPos, locationsStartY + 3);
+        pdf.text(loc.city, xPos, locationsStartY + 6);
+        pdf.text(loc.phone, xPos, locationsStartY + 9);
         xPos += colWidth;
       });
 
+      // Separator line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.3);
+      pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
+    };
+
+    // Function to add footer
+    const addFooter = (pdf: jsPDF, pageNum: number) => {
+      const footerY = pageHeight - footerHeight;
+
+      // Black separator line
+      pdf.setDrawColor(0, 0, 0);
+      pdf.setLineWidth(0.5);
+      pdf.line(contentMargin, footerY, pageWidth - contentMargin, footerY);
+
       // Page number at bottom right
-      pdf.setFontSize(8);
+      pdf.setFontSize(9);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(`${pageNum} | Page`, pageWidth - contentMargin, pageHeight - 3, { align: 'right' });
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(`Page ${pageNum}`, pageWidth - contentMargin, pageHeight - 4, { align: 'right' });
     };
 
     // Add pages
