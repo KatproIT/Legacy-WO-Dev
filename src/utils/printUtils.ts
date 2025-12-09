@@ -278,49 +278,89 @@ export async function generatePDF(
 
     // Function to add header
     const addHeader = (pdf: jsPDF) => {
+      // Light gray background for header
+      pdf.setFillColor(248, 249, 250);
+      pdf.rect(0, 0, pageWidth, headerHeight - 2, 'F');
+
       // Add logo with proper aspect ratio
       try {
-        const logoWidth = 35; // Target width in mm
+        const logoWidth = 40;
         const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
         const logoHeight = logoWidth / logoAspectRatio;
-        pdf.addImage(logo, 'PNG', contentMargin, 5, logoWidth, logoHeight);
+        pdf.addImage(logo, 'PNG', contentMargin, 6, logoWidth, logoHeight);
       } catch (e) {
         console.warn('Could not add logo');
       }
 
-      // Add job number on the right
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`Job #: ${formData.job_po_number || 'N/A'}`, pageWidth - contentMargin, 12, { align: 'right' });
+      // Job number section with styled box
+      const jobBoxWidth = 50;
+      const jobBoxHeight = 12;
+      const jobBoxX = pageWidth - contentMargin - jobBoxWidth;
+      const jobBoxY = 6;
 
-      // Add location information below logo and job number
-      const locationsStartY = 22;
-      pdf.setFontSize(6.5);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(40, 40, 40);
+      pdf.setFillColor(30, 58, 138);
+      pdf.roundedRect(jobBoxX, jobBoxY, jobBoxWidth, jobBoxHeight, 1.5, 1.5, 'F');
+
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('JOB NUMBER', jobBoxX + jobBoxWidth / 2, jobBoxY + 4, { align: 'center' });
+
+      pdf.setFontSize(11);
+      pdf.text(formData.job_po_number || 'N/A', jobBoxX + jobBoxWidth / 2, jobBoxY + 9, { align: 'center' });
+
+      // Professional divider line after logo/job section
+      pdf.setDrawColor(30, 58, 138);
+      pdf.setLineWidth(0.5);
+      pdf.line(contentMargin, 21, pageWidth - contentMargin, 21);
+
+      // Location information with cleaner layout
+      const locationsStartY = 26;
+      pdf.setFontSize(6);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 58, 138);
 
       const locations = [
-        { name: 'Western WA (Headquarters)', addr: '8102 Skansie Ave', city: 'Gig Harbor, WA 98332', phone: 'PH: (253) 858-0214' },
-        { name: 'Inland WA and RMR', addr: '1566 E. Weber Rd', city: 'Ritzville, WA 99169', phone: 'PH: (509) 659-4470' },
-        { name: 'Salem, OR', addr: '5873 State Street', city: 'Salem, OR', phone: 'PH: (541) 525-8140' },
+        { name: 'Western WA (HQ)', addr: '8102 Skansie Ave', city: 'Gig Harbor, WA 98332', phone: '(253) 858-0214' },
+        { name: 'Inland WA & RMR', addr: '1566 E. Weber Rd', city: 'Ritzville, WA 99169', phone: '(509) 659-4470' },
+        { name: 'Salem, OR', addr: '5873 State Street', city: 'Salem, OR', phone: '(541) 525-8140' },
         { name: 'Three Forks, MT', addr: '1600 Bench RD', city: 'PO Box 648', phone: 'Three Forks, MT 59752' },
-        { name: 'Nampa, ID', addr: '2024 N Elder St', city: 'Nampa, ID', phone: 'PH: (208) 703-2183' }
+        { name: 'Nampa, ID', addr: '2024 N Elder St', city: 'Nampa, ID', phone: '(208) 703-2183' }
       ];
 
       const colWidth = (pageWidth - (contentMargin * 2)) / 5;
       let xPos = contentMargin;
 
-      locations.forEach((loc) => {
+      locations.forEach((loc, index) => {
+        // Location name in bold dark blue
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(30, 58, 138);
         pdf.text(loc.name, xPos, locationsStartY);
+
+        // Address details in regular gray
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(60, 60, 60);
         pdf.text(loc.addr, xPos, locationsStartY + 3);
         pdf.text(loc.city, xPos, locationsStartY + 6);
+
+        // Phone in bold black
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
         pdf.text(loc.phone, xPos, locationsStartY + 9);
+
+        // Add vertical divider between locations (except after last one)
+        if (index < locations.length - 1) {
+          pdf.setDrawColor(200, 200, 200);
+          pdf.setLineWidth(0.2);
+          pdf.line(xPos + colWidth - 1, locationsStartY - 1, xPos + colWidth - 1, locationsStartY + 10);
+        }
+
         xPos += colWidth;
       });
 
-      // Separator line
-      pdf.setDrawColor(200, 200, 200);
-      pdf.setLineWidth(0.3);
+      // Bottom separator line with accent color
+      pdf.setDrawColor(30, 58, 138);
+      pdf.setLineWidth(0.8);
       pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
     };
 
