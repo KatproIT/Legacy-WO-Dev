@@ -17,19 +17,19 @@ const PORT = process.env.PORT || 4000;
    ✅ CORS (MUST be FIRST middleware)
 -------------------------------------------------------- */
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    process.env.FRONTEND_ORIGIN || "https://legacywo.ontivity.com/"
-  );
+  const origin = process.env.FRONTEND_ORIGIN || "https://legacywo.ontivity.com";
+  res.header("Access-Control-Allow-Origin", origin);
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+
+  // Handle preflight OPTIONS requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   next();
 });
-
-
-// Enable preflight requests for all routes
-app.options("*", cors());
 
 /* -------------------------------------------------------
    ✅ Disable caching (AFTER CORS)
