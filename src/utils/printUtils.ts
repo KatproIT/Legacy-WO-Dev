@@ -242,10 +242,10 @@ export async function generatePDF(
     const pageWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
 
-    const headerHeight = 45; // Increased to accommodate locations
-    const footerHeight = 10; // Reduced, only for page number
+    const firstPageHeaderHeight = 45; // Full header with addresses and locations
+    const subsequentPageHeaderHeight = 20; // Just logo
+    const footerHeight = 10;
     const contentMargin = 10;
-    const availableHeight = pageHeight - headerHeight - footerHeight;
 
     // Load logo and footer image
     const logo = new Image();
@@ -277,12 +277,34 @@ export async function generatePDF(
     let pageNumber = 1;
 
     // Function to add header
-    const addHeader = (pdf: jsPDF) => {
-      // Light gray background for header
-      pdf.setFillColor(248, 249, 250);
-      pdf.rect(0, 0, pageWidth, headerHeight - 2, 'F');
+    const addHeader = (pdf: jsPDF, isFirstPage: boolean = false) => {
+      if (!isFirstPage) {
+        // Subsequent pages: only logo
+        const simpleHeaderHeight = 20;
+        pdf.setFillColor(248, 249, 250);
+        pdf.rect(0, 0, pageWidth, simpleHeaderHeight, 'F');
 
-      // Add logo with proper aspect ratio
+        try {
+          const logoWidth = 40;
+          const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
+          const logoHeight = logoWidth / logoAspectRatio;
+          pdf.addImage(logo, 'PNG', contentMargin, 5, logoWidth, logoHeight);
+        } catch (e) {
+          console.warn('Could not add logo');
+        }
+
+        // Bottom separator line
+        pdf.setDrawColor(30, 58, 138);
+        pdf.setLineWidth(0.8);
+        pdf.line(contentMargin, simpleHeaderHeight, pageWidth - contentMargin, simpleHeaderHeight);
+        return;
+      }
+
+      // First page: Full header with logo, job number, addresses, and branch locations
+      pdf.setFillColor(248, 249, 250);
+      pdf.rect(0, 0, pageWidth, firstPageHeaderHeight - 2, 'F');
+
+      // Add logo
       try {
         const logoWidth = 40;
         const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
@@ -292,7 +314,7 @@ export async function generatePDF(
         console.warn('Could not add logo');
       }
 
-      // Job number section with styled box
+      // Job number section
       const jobBoxWidth = 50;
       const jobBoxHeight = 12;
       const jobBoxX = pageWidth - contentMargin - jobBoxWidth;
@@ -304,18 +326,54 @@ export async function generatePDF(
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(255, 255, 255);
-      pdf.text('JOB NUMBER', jobBoxX + jobBoxWidth / 2, jobBoxY + 4, { align: 'center' });
+      pdf.text('JOB/PO NUMBER', jobBoxX + jobBoxWidth / 2, jobBoxY + 4, { align: 'center' });
 
       pdf.setFontSize(11);
       pdf.text(formData.job_po_number || 'N/A', jobBoxX + jobBoxWidth / 2, jobBoxY + 9, { align: 'center' });
 
-      // Professional divider line after logo/job section
+      // Customer and Site Address section (below logo and job number)
+      let addressY = 22;
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 58, 138);
+
+      const customer = formData.customer || '';
+      const siteName = formData.site_name || '';
+      const siteAddress = formData.site_address || '';
+
+      // Check if customer and site info are the same
+      const customerInfo = `${customer}`.trim();
+      const siteInfo = `${siteName} ${siteAddress}`.trim();
+      const isSameAddress = customerInfo === siteName || (customerInfo && siteName && customerInfo.toLowerCase() === siteName.toLowerCase());
+
+      // Display Customer info
+      if (customer) {
+        pdf.text('CUSTOMER:', contentMargin, addressY);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(customer, contentMargin + 22, addressY);
+        addressY += 3.5;
+      }
+
+      // Display Site info only if different from customer
+      if (!isSameAddress && (siteName || siteAddress)) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(30, 58, 138);
+        pdf.text('LOCATION:', contentMargin, addressY);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        const locationText = siteName ? `${siteName}${siteAddress ? ', ' + siteAddress : ''}` : siteAddress;
+        pdf.text(locationText, contentMargin + 22, addressY);
+        addressY += 3.5;
+      }
+
+      // Professional divider line
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.5);
-      pdf.line(contentMargin, 21, pageWidth - contentMargin, 21);
+      pdf.line(contentMargin, addressY + 1, pageWidth - contentMargin, addressY + 1);
 
-      // Location information with cleaner layout
-      const locationsStartY = 26;
+      // Branch locations
+      const locationsStartY = addressY + 5;
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(30, 58, 138);
@@ -332,23 +390,19 @@ export async function generatePDF(
       let xPos = contentMargin;
 
       locations.forEach((loc, index) => {
-        // Location name in bold dark blue
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(30, 58, 138);
         pdf.text(loc.name, xPos, locationsStartY);
 
-        // Address details in regular gray
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(60, 60, 60);
         pdf.text(loc.addr, xPos, locationsStartY + 3);
         pdf.text(loc.city, xPos, locationsStartY + 6);
 
-        // Phone in bold black
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(0, 0, 0);
         pdf.text(loc.phone, xPos, locationsStartY + 9);
 
-        // Add vertical divider between locations (except after last one)
         if (index < locations.length - 1) {
           pdf.setDrawColor(200, 200, 200);
           pdf.setLineWidth(0.2);
@@ -358,10 +412,10 @@ export async function generatePDF(
         xPos += colWidth;
       });
 
-      // Bottom separator line with accent color
+      // Bottom separator line
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.8);
-      pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
+      pdf.line(contentMargin, firstPageHeaderHeight - 2, pageWidth - contentMargin, firstPageHeaderHeight - 2);
     };
 
     // Function to add footer
@@ -386,8 +440,12 @@ export async function generatePDF(
         pdf.addPage();
       }
 
+      const isFirstPage = pageNumber === 1;
+      const currentHeaderHeight = isFirstPage ? firstPageHeaderHeight : subsequentPageHeaderHeight;
+      const availableHeight = pageHeight - currentHeaderHeight - footerHeight;
+
       // Add header and footer
-      addHeader(pdf);
+      addHeader(pdf, isFirstPage);
       addFooter(pdf, pageNumber);
 
       // Calculate how much content fits on this page
@@ -420,7 +478,7 @@ export async function generatePDF(
           sliceData,
           'JPEG',
           contentMargin,
-          headerHeight,
+          currentHeaderHeight,
           imgWidth,
           sliceHeight
         );
