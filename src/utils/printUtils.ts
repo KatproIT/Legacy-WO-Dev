@@ -242,7 +242,7 @@ export async function generatePDF(
     const pageWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
 
-    const firstPageHeaderHeight = 33; // Full header with addresses and locations
+    const firstPageHeaderHeight = 30; // Full header with addresses and locations
     const subsequentPageHeaderHeight = 20; // Just logo
     const footerHeight = 10;
     const contentMargin = 10;
