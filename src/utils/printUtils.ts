@@ -242,7 +242,7 @@ export async function generatePDF(
     const pageWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
 
-    const firstPageHeaderHeight = 45; // Full header with addresses and locations
+    const firstPageHeaderHeight = 38; // Full header with addresses and locations
     const subsequentPageHeaderHeight = 20; // Just logo
     const footerHeight = 10;
     const contentMargin = 10;
@@ -309,35 +309,33 @@ export async function generatePDF(
         const logoWidth = 40;
         const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
         const logoHeight = logoWidth / logoAspectRatio;
-        pdf.addImage(logo, 'PNG', contentMargin, 6, logoWidth, logoHeight);
+        pdf.addImage(logo, 'PNG', contentMargin, 4, logoWidth, logoHeight);
       } catch (e) {
         console.warn('Could not add logo');
       }
 
-      // Job number section
-      const jobBoxWidth = 50;
-      const jobBoxHeight = 12;
+      // Job number section - single line format
+      const jobBoxWidth = 60;
+      const jobBoxHeight = 8;
       const jobBoxX = pageWidth - contentMargin - jobBoxWidth;
-      const jobBoxY = 6;
+      const jobBoxY = 4;
 
       pdf.setFillColor(30, 58, 138);
       pdf.roundedRect(jobBoxX, jobBoxY, jobBoxWidth, jobBoxHeight, 1.5, 1.5, 'F');
 
-      pdf.setFontSize(8);
+      pdf.setFontSize(9);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(255, 255, 255);
-      pdf.text('JOB/PO NUMBER', jobBoxX + jobBoxWidth / 2, jobBoxY + 4, { align: 'center' });
-
-      pdf.setFontSize(11);
-      pdf.text(formData.job_po_number || 'N/A', jobBoxX + jobBoxWidth / 2, jobBoxY + 9, { align: 'center' });
+      const jobText = `Job No# ${formData.job_po_number || 'N/A'}`;
+      pdf.text(jobText, jobBoxX + jobBoxWidth / 2, jobBoxY + 5.5, { align: 'center' });
 
       // Professional divider line after logo/job section
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.5);
-      pdf.line(contentMargin, 21, pageWidth - contentMargin, 21);
+      pdf.line(contentMargin, 16, pageWidth - contentMargin, 16);
 
       // Branch locations
-      const locationsStartY = 26;
+      const locationsStartY = 20;
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(30, 58, 138);
@@ -375,7 +373,7 @@ export async function generatePDF(
       // Bottom separator line
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.8);
-      pdf.line(contentMargin, firstPageHeaderHeight - 2, pageWidth - contentMargin, firstPageHeaderHeight - 2);
+      pdf.line(contentMargin, 30, pageWidth - contentMargin, 30);
     };
 
     // Function to add footer
