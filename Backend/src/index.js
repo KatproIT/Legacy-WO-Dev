@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 4000;
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",
-    process.env.FRONTEND_ORIGIN || "https://brave-dune-07628650f.3.azurestaticapps.net"
+    process.env.FRONTEND_ORIGIN || "https://legacywo.ontivity.com/"
   );
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
