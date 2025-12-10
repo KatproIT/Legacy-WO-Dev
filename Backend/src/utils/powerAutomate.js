@@ -20,6 +20,7 @@ async function sendPowerAutomateRequest(dataRow) {
     technician: dataRow.technician || dataRow.data?.technician || null,
     technicianEmail: dataRow.submitted_by_email || dataRow.data?.submitted_by_email || null,
     customer: dataRow.customer || dataRow.data?.customer || null,
+    siteName: dataRow.site_name || dataRow.data?.site_name || null,
     formUniqueId: dataRow.id || null,
     editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.id}/${dataRow.job_po_number}`
   };
@@ -60,6 +61,7 @@ async function sendRejectNotification(formData, note) {
     technician: formData.technician || formData.data?.technician || null,
     technicianEmail: formData.submitted_by_email || formData.data?.submitted_by_email || null,
     customer: formData.customer || formData.data?.customer || null,
+    siteName: formData.site_name || formData.data?.site_name || null,
     rejectionNote: note
   };
 
@@ -98,6 +100,7 @@ async function sendForwardNotification(formData, toEmail) {
     technician: formData.technician || formData.data?.technician || null,
     technicianEmail: formData.submitted_by_email || formData.data?.submitted_by_email || null,
     customer: formData.customer || formData.data?.customer || null,
+    siteName: formData.site_name || formData.data?.site_name || null,
     forwardedTo: toEmail
   };
 
