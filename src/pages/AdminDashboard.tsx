@@ -117,199 +117,291 @@ export function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-lg font-medium text-gray-900">Loading Dashboard...</p>
+          <p className="text-sm text-gray-500 mt-1">Please wait</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+    <div className="min-h-screen bg-gray-50">
+      {/* Professional Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-6">
+            <div className="flex items-center gap-4">
               <img
                 src="/image.png"
                 alt="Legacy Power Systems"
-                className="h-12 sm:h-20 object-contain"
+                className="h-14 sm:h-16 object-contain"
               />
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Admin Dashboard</h1>
+                <p className="text-sm text-gray-500 mt-0.5">Manage and monitor all service submissions</p>
+              </div>
             </div>
             <button
               onClick={() => navigate('/form/new')}
-              className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-all duration-200 flex items-center gap-2 w-full sm:w-auto justify-center hover:shadow-md"
             >
-              <Plus size={18} className="sm:w-5 sm:h-5" />
-              New Form
+              <Plus size={20} />
+              New Submission
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Key Metrics Dashboard */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Submissions</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{submissions.length}</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <FileText size={28} className="text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Pending</p>
+                <p className="text-3xl font-bold text-amber-600 mt-2">
+                  {submissions.filter(s => !s.http_post_sent).length}
+                </p>
+              </div>
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <Clock size={28} className="text-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Submitted</p>
+                <p className="text-3xl font-bold text-green-600 mt-2">
+                  {submissions.filter(s => s.http_post_sent).length}
+                </p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-lg">
+                <CheckCircle size={28} className="text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Service Due</p>
+                <p className="text-3xl font-bold text-red-600 mt-2">
+                  {submissions.filter(s =>
+                    s.service_coolant_flush_due ||
+                    s.service_batteries_due ||
+                    s.service_belts_due ||
+                    s.service_hoses_due
+                  ).length}
+                </p>
+              </div>
+              <div className="bg-red-100 p-3 rounded-lg">
+                <AlertCircle size={28} className="text-red-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Search and Filter Bar */}
-        <div className="section-card mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
+          <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder="Search by Job #, Customer, Site, or Technician..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setStatusFilter('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
                   statusFilter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                All ({submissions.length})
+                All <span className="ml-1 font-bold">({submissions.length})</span>
               </button>
               <button
                 onClick={() => setStatusFilter('submitted')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
                   statusFilter === 'submitted'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Submitted ({submissions.filter(s => s.http_post_sent).length})
+                Submitted <span className="ml-1 font-bold">({submissions.filter(s => s.http_post_sent).length})</span>
               </button>
               <button
                 onClick={() => setStatusFilter('pending')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
                   statusFilter === 'pending'
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Pending ({submissions.filter(s => !s.http_post_sent).length})
+                Pending <span className="ml-1 font-bold">({submissions.filter(s => !s.http_post_sent).length})</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div className="section-card">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Filter size={20} className="text-gray-600" />
-              <span className="text-lg font-semibold text-gray-700">
-                Showing {filteredSubmissions.length} of {submissions.length} forms
-              </span>
+        {/* Submissions List Container */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Filter size={18} className="text-gray-500" />
+                <span className="text-base font-semibold text-gray-900">
+                  {filteredSubmissions.length} {filteredSubmissions.length === 1 ? 'Submission' : 'Submissions'}
+                </span>
+                {(searchTerm || statusFilter !== 'all') && (
+                  <span className="text-sm text-gray-500">
+                    (filtered from {submissions.length} total)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           {filteredSubmissions.length === 0 ? (
-            <div className="text-center py-16">
-              <FileText size={64} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-600 text-xl font-medium mb-6">
-                {searchTerm || statusFilter !== 'all' ? 'No matching forms found' : 'No submissions found'}
+            <div className="text-center py-20 px-4">
+              <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText size={40} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {searchTerm || statusFilter !== 'all' ? 'No matching submissions found' : 'No submissions yet'}
+              </h3>
+              <p className="text-gray-500 mb-6">
+                {searchTerm || statusFilter !== 'all'
+                  ? 'Try adjusting your search or filter criteria'
+                  : 'Get started by creating your first service submission'
+                }
               </p>
               {!searchTerm && statusFilter === 'all' && (
                 <button
                   onClick={() => navigate('/form/new')}
-                  className="btn-primary"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all inline-flex items-center gap-2"
                 >
-                  Create First Form
+                  <Plus size={20} />
+                  Create First Submission
                 </button>
               )}
             </div>
           ) : (
             <>
               {/* --- SUBMISSIONS LIST --- */}
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-200">
                 {filteredSubmissions.map((submission) => {
                   const isExpanded = expandedRows.has(submission.id!);
 
                   return (
-                    <div key={submission.id} className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all">
+                    <div key={submission.id} className="hover:bg-gray-50 transition-colors">
                       {/* Main Row */}
-                      <div className="p-4 sm:p-6 flex items-center justify-between gap-4">
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-                          {/* Status */}
-                          <div className="flex items-center gap-2">
+                      <div className="p-6">
+                        <div className="flex items-center justify-between gap-4 flex-wrap lg:flex-nowrap">
+                          {/* Left Section: Status Badge */}
+                          <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
                             {submission.http_post_sent ? (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold rounded-lg">
-                                <CheckCircle size={16} />
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-300 text-green-700 text-xs font-bold rounded-md uppercase tracking-wide">
+                                <CheckCircle size={14} />
                                 Submitted
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-semibold rounded-lg">
-                                <Clock size={16} />
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-300 text-amber-700 text-xs font-bold rounded-md uppercase tracking-wide">
+                                <Clock size={14} />
                                 Pending
                               </span>
                             )}
                           </div>
 
-                          {/* Job Number */}
-                          <div>
-                            <div className="text-xs text-gray-500 mb-1">Job/PO #</div>
-                            <div className="font-bold text-gray-900">{submission.job_po_number}</div>
+                          {/* Middle Section: Info Grid */}
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 min-w-0">
+                            {/* Job Number */}
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Job/PO #</div>
+                              <div className="font-bold text-gray-900 truncate">{submission.job_po_number}</div>
+                            </div>
+
+                            {/* Customer */}
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Customer</div>
+                              <div className="font-medium text-gray-800 truncate">{submission.customer || '-'}</div>
+                            </div>
+
+                            {/* Site */}
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Site</div>
+                              <div className="font-medium text-gray-800 truncate">{submission.site_name || '-'}</div>
+                            </div>
+
+                            {/* Technician */}
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Technician</div>
+                              <div className="font-medium text-gray-800 truncate">{submission.technician || '-'}</div>
+                            </div>
+
+                            {/* Date */}
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Service Date</div>
+                              <div className="font-medium text-gray-800 truncate">{submission.date || '-'}</div>
+                            </div>
                           </div>
 
-                          {/* Customer */}
-                          <div>
-                            <div className="text-xs text-gray-500 mb-1">Customer</div>
-                            <div className="font-medium text-gray-800">{submission.customer || '-'}</div>
+                          {/* Right Section: Action Buttons */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <button
+                              onClick={() => toggleRow(submission.id!)}
+                              className="p-2 text-gray-600 hover:bg-gray-200 rounded-md transition-colors"
+                              title={isExpanded ? 'Collapse details' : 'Expand details'}
+                            >
+                              {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            </button>
+                            <button
+                              onClick={() => navigate(`/form/${submission.id}/${submission.job_po_number}`)}
+                              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md flex items-center gap-2 hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                            >
+                              <ExternalLink size={16} />
+                              <span className="hidden sm:inline">Open</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(submission)}
+                              disabled={deleting === submission.id}
+                              className="px-4 py-2 bg-red-600 text-white text-sm rounded-md flex items-center gap-2 hover:bg-red-700 disabled:opacity-50 transition-colors font-medium shadow-sm"
+                            >
+                              <Trash2 size={16} />
+                              <span className="hidden sm:inline">{deleting === submission.id ? '...' : 'Delete'}</span>
+                            </button>
                           </div>
-
-                          {/* Site */}
-                          <div>
-                            <div className="text-xs text-gray-500 mb-1">Site</div>
-                            <div className="font-medium text-gray-800">{submission.site_name || '-'}</div>
-                          </div>
-
-                          {/* Technician */}
-                          <div>
-                            <div className="text-xs text-gray-500 mb-1">Technician</div>
-                            <div className="font-medium text-gray-800">{submission.technician || '-'}</div>
-                          </div>
-
-                          {/* Date */}
-                          <div>
-                            <div className="text-xs text-gray-500 mb-1">Service Date</div>
-                            <div className="font-medium text-gray-800">{submission.date || '-'}</div>
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => toggleRow(submission.id!)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            title={isExpanded ? 'Collapse details' : 'Expand details'}
-                          >
-                            {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                          </button>
-                          <button
-                            onClick={() => navigate(`/form/${submission.id}/${submission.job_po_number}`)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
-                          >
-                            <ExternalLink size={16} />
-                            Open
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(submission)}
-                            disabled={deleting === submission.id}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center gap-2 hover:bg-red-700 disabled:opacity-50 transition-colors"
-                          >
-                            <Trash2 size={16} />
-                            {deleting === submission.id ? '...' : 'Delete'}
-                          </button>
                         </div>
                       </div>
 
                       {/* Expanded Details */}
                       {isExpanded && (
-                        <div className="border-t-2 border-gray-200 bg-gray-50 p-6">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div className="border-t border-gray-200 bg-gray-50 p-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
 
                             {/* General Information */}
                             <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -582,127 +674,94 @@ export function AdminDashboard() {
           )}
         </div>
 
-        {/* Summary Statistics */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="section-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-700 text-sm font-medium">Total Submissions</p>
-                <p className="text-4xl font-bold text-blue-900 mt-2">{submissions.length}</p>
-              </div>
-              <div className="bg-blue-200 p-3 rounded-full">
-                <FileText size={32} className="text-blue-700" />
-              </div>
-            </div>
-          </div>
-
-          <div className="section-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-yellow-700 text-sm font-medium">Pending</p>
-                <p className="text-4xl font-bold text-yellow-900 mt-2">
-                  {submissions.filter(s => !s.http_post_sent).length}
-                </p>
-              </div>
-              <div className="bg-yellow-200 p-3 rounded-full">
-                <Clock size={32} className="text-yellow-700" />
-              </div>
-            </div>
-          </div>
-
-          <div className="section-card bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-700 text-sm font-medium">Submitted</p>
-                <p className="text-4xl font-bold text-green-900 mt-2">
-                  {submissions.filter(s => s.http_post_sent).length}
-                </p>
-              </div>
-              <div className="bg-green-200 p-3 rounded-full">
-                <CheckCircle size={32} className="text-green-700" />
-              </div>
-            </div>
-          </div>
-
-          <div className="section-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-700 text-sm font-medium">Total Parts Used</p>
-                <p className="text-4xl font-bold text-purple-900 mt-2">
-                  {submissions.reduce((acc, s) => acc + (s.parts_supplies_used?.length || 0), 0)}
-                </p>
-              </div>
-              <div className="bg-purple-200 p-3 rounded-full">
-                <Package size={32} className="text-purple-700" />
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Additional Analytics */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="section-card">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Battery className="text-green-600" size={24} />
-              <h3 className="font-bold text-gray-900">Battery Tests</h3>
+              <div className="bg-blue-100 p-2.5 rounded-lg">
+                <Package className="text-blue-600" size={24} />
+              </div>
+              <h3 className="font-semibold text-gray-900">Total Parts Used</h3>
             </div>
-            <p className="text-3xl font-bold text-green-600">
+            <p className="text-3xl font-bold text-gray-900">
+              {submissions.reduce((acc, s) => acc + (s.parts_supplies_used?.length || 0), 0)}
+            </p>
+            <p className="text-sm text-gray-500 mt-2">Parts installed across all jobs</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-green-100 p-2.5 rounded-lg">
+                <Battery className="text-green-600" size={24} />
+              </div>
+              <h3 className="font-semibold text-gray-900">Battery Tests</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">
               {submissions.reduce((acc, s) => acc + (s.battery_health_readings?.length || 0), 0)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Total battery readings recorded</p>
+            <p className="text-sm text-gray-500 mt-2">Total battery readings</p>
           </div>
 
-          <div className="section-card">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Zap className="text-yellow-600" size={24} />
-              <h3 className="font-bold text-gray-900">Load Bank Tests</h3>
+              <div className="bg-amber-100 p-2.5 rounded-lg">
+                <Zap className="text-amber-600" size={24} />
+              </div>
+              <h3 className="font-semibold text-gray-900">Load Bank Tests</h3>
             </div>
-            <p className="text-3xl font-bold text-yellow-600">
+            <p className="text-3xl font-bold text-gray-900">
               {submissions.filter(s => s.load_bank_entries && s.load_bank_entries.length > 0).length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Forms with load bank testing</p>
+            <p className="text-sm text-gray-500 mt-2">Forms with load testing</p>
           </div>
 
-          <div className="section-card">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="text-red-600" size={24} />
-              <h3 className="font-bold text-gray-900">Service Due</h3>
+              <div className="bg-slate-100 p-2.5 rounded-lg">
+                <Clock className="text-slate-600" size={24} />
+              </div>
+              <h3 className="font-semibold text-gray-900">Time Entries</h3>
             </div>
-            <p className="text-3xl font-bold text-red-600">
-              {submissions.filter(s =>
-                s.service_coolant_flush_due ||
-                s.service_batteries_due ||
-                s.service_belts_due ||
-                s.service_hoses_due
-              ).length}
+            <p className="text-3xl font-bold text-gray-900">
+              {submissions.reduce((acc, s) => acc + (s.time_on_job?.length || 0), 0)}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Units requiring service</p>
+            <p className="text-sm text-gray-500 mt-2">Total time logs recorded</p>
           </div>
         </div>
 
-        {/* User Management Button */}
+        {/* User Management Section */}
         {localStorage.getItem("userRole") === "superadmin" && (
-          <div className="mt-6">
-            <button
-              onClick={() => navigate('/admin/users')}
-              className="btn-secondary w-full sm:w-auto flex items-center gap-2 justify-center"
-            >
-              <User size={18} />
-              Manage Users
-            </button>
+          <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">User Management</h3>
+                <p className="text-sm text-gray-500">Add, edit, or remove user accounts and permissions</p>
+              </div>
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 hover:shadow-md"
+              >
+                <User size={18} />
+                Manage Users
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Toast */}
+      {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-6 right-6 px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 border-l-4 ${
+        <div className={`fixed top-6 right-6 px-5 py-4 rounded-lg shadow-xl z-50 flex items-center gap-3 border-l-4 animate-slide-in ${
           toast.type === 'success'
-            ? 'bg-green-50 text-green-800 border-green-500'
-            : 'bg-red-50 text-red-800 border-red-500'
+            ? 'bg-white text-green-800 border-green-500'
+            : 'bg-white text-red-800 border-red-500'
         }`}>
-          <CheckCircle size={22} className="flex-shrink-0" />
-          <span className="font-medium">{toast.message}</span>
+          {toast.type === 'success' ? (
+            <CheckCircle size={20} className="flex-shrink-0 text-green-600" />
+          ) : (
+            <AlertCircle size={20} className="flex-shrink-0 text-red-600" />
+          )}
+          <span className="font-medium text-gray-900">{toast.message}</span>
         </div>
       )}
 
