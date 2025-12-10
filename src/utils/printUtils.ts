@@ -363,14 +363,10 @@ export async function generatePDF(
         pdf.text(loc.addr, xPos, locationsStartY + 3);
         pdf.text(loc.city, xPos, locationsStartY + 6);
 
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(loc.phone, xPos, locationsStartY + 9);
-
         if (index < locations.length - 1) {
           pdf.setDrawColor(200, 200, 200);
           pdf.setLineWidth(0.2);
-          pdf.line(xPos + colWidth - 1, locationsStartY - 1, xPos + colWidth - 1, locationsStartY + 10);
+          pdf.line(xPos + colWidth - 1, locationsStartY - 1, xPos + colWidth - 1, locationsStartY + 7);
         }
 
         xPos += colWidth;
