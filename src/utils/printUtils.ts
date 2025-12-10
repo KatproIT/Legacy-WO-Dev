@@ -278,99 +278,90 @@ export async function generatePDF(
 
     // Function to add header
     const addHeader = (pdf: jsPDF) => {
-      // Dark blue top bar
-      pdf.setFillColor(25, 42, 86);
-      pdf.rect(0, 0, pageWidth, 18, 'F');
+      // Light gray background for header
+      pdf.setFillColor(248, 249, 250);
+      pdf.rect(0, 0, pageWidth, headerHeight - 2, 'F');
 
-      // Add logo on dark background
+      // Add logo with proper aspect ratio
       try {
-        const logoWidth = 32;
+        const logoWidth = 40;
         const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
         const logoHeight = logoWidth / logoAspectRatio;
-        pdf.addImage(logo, 'PNG', contentMargin + 2, 4, logoWidth, logoHeight);
+        pdf.addImage(logo, 'PNG', contentMargin, 6, logoWidth, logoHeight);
       } catch (e) {
         console.warn('Could not add logo');
       }
 
-      // Job number in top bar
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(180, 180, 180);
-      const jobLabelX = pageWidth - contentMargin - 42;
-      pdf.text('Job Number:', jobLabelX, 9, { align: 'left' });
+      // Job number section with styled box
+      const jobBoxWidth = 50;
+      const jobBoxHeight = 12;
+      const jobBoxX = pageWidth - contentMargin - jobBoxWidth;
+      const jobBoxY = 6;
 
-      pdf.setFontSize(13);
+      pdf.setFillColor(30, 58, 138);
+      pdf.roundedRect(jobBoxX, jobBoxY, jobBoxWidth, jobBoxHeight, 1.5, 1.5, 'F');
+
+      pdf.setFontSize(8);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(255, 255, 255);
-      pdf.text(formData.job_po_number || 'N/A', jobLabelX, 15, { align: 'left' });
+      pdf.text('JOB NUMBER', jobBoxX + jobBoxWidth / 2, jobBoxY + 4, { align: 'center' });
 
-      // White background for locations section
-      pdf.setFillColor(255, 255, 255);
-      pdf.rect(0, 18, pageWidth, 25, 'F');
+      pdf.setFontSize(11);
+      pdf.text(formData.job_po_number || 'N/A', jobBoxX + jobBoxWidth / 2, jobBoxY + 9, { align: 'center' });
 
-      // Locations header
-      pdf.setFontSize(7);
+      // Professional divider line after logo/job section
+      pdf.setDrawColor(30, 58, 138);
+      pdf.setLineWidth(0.5);
+      pdf.line(contentMargin, 21, pageWidth - contentMargin, 21);
+
+      // Location information with cleaner layout
+      const locationsStartY = 26;
+      pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(25, 42, 86);
-      pdf.text('SERVICE LOCATIONS', contentMargin, 23);
+      pdf.setTextColor(30, 58, 138);
 
-      // Thin separator under header
-      pdf.setDrawColor(220, 220, 220);
-      pdf.setLineWidth(0.3);
-      pdf.line(contentMargin, 24.5, pageWidth - contentMargin, 24.5);
-
-      // Location boxes in a grid
       const locations = [
         { name: 'Western WA (HQ)', addr: '8102 Skansie Ave', city: 'Gig Harbor, WA 98332', phone: '(253) 858-0214' },
         { name: 'Inland WA & RMR', addr: '1566 E. Weber Rd', city: 'Ritzville, WA 99169', phone: '(509) 659-4470' },
         { name: 'Salem, OR', addr: '5873 State Street', city: 'Salem, OR', phone: '(541) 525-8140' },
-        { name: 'Three Forks, MT', addr: '1600 Bench RD', city: 'PO Box 648, Three Forks, MT 59752', phone: '' },
+        { name: 'Three Forks, MT', addr: '1600 Bench RD', city: 'PO Box 648', phone: 'Three Forks, MT 59752' },
         { name: 'Nampa, ID', addr: '2024 N Elder St', city: 'Nampa, ID', phone: '(208) 703-2183' }
       ];
 
-      const boxStartY = 27;
-      const boxWidth = (pageWidth - (contentMargin * 2) - 8) / 5;
-      const boxSpacing = 2;
+      const colWidth = (pageWidth - (contentMargin * 2)) / 5;
       let xPos = contentMargin;
 
       locations.forEach((loc, index) => {
-        // Light box background
-        pdf.setFillColor(250, 250, 252);
-        pdf.roundedRect(xPos, boxStartY, boxWidth, 13, 0.8, 0.8, 'FD');
-        pdf.setDrawColor(230, 230, 235);
-        pdf.setLineWidth(0.2);
-
-        // Location name with small icon-like square
-        pdf.setFillColor(25, 42, 86);
-        pdf.rect(xPos + 1, boxStartY + 1.5, 1, 1, 'F');
-
-        pdf.setFontSize(5.8);
+        // Location name in bold dark blue
         pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(25, 42, 86);
-        pdf.text(loc.name, xPos + 3, boxStartY + 2.5);
+        pdf.setTextColor(30, 58, 138);
+        pdf.text(loc.name, xPos, locationsStartY);
 
-        // Address in smaller font
-        pdf.setFontSize(5.2);
+        // Address details in regular gray
         pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(70, 70, 70);
-        pdf.text(loc.addr, xPos + 1.5, boxStartY + 5.5);
-        pdf.text(loc.city, xPos + 1.5, boxStartY + 8);
+        pdf.setTextColor(60, 60, 60);
+        pdf.text(loc.addr, xPos, locationsStartY + 3);
+        pdf.text(loc.city, xPos, locationsStartY + 6);
 
-        // Phone number
-        if (loc.phone) {
-          pdf.setFontSize(5.5);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(0, 0, 0);
-          pdf.text(loc.phone, xPos + 1.5, boxStartY + 11);
+        // Phone in bold black
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(loc.phone, xPos, locationsStartY + 9);
+
+        // Add vertical divider between locations (except after last one)
+        if (index < locations.length - 1) {
+          pdf.setDrawColor(200, 200, 200);
+          pdf.setLineWidth(0.2);
+          pdf.line(xPos + colWidth - 1, locationsStartY - 1, xPos + colWidth - 1, locationsStartY + 10);
         }
 
-        xPos += boxWidth + boxSpacing;
+        xPos += colWidth;
       });
 
-      // Bottom accent line
-      pdf.setDrawColor(25, 42, 86);
-      pdf.setLineWidth(1.2);
-      pdf.line(0, headerHeight - 2, pageWidth, headerHeight - 2);
+      // Bottom separator line with accent color
+      pdf.setDrawColor(30, 58, 138);
+      pdf.setLineWidth(0.8);
+      pdf.line(contentMargin, headerHeight - 2, pageWidth - contentMargin, headerHeight - 2);
     };
 
     // Function to add footer
