@@ -331,49 +331,13 @@ export async function generatePDF(
       pdf.setFontSize(11);
       pdf.text(formData.job_po_number || 'N/A', jobBoxX + jobBoxWidth / 2, jobBoxY + 9, { align: 'center' });
 
-      // Customer and Site Address section (below logo and job number)
-      let addressY = 22;
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(30, 58, 138);
-
-      const customer = formData.customer || '';
-      const siteName = formData.site_name || '';
-      const siteAddress = formData.site_address || '';
-
-      // Check if customer and site info are the same
-      const customerInfo = `${customer}`.trim();
-      const siteInfo = `${siteName} ${siteAddress}`.trim();
-      const isSameAddress = customerInfo === siteName || (customerInfo && siteName && customerInfo.toLowerCase() === siteName.toLowerCase());
-
-      // Display Customer info
-      if (customer) {
-        pdf.text('CUSTOMER:', contentMargin, addressY);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(customer, contentMargin + 22, addressY);
-        addressY += 3.5;
-      }
-
-      // Display Site info only if different from customer
-      if (!isSameAddress && (siteName || siteAddress)) {
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(30, 58, 138);
-        pdf.text('LOCATION:', contentMargin, addressY);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(0, 0, 0);
-        const locationText = siteName ? `${siteName}${siteAddress ? ', ' + siteAddress : ''}` : siteAddress;
-        pdf.text(locationText, contentMargin + 22, addressY);
-        addressY += 3.5;
-      }
-
-      // Professional divider line
+      // Professional divider line after logo/job section
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.5);
-      pdf.line(contentMargin, addressY + 1, pageWidth - contentMargin, addressY + 1);
+      pdf.line(contentMargin, 21, pageWidth - contentMargin, 21);
 
       // Branch locations
-      const locationsStartY = addressY + 5;
+      const locationsStartY = 26;
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(30, 58, 138);
