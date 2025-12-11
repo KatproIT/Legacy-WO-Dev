@@ -27,8 +27,9 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
   };
 
   const updateRecommendedPart = (id: string, field: keyof RecommendedPart, value: any) => {
+    const uppercasedValue = (field === 'partNo' || field === 'description') && typeof value === 'string' ? value.toUpperCase() : value;
     onChange('recommended_parts', recommendedParts.map(p =>
-      p.id === id ? { ...p, [field]: value } : p
+      p.id === id ? { ...p, [field]: uppercasedValue } : p
     ));
   };
 
@@ -49,8 +50,9 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
   };
 
   const updatePartsSupply = (id: string, field: keyof PartsSupply, value: any) => {
+    const uppercasedValue = (field === 'partNo' || field === 'description') && typeof value === 'string' ? value.toUpperCase() : value;
     onChange('parts_supplies_used', partsSupplies.map(p =>
-      p.id === id ? { ...p, [field]: value } : p
+      p.id === id ? { ...p, [field]: uppercasedValue } : p
     ));
   };
 
@@ -139,6 +141,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                       onChange={(e) => updateRecommendedPart(part.id, 'partNo', e.target.value)}
                       disabled={readOnly}
                       className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
@@ -148,6 +151,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                       onChange={(e) => updateRecommendedPart(part.id, 'description', e.target.value)}
                       disabled={readOnly}
                       className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 px-2 py-2 text-center">
@@ -215,6 +219,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                       onChange={(e) => updatePartsSupply(part.id, 'partNo', e.target.value)}
                       disabled={readOnly}
                       className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
@@ -224,6 +229,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                       onChange={(e) => updatePartsSupply(part.id, 'description', e.target.value)}
                       disabled={readOnly}
                       className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 px-2 py-2">

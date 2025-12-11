@@ -82,9 +82,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.full_caps || ''}
-                onChange={(e) => onChange('full_caps', e.target.value)}
+                onChange={(e) => onChange('full_caps', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -123,9 +124,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.oil_type || ''}
-                onChange={(e) => onChange('oil_type', e.target.value)}
+                onChange={(e) => onChange('oil_type', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -133,9 +135,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.oil_cap || ''}
-                onChange={(e) => onChange('oil_cap', e.target.value)}
+                onChange={(e) => onChange('oil_cap', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -153,9 +156,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.oil_psi || ''}
-                onChange={(e) => onChange('oil_psi', e.target.value)}
+                onChange={(e) => onChange('oil_psi', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
           </div>
@@ -169,9 +173,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.oil_filter_pn || ''}
-                onChange={(e) => onChange('oil_filter_pn', e.target.value)}
+                onChange={(e) => onChange('oil_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -191,9 +196,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.fuel_filter_pn || ''}
-                onChange={(e) => onChange('fuel_filter_pn', e.target.value)}
+                onChange={(e) => onChange('fuel_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -213,9 +219,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.coolant_filter_pn || ''}
-                onChange={(e) => onChange('coolant_filter_pn', e.target.value)}
+                onChange={(e) => onChange('coolant_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -235,9 +242,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="text"
                 value={formData.air_filter_pn || ''}
-                onChange={(e) => onChange('air_filter_pn', e.target.value)}
+                onChange={(e) => onChange('air_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className="form-input"
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -386,9 +394,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_ab || ''}
-                    onChange={(e) => onChange('electrical_ab', e.target.value)}
+                    onChange={(e) => onChange('electrical_ab', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -396,9 +405,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_bc || ''}
-                    onChange={(e) => onChange('electrical_bc', e.target.value)}
+                    onChange={(e) => onChange('electrical_bc', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -406,9 +416,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_ca || ''}
-                    onChange={(e) => onChange('electrical_ca', e.target.value)}
+                    onChange={(e) => onChange('electrical_ca', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -416,9 +427,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.frequency || ''}
-                    onChange={(e) => onChange('frequency', e.target.value)}
+                    onChange={(e) => onChange('frequency', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
               </div>
@@ -432,9 +444,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_an || ''}
-                    onChange={(e) => onChange('electrical_an', e.target.value)}
+                    onChange={(e) => onChange('electrical_an', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -442,9 +455,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_bn || ''}
-                    onChange={(e) => onChange('electrical_bn', e.target.value)}
+                    onChange={(e) => onChange('electrical_bn', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -452,9 +466,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.electrical_cn || ''}
-                    onChange={(e) => onChange('electrical_cn', e.target.value)}
+                    onChange={(e) => onChange('electrical_cn', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
               </div>
@@ -468,9 +483,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.voltage_a || ''}
-                    onChange={(e) => onChange('voltage_a', e.target.value)}
+                    onChange={(e) => onChange('voltage_a', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -478,9 +494,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.voltage_b || ''}
-                    onChange={(e) => onChange('voltage_b', e.target.value)}
+                    onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
@@ -488,9 +505,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                   <input
                     type="text"
                     value={formData.voltage_c || ''}
-                    onChange={(e) => onChange('voltage_c', e.target.value)}
+                    onChange={(e) => onChange('voltage_c', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className="form-input"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
               </div>
@@ -537,9 +555,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                       <input
                         type="text"
                         value={battery.batteryType || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value)}
+                        onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value.toUpperCase())}
                         disabled={readOnly}
                         className="form-input"
+                        style={{ textTransform: 'uppercase' }}
                       />
                     </div>
                     <div>
@@ -547,9 +566,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                       <input
                         type="text"
                         value={battery.batteryChargerVolts || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value)}
+                        onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value.toUpperCase())}
                         disabled={readOnly}
                         className="form-input"
+                        style={{ textTransform: 'uppercase' }}
                       />
                     </div>
                   </div>
@@ -570,27 +590,30 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                             <input
                               type="text"
                               value={battery.voltage}
-                              onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value)}
+                              onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value.toUpperCase())}
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                              style={{ textTransform: 'uppercase' }}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">
                             <input
                               type="text"
                               value={battery.ccaRating}
-                              onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value)}
+                              onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value.toUpperCase())}
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                              style={{ textTransform: 'uppercase' }}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">
                             <input
                               type="text"
                               value={battery.ccaTested}
-                              onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value)}
+                              onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value.toUpperCase())}
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                              style={{ textTransform: 'uppercase' }}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">

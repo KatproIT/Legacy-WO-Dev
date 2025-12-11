@@ -34,7 +34,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
     onChange(
       'additional_ats',
       additionalATS.map((ats: AdditionalATS) =>
-        ats.id === id ? { ...ats, [field]: value } : ats
+        ats.id === id ? { ...ats, [field]: value.toUpperCase() } : ats
       )
     );
   };
@@ -86,6 +86,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     onChange={(e) => updateATS(ats.id, 'make', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
 
@@ -97,6 +98,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     onChange={(e) => updateATS(ats.id, 'model', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
 
@@ -108,6 +110,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     onChange={(e) => updateATS(ats.id, 'serial', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
 
@@ -119,6 +122,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     onChange={(e) => updateATS(ats.id, 'spec', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
 
@@ -163,6 +167,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     onChange={(e) => updateATS(ats.id, 'amp', e.target.value)}
                     disabled={readOnly}
                     className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </div>
               </div>

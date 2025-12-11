@@ -45,7 +45,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
     onChange(
       'load_bank_entries',
       entries.map((entry: LoadBankEntry) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
+        entry.id === id ? { ...entry, [field]: value.toUpperCase() } : entry
       )
     );
   };
@@ -73,9 +73,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_customer || ''}
-                onChange={(e) => onChange('load_bank_customer', e.target.value)}
+                onChange={(e) => onChange('load_bank_customer', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -99,9 +100,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_site_name || ''}
-                onChange={(e) => onChange('load_bank_site_name', e.target.value)}
+                onChange={(e) => onChange('load_bank_site_name', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -125,9 +127,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_site_address || ''}
-                onChange={(e) => onChange('load_bank_site_address', e.target.value)}
+                onChange={(e) => onChange('load_bank_site_address', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -135,9 +138,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_ambient_air_temp || ''}
-                onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value)}
+                onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_ambient_air_temp, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
           </div>
@@ -148,9 +152,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_make || ''}
-                onChange={(e) => onChange('load_bank_make', e.target.value)}
+                onChange={(e) => onChange('load_bank_make', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_make, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -158,9 +163,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_model || ''}
-                onChange={(e) => onChange('load_bank_model', e.target.value)}
+                onChange={(e) => onChange('load_bank_model', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_model, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
@@ -168,9 +174,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_sn || ''}
-                onChange={(e) => onChange('load_bank_sn', e.target.value)}
+                onChange={(e) => onChange('load_bank_sn', e.target.value.toUpperCase())}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_sn, hasValidationErrors && isRequired, readOnly)}
+                style={{ textTransform: 'uppercase' }}
               />
             </div>
           </div>
@@ -243,6 +250,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'kw', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -252,6 +260,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'hertz', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -261,6 +270,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'ab', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -270,6 +280,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'bc', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -279,6 +290,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'ca', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -288,6 +300,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'an', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -297,6 +310,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'bn', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -306,6 +320,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'cn', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -315,6 +330,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'amps_a', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -324,6 +340,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'amps_b', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -333,6 +350,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'amps_c', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -342,6 +360,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'oil_pressure', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -351,6 +370,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'water_temp', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   <td className="border border-gray-300 p-0">
@@ -360,6 +380,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       onChange={(e) => updateEntry(entry.id, 'batt_charger_voltage', e.target.value)}
                       disabled={readOnly}
                       className="w-full p-0 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs"
+                      style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   {!readOnly && (

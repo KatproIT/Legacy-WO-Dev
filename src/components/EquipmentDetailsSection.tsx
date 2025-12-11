@@ -15,7 +15,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
 
   const updateEquipment = (equipment: 'equipment_generator' | 'equipment_engine' | 'equipment_ats1' | 'equipment_ats2', field: keyof EquipmentDetails, value: string) => {
     const current = formData[equipment] || {};
-    onChange(equipment, { ...current, [field]: value });
+    onChange(equipment, { ...current, [field]: value.toUpperCase() });
   };
 
   const getTableInputClass = (value: any) => {
@@ -56,6 +56,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={1}
                     className={getTableInputClass(formData.equipment_generator?.make)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -66,6 +67,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={11}
                     className={getTableInputClass(formData.equipment_engine?.make)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -76,6 +78,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={15}
                     className={getTableInputClass(formData.equipment_ats1?.make)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -86,6 +89,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={22}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
               </tr>
@@ -99,6 +103,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={2}
                     className={getTableInputClass(formData.equipment_generator?.model)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -109,6 +114,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={12}
                     className={getTableInputClass(formData.equipment_engine?.model)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -119,6 +125,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={16}
                     className={getTableInputClass(formData.equipment_ats1?.model)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -129,6 +136,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={23}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
               </tr>
@@ -142,6 +150,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={3}
                     className={getTableInputClass(formData.equipment_generator?.serial)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -152,6 +161,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={13}
                     className={getTableInputClass(formData.equipment_engine?.serial)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -162,6 +172,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={17}
                     className={getTableInputClass(formData.equipment_ats1?.serial)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -172,6 +183,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={24}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
               </tr>
@@ -185,6 +197,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={4}
                     className={getTableInputClass(formData.equipment_generator?.spec)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -195,6 +208,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={14}
                     className={getTableInputClass(formData.equipment_engine?.spec)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -205,6 +219,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={18}
                     className={getTableInputClass(formData.equipment_ats1?.spec)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -215,6 +230,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={25}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
               </tr>
@@ -329,6 +345,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={7}
                     className={getTableInputClass(formData.equipment_generator?.genAmp)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
@@ -340,6 +357,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={21}
                     className={getTableInputClass(formData.equipment_ats1?.ats1Amp)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1">
@@ -350,6 +368,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={28}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
               </tr>
@@ -363,6 +382,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={8}
                     className={getTableInputClass(formData.equipment_generator?.kw)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
@@ -379,6 +399,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={9}
                     className="w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
@@ -395,6 +416,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     disabled={readOnly}
                     tabIndex={10}
                     className={getTableInputClass(formData.equipment_generator?.hours)}
+                    style={{ textTransform: 'uppercase' }}
                   />
                 </td>
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
