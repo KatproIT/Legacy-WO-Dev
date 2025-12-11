@@ -52,7 +52,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
 
   if (!formData.exercise_day) errors.push('Exercise Day is required');
   if (!formData.with_load) errors.push('With Load is required');
-  if (!formData.exercise_time) errors.push('Exercise Time is required');
   if (!formData.exercise_interval) errors.push('Exercise Interval is required');
   if (!formData.load_bank_test) errors.push('Load Bank Test is required');
   if (!formData.transfer_test) errors.push('Transfer Test is required');

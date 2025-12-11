@@ -61,7 +61,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">Time <span className="text-red-600">*</span></label>
+          <label className="form-label">Time</label>
           <input
             type="time"
             value={formData.exercise_time || ''}
