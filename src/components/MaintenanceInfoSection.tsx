@@ -42,6 +42,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             <option value="FRIDAY">FRIDAY</option>
             <option value="SATURDAY">SATURDAY</option>
             <option value="SUNDAY">SUNDAY</option>
+            <option value="OFF">OFF</option>
             <option value="UNKNOWN">UNKNOWN</option>
           </select>
         </div>
@@ -65,8 +66,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             type="time"
             value={formData.exercise_time || ''}
             onChange={(e) => onChange('exercise_time', e.target.value)}
-            disabled={readOnly}
-            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly)}
+            disabled={readOnly || formData.exercise_day === 'OFF'}
+            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly || formData.exercise_day === 'OFF')}
           />
         </div>
         <div>
@@ -81,6 +82,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             <option value="WEEKLY">WEEKLY</option>
             <option value="BIWEEKLY">BIWEEKLY</option>
             <option value="MONTHLY">MONTHLY</option>
+            <option value="OFF">OFF</option>
             <option value="UNKNOWN">UNKNOWN</option>
           </select>
         </div>
