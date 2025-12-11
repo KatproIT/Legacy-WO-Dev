@@ -134,6 +134,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     <option value="1P">1P</option>
                     <option value="3P">3P</option>
                     <option value="MULTI">MULTI</option>
+                    <option value="N/A">N/A</option>
                   </select>
                 </div>
 
@@ -150,6 +151,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
                     <option value="240">240</option>
                     <option value="480">480</option>
                     <option value="MULTI">MULTI</option>
+                    <option value="N/A">N/A</option>
                   </select>
                 </div>
 
