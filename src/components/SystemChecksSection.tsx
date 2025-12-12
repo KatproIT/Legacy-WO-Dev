@@ -144,11 +144,12 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
             <div>
               <label className="form-label">DATE LAST OIL CHANGE <span className="text-red-600">*</span></label>
               <input
-                type="date"
+                type="text"
                 value={formData.date_last_oil_change || ''}
                 onChange={(e) => onChange('date_last_oil_change', e.target.value)}
                 disabled={readOnly}
                 placeholder="DD-MM-YYYY"
+                pattern="\d{2}-\d{2}-\d{4}"
                 className="form-input"
               />
             </div>
@@ -544,11 +545,12 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                     <div>
                       <label className="form-label">BATTERY DATE</label>
                       <input
-                        type="date"
+                        type="text"
                         value={battery.batteryDate || ''}
                         onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
                         disabled={readOnly}
                         placeholder="DD-MM-YYYY"
+                        pattern="\d{2}-\d{2}-\d{4}"
                         className="form-input"
                       />
                     </div>
