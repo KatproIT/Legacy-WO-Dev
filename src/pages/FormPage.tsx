@@ -915,7 +915,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
                     >
                       <CheckCircle size={16} />
-                      <span>{saving ? 'Submitting...' : 'Submit Work Order'}</span>
+                      <span>{saving ? 'Submitting...' : 'SUBMIT WORK ORDER'}</span>
                     </button>
                   )}
                 </>
