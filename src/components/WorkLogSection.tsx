@@ -126,7 +126,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                         value={entry.rate}
                         onChange={(e) => updateTimeEntry(entry.id, 'rate', e.target.value)}
                         disabled={readOnly}
-                        placeholder="$"
+                        placeholder="$0.00"
                         className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
                       />
                     </td>
@@ -276,7 +276,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
             disabled={readOnly}
             rows={6}
             className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-y"
-            placeholder="Describe the work performed..."
+            placeholder="DESCRIBE THE WORK PERFORMED..."
           />
         </div>
       </div>

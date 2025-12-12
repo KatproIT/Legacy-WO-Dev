@@ -63,7 +63,7 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Forward Form</h2>
+            <h2 className="text-xl font-semibold text-gray-900">FORWARD FORM</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -118,7 +118,7 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
                 type="submit"
                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                Forward
+                FORWARD
               </button>
             </div>
           </form>

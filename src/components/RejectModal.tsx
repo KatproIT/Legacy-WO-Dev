@@ -26,7 +26,7 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">Reject Form</h2>
+            <h2 className="text-xl font-semibold text-gray-900">REJECT FORM</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -53,7 +53,7 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
                 rows={4}
-                placeholder="Enter reason for rejection..."
+                placeholder="ENTER REASON FOR REJECTION..."
                 autoFocus
               />
               {error && (
@@ -73,7 +73,7 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
                 type="submit"
                 className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium"
               >
-                Reject Form
+                REJECT FORM
               </button>
             </div>
           </form>

@@ -43,7 +43,7 @@ export function FormTabs({ activeTab, onTabChange, hasServiceReportErrors = fals
               : 'bg-transparent text-gray-600 hover:bg-gray-100'
           }`}
         >
-          Load Bank Report
+          LOAD BANK REPORT
         </button>
       </div>
     </div>

@@ -84,7 +84,7 @@ export function DraftsModal({ isOpen, onClose, onLoadDraft, userEmail }: DraftsM
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">My Drafts</h2>
+          <h2 className="text-xl font-semibold text-gray-900">MY DRAFTS</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -96,7 +96,7 @@ export function DraftsModal({ isOpen, onClose, onLoadDraft, userEmail }: DraftsM
         <div className="flex-1 overflow-y-auto p-6">
           {loading && (
             <div className="text-center py-8 text-gray-500">
-              Loading drafts...
+              LOADING DRAFTS...
             </div>
           )}
 
@@ -109,7 +109,7 @@ export function DraftsModal({ isOpen, onClose, onLoadDraft, userEmail }: DraftsM
           {!loading && !error && drafts.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <FileText size={48} className="mx-auto mb-4 text-gray-300" />
-              <p>No drafts found</p>
+              <p>NO DRAFTS FOUND</p>
             </div>
           )}
 
