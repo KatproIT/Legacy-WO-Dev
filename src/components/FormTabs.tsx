@@ -21,7 +21,7 @@ export function FormTabs({ activeTab, onTabChange, hasServiceReportErrors = fals
               : 'bg-transparent text-gray-600 hover:bg-gray-100'
           }`}
         >
-          Service Report
+          SERVICE REPORT
         </button>
         <button
           onClick={() => onTabChange(1)}
