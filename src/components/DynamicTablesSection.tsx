@@ -175,7 +175,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
               className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               <Plus size={18} />
-              Add Part
+              ADD PART
             </button>
           )}
         </div>
@@ -281,7 +281,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
               className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               <Plus size={18} />
-              Add Item
+              ADD ITEM
             </button>
           )}
         </div>
