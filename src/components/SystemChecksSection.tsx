@@ -148,6 +148,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 value={formData.date_last_oil_change || ''}
                 onChange={(e) => onChange('date_last_oil_change', e.target.value)}
                 disabled={readOnly}
+                placeholder="DD-MM-YYYY"
                 className="form-input"
               />
             </div>
@@ -547,6 +548,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                         value={battery.batteryDate || ''}
                         onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
                         disabled={readOnly}
+                        placeholder="DD-MM-YYYY"
                         className="form-input"
                       />
                     </div>

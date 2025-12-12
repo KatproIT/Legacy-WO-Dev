@@ -50,7 +50,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
   const addTimeEntry = () => {
     const newEntry: TimeEntry = {
       id: Date.now().toString(),
-      activity: `(${getOrdinal(timeEntries.length + 1)} Day) Time on Job`,
+      activity: `(${getOrdinal(timeEntries.length + 1)} DAY) TIME ON JOB`,
       date: '',
       rate: '',
       startTime: '00:00',
@@ -63,7 +63,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
     const updated = timeEntries.filter(e => e.id !== id);
     const renumbered = updated.map((entry, index) => ({
       ...entry,
-      activity: `(${getOrdinal(index + 1)} Day) Time on Job`
+      activity: `(${getOrdinal(index + 1)} DAY) TIME ON JOB`
     }));
     onChange('time_on_job', renumbered);
   };
@@ -75,7 +75,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
   };
 
   const getOrdinal = (n: number): string => {
-    const suffixes = ['th', 'st', 'nd', 'rd'];
+    const suffixes = ['TH', 'ST', 'ND', 'RD'];
     const v = n % 100;
     return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
   };
@@ -115,6 +115,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                         value={entry.date}
                         onChange={(e) => updateTimeEntry(entry.id, 'date', e.target.value)}
                         disabled={readOnly}
+                        placeholder="DD-MM-YYYY"
                         className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
                       />
                     </td>
@@ -149,7 +150,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                       />
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-center font-medium">
-                      {totalTime.toFixed(2)} hrs
+                      {totalTime.toFixed(2)} HRS
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-center font-medium">
                       ${totalDollar.toFixed(2)}
