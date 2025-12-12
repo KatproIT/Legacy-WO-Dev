@@ -42,7 +42,7 @@ export function AdditionalATSSection({ formData, onChange, readOnly }: Additiona
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">Additional ATS Units (ATS 3-6)</h2>
+        <h2 className="text-xl font-bold">ADDITIONAL ATS UNITS (ATS 3-6)</h2>
         {!readOnly && (
           <button
             type="button"
