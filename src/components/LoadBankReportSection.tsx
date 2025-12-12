@@ -65,7 +65,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
         <div className="mt-4 space-y-6">
 
       <div className="bg-gray-50 p-4 border border-gray-300">
-        <h3 className="font-semibold mb-3">Load Bank Test Information</h3>
+        <h3 className="font-semibold mb-3">LOAD BANK TEST INFORMATION</h3>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -185,7 +185,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Load Bank Test Entries</h3>
+        <h3 className="text-lg font-semibold">LOAD BANK TEST ENTRIES</h3>
         {!readOnly && (
           <button
             type="button"
@@ -193,14 +193,14 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >
             <Plus size={18} />
-            Add Entry
+            ADD ENTRY
           </button>
         )}
       </div>
 
       {entries.length === 0 ? (
         <div className="bg-gray-50 border border-gray-300 p-8 text-center text-gray-500">
-          No load bank test entries added. Click "Add Entry" to add one.
+          NO LOAD BANK TEST ENTRIES ADDED. CLICK "ADD ENTRY" TO ADD ONE.
         </div>
       ) : (
         <div className="overflow-x-auto lg:overflow-visible">

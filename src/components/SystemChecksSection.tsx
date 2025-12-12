@@ -53,13 +53,13 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        Maintenance Information
+        MAINTENANCE INFORMATION
       </h2>
 
       {!isCollapsed && (
       <div className="p-4 space-y-4">
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">Fuel Information</h3>
+          <h3 className="font-semibold mb-3">FUEL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">FUEL TYPE <span className="text-red-600">*</span></label>
@@ -78,7 +78,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               </select>
             </div>
             <div>
-              <label className="form-label">Fuel Capacity <span className="text-red-600">*</span></label>
+              <label className="form-label">FUEL CAPACITY <span className="text-red-600">*</span></label>
               <input
                 type="text"
                 value={formData.full_caps || ''}
@@ -117,7 +117,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">Oil Information</h3>
+          <h3 className="font-semibold mb-3">OIL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="form-label">OIL TYPE <span className="text-red-600">*</span></label>
@@ -131,7 +131,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               />
             </div>
             <div>
-              <label className="form-label">Oil Capacity <span className="text-red-600">*</span></label>
+              <label className="form-label">OIL CAPACITY <span className="text-red-600">*</span></label>
               <input
                 type="text"
                 value={formData.oil_cap || ''}
@@ -166,7 +166,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">Filter Information</h3>
+          <h3 className="font-semibold mb-3">FILTER INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-label">OIL FILTER P/N <span className="text-red-600">*</span></label>
@@ -264,7 +264,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">System Checks</h3>
+          <h3 className="font-semibold mb-3">SYSTEM CHECKS</h3>
 
           <div className="mb-3">
             <label className="form-label">COOLANT LEVEL / PROTECTION <span className="text-red-600">*</span></label>
@@ -370,7 +370,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
           </div>
 
           <div className="mt-3">
-            <label className="form-label">OIL / Coolant Fill cap <span className="text-red-600">*</span></label>
+            <label className="form-label">OIL / COOLANT FILL CAP <span className="text-red-600">*</span></label>
             <select
               value={formData.fill_caps || ''}
               onChange={(e) => onChange('fill_caps', e.target.value)}
@@ -387,7 +387,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
         <div className="bg-gray-50 p-4 border border-gray-300">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <h3 className="font-semibold mb-3">Electrical Readings</h3>
+              <h3 className="font-semibold mb-3">ELECTRICAL READINGS</h3>
               <div className="space-y-3">
                 <div>
                   <label className="form-label">A-B <span className="text-red-600">*</span></label>
@@ -437,7 +437,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
             </div>
 
             <div>
-              <h3 className="font-semibold mb-3 invisible">Spacer</h3>
+              <h3 className="font-semibold mb-3 invisible">SPACER</h3>
               <div className="space-y-3">
                 <div>
                   <label className="form-label">A-N <span className="text-red-600">*</span></label>
@@ -476,7 +476,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
             </div>
 
             <div>
-              <h3 className="font-semibold mb-3">Current</h3>
+              <h3 className="font-semibold mb-3">CURRENT</h3>
               <div className="space-y-3">
                 <div>
                   <label className="form-label">A <span className="text-red-600">*</span></label>
@@ -527,21 +527,21 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
 
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-700">Battery {battery.battery}</h3>
+                    <h3 className="text-lg font-semibold text-gray-700">BATTERY {battery.battery}</h3>
                     {!readOnly && (
                       <button
                         onClick={() => removeBattery(battery.id)}
                         className="text-red-600 hover:text-red-800 transition-colors flex items-center gap-2"
                       >
                         <Trash2 size={18} />
-                        Remove
+                        REMOVE
                       </button>
                     )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className="form-label">Battery Date</label>
+                      <label className="form-label">BATTERY DATE</label>
                       <input
                         type="date"
                         value={battery.batteryDate || ''}
@@ -551,7 +551,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                       />
                     </div>
                     <div>
-                      <label className="form-label">Battery Type</label>
+                      <label className="form-label">BATTERY TYPE</label>
                       <input
                         type="text"
                         value={battery.batteryType || ''}
@@ -562,7 +562,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                       />
                     </div>
                     <div>
-                      <label className="form-label">Battery Charger Volts</label>
+                      <label className="form-label">BATTERY CHARGER VOLTS</label>
                       <input
                         type="text"
                         value={battery.batteryChargerVolts || ''}
@@ -578,10 +578,10 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="bg-blue-100">
-                          <th className="border border-gray-300 px-3 py-2 text-center">Voltage</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">CCA Rating</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">CCA Tested</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">Pass/Fail</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">VOLTAGE</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">CCA RATING</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">CCA TESTED</th>
+                          <th className="border border-gray-300 px-3 py-2 text-center">PASS/FAIL</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -623,8 +623,8 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                               disabled={readOnly}
                               className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
                             >
-                              <option value="Pass">Pass</option>
-                              <option value="Fail">Fail</option>
+                              <option value="Pass">PASS</option>
+                              <option value="Fail">FAIL</option>
                             </select>
                           </td>
                         </tr>
@@ -641,7 +641,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
                 <Plus size={18} />
-                Add Battery
+                ADD BATTERY
               </button>
             )}
           </div>

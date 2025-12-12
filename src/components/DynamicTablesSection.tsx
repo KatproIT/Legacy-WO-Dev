@@ -80,10 +80,10 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
             </thead>
             <tbody>
               {[
-                { type: 'Coolant Flush', interval: 'Every 5 Years', field: 'service_coolant_flush_due' },
-                { type: 'Batteries', interval: 'Every 3 Years', field: 'service_batteries_due' },
-                { type: 'Belts', interval: 'Every 3 Years', field: 'service_belts_due' },
-                { type: 'Hoses', interval: 'Every 3 Years', field: 'service_hoses_due' },
+                { type: 'COOLANT FLUSH', interval: 'EVERY 5 YEARS', field: 'service_coolant_flush_due' },
+                { type: 'BATTERIES', interval: 'EVERY 3 YEARS', field: 'service_batteries_due' },
+                { type: 'BELTS', interval: 'EVERY 3 YEARS', field: 'service_belts_due' },
+                { type: 'HOSES', interval: 'EVERY 3 YEARS', field: 'service_hoses_due' },
               ].map((item, index) => (
                 <tr key={item.type} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="border border-gray-300 px-4 py-2">{item.type}</td>
@@ -117,7 +117,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 <th className="border border-gray-300 px-3 py-2 text-center">QTY</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">PART NO.</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">DESCRIPTION</th>
-                <th className="border border-gray-300 px-3 py-2 text-center">Action</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">ACTION</th>
               </tr>
             </thead>
             <tbody>
@@ -195,7 +195,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 <th className="border border-gray-300 px-3 py-2 text-center">DESCRIPTION</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">COST</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">FROM</th>
-                <th className="border border-gray-300 px-3 py-2 text-center">Action</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">ACTION</th>
               </tr>
             </thead>
             <tbody>

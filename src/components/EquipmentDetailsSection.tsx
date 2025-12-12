@@ -30,7 +30,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        Equipment Details
+        EQUIPMENT DETAILS
       </h2>
 
       {!isCollapsed && (
@@ -38,9 +38,9 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold text-left">Field</th>
-                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">Generator</th>
-                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">Engine</th>
+                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold text-left">FIELD</th>
+                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">GENERATOR</th>
+                <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">ENGINE</th>
                 <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">ATS 1</th>
                 <th className="border border-gray-300 px-3 py-2 text-sm font-semibold">ATS 2</th>
               </tr>

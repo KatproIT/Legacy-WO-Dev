@@ -20,14 +20,14 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
          {isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
-        ATS Exerciser
+        ATS EXERCISER
       </h2>
 
       {!isCollapsed && (
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
-          <label className="form-label">Exercise Day <span className="text-red-600">*</span></label>
+          <label className="form-label">EXERCISE DAY <span className="text-red-600">*</span></label>
           <select
             value={formData.exercise_day || ''}
             onChange={(e) => onChange('exercise_day', e.target.value)}
@@ -47,7 +47,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">With Load <span className="text-red-600">*</span></label>
+          <label className="form-label">WITH LOAD <span className="text-red-600">*</span></label>
           <select
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
@@ -61,7 +61,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">Time</label>
+          <label className="form-label">TIME</label>
           <input
             type="time"
             value={formData.exercise_time || ''}
@@ -71,7 +71,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           />
         </div>
         <div>
-          <label className="form-label">Exercise Interval <span className="text-red-600">*</span></label>
+          <label className="form-label">EXERCISE INTERVAL <span className="text-red-600">*</span></label>
           <select
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
@@ -87,7 +87,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">Load Bank Test <span className="text-red-600">*</span></label>
+          <label className="form-label">LOAD BANK TEST <span className="text-red-600">*</span></label>
           <select
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
@@ -102,7 +102,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">Transfer Test <span className="text-red-600">*</span></label>
+          <label className="form-label">TRANSFER TEST <span className="text-red-600">*</span></label>
           <select
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}

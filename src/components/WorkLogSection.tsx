@@ -98,7 +98,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                 <th className="border border-gray-300 px-3 py-2 text-center">END TIME</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">TOTAL TIME</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">TOTAL ($)</th>
-                <th className="border border-gray-300 px-3 py-2 text-center">Action</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">ACTION</th>
               </tr>
             </thead>
             <tbody>
@@ -176,7 +176,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
               className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               <Plus size={18} />
-              Add Day
+              ADD DAY
             </button>
           )}
         </div>
@@ -189,7 +189,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
           </div>
           <div className="p-4 space-y-3">
             <div>
-              <label className="form-label">Trip Charge</label>
+              <label className="form-label">TRIP CHARGE</label>
               <input
                 type="number"
                 min="0"
@@ -202,7 +202,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
               />
             </div>
             <div>
-              <label className="form-label">Environmental Fee</label>
+              <label className="form-label">ENVIRONMENTAL FEE</label>
               <input
                 type="number"
                 min="0"
@@ -215,7 +215,7 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
               />
             </div>
             <div>
-              <label className="form-label">Consumables</label>
+              <label className="form-label">CONSUMABLES</label>
               <input
                 type="number"
                 min="0"
@@ -236,23 +236,23 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
           </div>
           <div className="p-4 space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Labor Cost:</span>
+              <span className="text-sm font-medium text-gray-700">LABOR COST:</span>
               <span className="text-lg font-semibold">${totalLaborCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Parts Cost:</span>
+              <span className="text-sm font-medium text-gray-700">PARTS COST:</span>
               <span className="text-lg font-semibold">${totalPartsCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Trip Charge:</span>
+              <span className="text-sm font-medium text-gray-700">TRIP CHARGE:</span>
               <span className="text-lg font-semibold">${tripCharge.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Environmental Fee:</span>
+              <span className="text-sm font-medium text-gray-700">ENVIRONMENTAL FEE:</span>
               <span className="text-lg font-semibold">${environmentalFee.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Consumables:</span>
+              <span className="text-sm font-medium text-gray-700">CONSUMABLES:</span>
               <span className="text-lg font-semibold">${consumables.toFixed(2)}</span>
             </div>
             <div className="border-t-2 border-gray-300 pt-3 mt-3">

@@ -15,14 +15,14 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
   return (
     <div className="section-card">
       <h2 className="section-header">
-        Field Service Report - Work Order
+        FIELD SERVICE REPORT - WORK ORDER
       </h2>
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="form-label">
-              Date <span className="text-red-600">*</span>
+              DATE <span className="text-red-600">*</span>
             </label>
             <input
               type="date"
@@ -34,7 +34,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
           </div>
           <div>
             <label className="form-label">
-              Job/PO # <span className="text-red-600">*</span>
+              JOB/PO # <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
@@ -78,7 +78,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
           </div>
           <div>
             <label className="form-label">
-              Technician <span className="text-red-600">*</span>
+              TECHNICIAN <span className="text-red-600">*</span>
             </label>
             <input
               type="text"
