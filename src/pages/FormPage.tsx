@@ -814,7 +814,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
               >
                 <Plus size={18} />
-                <span className="hidden sm:inline">New Form</span>
+                <span className="hidden sm:inline">NEW FORM</span>
               </button>
             </div>
           </div>
@@ -828,14 +828,14 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
               >
                 <Printer size={16} />
-                <span>Print</span>
+                <span>PRINT</span>
               </button>
               <button
                 onClick={handleCustomerCopy}
                 className="px-3 py-1.5 text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
               >
                 <Download size={16} />
-                <span>Customer Copy</span>
+                <span>CUSTOMER COPY</span>
               </button>
 
               {/* Divider */}
@@ -850,14 +850,14 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     className="px-3 py-1.5 text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm disabled:opacity-50"
                   >
                     <Save size={16} />
-                    <span>Save Draft</span>
+                    <span>SAVE DRAFT</span>
                   </button>
                   <button
                     onClick={() => setShowDraftsModal(true)}
                     className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
                     <FileText size={16} />
-                    <span>My Drafts</span>
+                    <span>MY DRAFT</span>
                   </button>
                 </>
               )}
@@ -872,7 +872,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     className="px-3 py-1.5 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
                     <XCircle size={16} />
-                    <span>Reject</span>
+                    <span>REJECT</span>
                   </button>
                   <button
                     onClick={() => setShowForwardModal(true)}
@@ -880,7 +880,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     className="px-3 py-1.5 text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
                     <Forward size={16} />
-                    <span>Forward</span>
+                    <span>FORWARD</span>
                   </button>
                 </>
               )}
@@ -895,7 +895,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
                 >
                   <Edit size={16} />
-                  <span>Enable Edit</span>
+                  <span>ENABLE EDIT</span>
                 </button>
               ) : (
                 <>
