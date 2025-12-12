@@ -31,7 +31,7 @@ export function FormTabs({ activeTab, onTabChange, hasServiceReportErrors = fals
               : 'bg-transparent text-gray-600 hover:bg-gray-100'
           }`}
         >
-          Additional ATS
+          ADDITIONAL ATS
         </button>
         <button
           onClick={() => onTabChange(2)}
