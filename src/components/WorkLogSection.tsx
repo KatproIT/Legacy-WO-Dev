@@ -111,12 +111,11 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
                     <td className="border border-gray-300 px-3 py-2 font-medium">{entry.activity}</td>
                     <td className="border border-gray-300 px-2 py-2">
                       <input
-                        type="text"
+                        type="date"
                         value={entry.date}
                         onChange={(e) => updateTimeEntry(entry.id, 'date', e.target.value)}
                         disabled={readOnly}
                         placeholder="DD-MM-YYYY"
-                        pattern="\d{2}-\d{2}-\d{4}"
                         className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
                       />
                     </td>

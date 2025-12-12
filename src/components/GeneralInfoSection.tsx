@@ -25,12 +25,11 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               DATE <span className="text-red-600">*</span>
             </label>
             <input
-              type="text"
+              type="date"
               value={formData.date || ''}
               onChange={(e) => onChange('date', e.target.value)}
               disabled={readOnly}
               placeholder="DD-MM-YYYY"
-              pattern="\d{2}-\d{2}-\d{4}"
               className={getInputClass(formData.date, hasValidationErrors, readOnly)}
             />
           </div>
@@ -219,12 +218,11 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               NEXT INSPECTION DUE <span className="text-red-600">*</span>
             </label>
             <input
-              type="text"
+              type="date"
               value={formData.next_inspection_due || ''}
               onChange={(e) => onChange('next_inspection_due', e.target.value)}
               disabled={readOnly}
               placeholder="DD-MM-YYYY"
-              pattern="\d{2}-\d{2}-\d{4}"
               className={getInputClass(formData.next_inspection_due, hasValidationErrors, readOnly)}
             />
           </div>
