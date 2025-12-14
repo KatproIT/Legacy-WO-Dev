@@ -16,8 +16,9 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
   const partsSupplies = formData.parts_supplies_used || [];
 
   const totalPartsCost = partsSupplies.reduce((sum, part) => {
+    const qty = parseFloat(part.qty) || 0;
     const cost = parseFloat(part.cost) || 0;
-    return sum + cost;
+    return sum + (qty * cost);
   }, 0);
 
   const calculateTotalTime = (startTime: string, endTime: string): number => {
