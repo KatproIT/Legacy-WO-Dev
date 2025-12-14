@@ -375,35 +375,44 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 <div key={field}>
                   <label className="form-label text-sm">{label}</label>
                   <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="12"
+                    <select
                       value={time.hours}
                       onChange={(e) => handleTimePartChange(field, 'hours', e.target.value)}
                       disabled={readOnly}
-                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
-                    />
+                      className="w-20 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    >
+                      {Array.from({ length: 13 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i.toString().padStart(2, '0')}
+                        </option>
+                      ))}
+                    </select>
                     <span className="text-gray-600 font-semibold">:</span>
-                    <input
-                      type="number"
-                      min="0"
-                      max="59"
+                    <select
                       value={time.minutes}
                       onChange={(e) => handleTimePartChange(field, 'minutes', e.target.value)}
                       disabled={readOnly}
-                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
-                    />
+                      className="w-20 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    >
+                      {Array.from({ length: 60 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i.toString().padStart(2, '0')}
+                        </option>
+                      ))}
+                    </select>
                     <span className="text-gray-600 font-semibold">:</span>
-                    <input
-                      type="number"
-                      min="0"
-                      max="59"
+                    <select
                       value={time.seconds}
                       onChange={(e) => handleTimePartChange(field, 'seconds', e.target.value)}
                       disabled={readOnly}
-                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
-                    />
+                      className="w-20 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    >
+                      {Array.from({ length: 60 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i.toString().padStart(2, '0')}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               );
