@@ -102,6 +102,18 @@ export async function generatePDF(
     const noPrintElements = clonedContainer.querySelectorAll('.no-print');
     noPrintElements.forEach(el => el.remove());
 
+    // Remove all buttons and interactive elements to make it look like a proper form
+    const buttons = clonedContainer.querySelectorAll('button');
+    buttons.forEach(btn => btn.remove());
+
+    // Remove navigation and UI controls
+    const navElements = clonedContainer.querySelectorAll('nav, .navigation, .nav-bar');
+    navElements.forEach(el => el.remove());
+
+    // Remove any action menus, dropdowns, or control panels
+    const controlElements = clonedContainer.querySelectorAll('.action-menu, .dropdown-menu, .controls, .toolbar');
+    controlElements.forEach(el => el.remove());
+
     // Fix table layouts after removing no-print columns
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
