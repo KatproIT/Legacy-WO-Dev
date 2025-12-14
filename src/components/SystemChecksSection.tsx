@@ -20,6 +20,29 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
   const [isCollapsed, setIsCollapsed] = useState(true);
   const batteryReadings = formData.battery_health_readings || [];
 
+  const validateAndFormatTime = (value: string): string => {
+    if (!value) return '00:00:00';
+
+    const parts = value.split(':');
+    if (parts.length !== 3) return value;
+
+    let [hours, minutes, seconds] = parts.map(p => parseInt(p, 10));
+
+    if (hours > 12) hours = 12;
+    if (hours < 0) hours = 0;
+    if (minutes > 59) minutes = 59;
+    if (minutes < 0) minutes = 0;
+    if (seconds > 59) seconds = 59;
+    if (seconds < 0) seconds = 0;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleTimeChange = (field: string, value: string) => {
+    const formattedValue = validateAndFormatTime(value);
+    onChange(field, formattedValue);
+  };
+
   const addBattery = () => {
     const newBattery: BatteryReading = {
       id: Date.now().toString(),
@@ -340,33 +363,42 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               <input
                 type="time"
                 step="1"
+                max="12:59:59"
                 value={(formData as any).transfer_time || '00:00:00'}
-                onChange={(e) => onChange('transfer_time', e.target.value)}
+                onChange={(e) => handleTimeChange('transfer_time', e.target.value)}
+                onBlur={(e) => handleTimeChange('transfer_time', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
               />
+              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
             </div>
             <div>
               <label className="form-label text-sm">RE-TRANSFER TIME</label>
               <input
                 type="time"
                 step="1"
+                max="12:59:59"
                 value={(formData as any).re_transfer_time || '00:00:00'}
-                onChange={(e) => onChange('re_transfer_time', e.target.value)}
+                onChange={(e) => handleTimeChange('re_transfer_time', e.target.value)}
+                onBlur={(e) => handleTimeChange('re_transfer_time', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
               />
+              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
             </div>
             <div>
               <label className="form-label text-sm">COOLDOWN</label>
               <input
                 type="time"
                 step="1"
+                max="12:59:59"
                 value={(formData as any).cooldown || '00:00:00'}
-                onChange={(e) => onChange('cooldown', e.target.value)}
+                onChange={(e) => handleTimeChange('cooldown', e.target.value)}
+                onBlur={(e) => handleTimeChange('cooldown', e.target.value)}
                 disabled={readOnly}
                 className="form-input"
               />
+              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
             </div>
           </div>
 
