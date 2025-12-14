@@ -350,7 +350,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED', options: ['YES', 'NO'] },
             ].map(({ field, label, options }) => (
               <div key={field}>
-                <label className="form-label text-sm">{label}</label>
+                <label className="form-label text-sm">{label} <span className="text-red-600">*</span></label>
                 <select
                   value={(formData as any)[field] || ''}
                   onChange={(e) => onChange(field, e.target.value)}
@@ -373,7 +373,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
               const time = parseTime((formData as any)[field] || '00:00:00');
               return (
                 <div key={field}>
-                  <label className="form-label text-sm">{label}</label>
+                  <label className="form-label text-sm">{label} <span className="text-red-600">*</span></label>
                   <div className="flex items-center gap-1">
                     <select
                       value={time.hours}
