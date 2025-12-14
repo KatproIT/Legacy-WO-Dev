@@ -127,9 +127,9 @@ export async function generatePDF(
     // Enhanced table cell spacing and page break handling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
-      (cell as HTMLElement).style.padding = '12px 10px';
-      (cell as HTMLElement).style.minHeight = '40px';
-      (cell as HTMLElement).style.lineHeight = '1.4';
+      (cell as HTMLElement).style.padding = '14px 12px';
+      (cell as HTMLElement).style.minHeight = '42px';
+      (cell as HTMLElement).style.lineHeight = '1.5';
       (cell as HTMLElement).style.verticalAlign = 'middle';
     });
 
@@ -164,7 +164,7 @@ export async function generatePDF(
       const replacement = document.createElement('div');
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.height = '50px';
+      replacement.style.height = '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
@@ -177,7 +177,7 @@ export async function generatePDF(
       span.style.paddingLeft = '14px';
       span.style.paddingRight = '14px';
       span.style.color = '#000';
-      span.style.fontSize = '15px';
+      span.style.fontSize = '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
       replacement.appendChild(span);
@@ -194,12 +194,12 @@ export async function generatePDF(
       const replacement = document.createElement('div');
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.height = isInTable ? 'auto' : '50px';
-      replacement.style.minHeight = isInTable ? '35px' : '50px';
+      replacement.style.height = isInTable ? 'auto' : '52px';
+      replacement.style.minHeight = isInTable ? '38px' : '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? '10px' : '0';
+      replacement.style.padding = isInTable ? '11px' : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -209,7 +209,7 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? '13px' : '15px';
+      span.style.fontSize = isInTable ? '14px' : '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = 'left';
       span.style.wordWrap = 'break-word';
@@ -227,13 +227,13 @@ export async function generatePDF(
 
       const replacement = document.createElement('span');
       replacement.textContent = isChecked ? '☑' : '☐';
-      replacement.style.fontSize = '18px';
+      replacement.style.fontSize = '20px';
       replacement.style.color = '#000';
       replacement.style.display = 'inline-block';
-      replacement.style.width = '20px';
-      replacement.style.height = '20px';
+      replacement.style.width = '22px';
+      replacement.style.height = '22px';
       replacement.style.textAlign = 'center';
-      replacement.style.lineHeight = '20px';
+      replacement.style.lineHeight = '22px';
 
       checkbox.parentNode?.replaceChild(replacement, checkbox);
     });
@@ -250,7 +250,7 @@ export async function generatePDF(
       replacement.style.border = '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.color = '#000';
-      replacement.style.fontSize = '14px';
+      replacement.style.fontSize = '15px';
       replacement.style.lineHeight = '1.5';
       replacement.style.minHeight = '80px';
       replacement.style.boxSizing = 'border-box';
