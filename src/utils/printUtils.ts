@@ -108,6 +108,29 @@ export async function generatePDF(
       (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
+      (table as HTMLElement).style.marginBottom = '20px';
+      (table as HTMLElement).style.marginTop = '10px';
+    });
+
+    // Enhanced table cell spacing and page break handling
+    const tableCells = clonedContainer.querySelectorAll('td, th');
+    tableCells.forEach(cell => {
+      (cell as HTMLElement).style.padding = '12px 10px';
+      (cell as HTMLElement).style.minHeight = '40px';
+      (cell as HTMLElement).style.lineHeight = '1.4';
+      (cell as HTMLElement).style.verticalAlign = 'middle';
+    });
+
+    // Prevent mid-row page breaks
+    const tableRows = clonedContainer.querySelectorAll('tr');
+    tableRows.forEach(row => {
+      (row as HTMLElement).style.pageBreakInside = 'avoid';
+    });
+
+    // Add spacing between major sections
+    const sections = clonedContainer.querySelectorAll('[data-section]');
+    sections.forEach(section => {
+      (section as HTMLElement).style.marginBottom = '25px';
     });
 
     // Show ALL hidden elements in the clone
@@ -160,10 +183,11 @@ export async function generatePDF(
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.height = isInTable ? 'auto' : '50px';
+      replacement.style.minHeight = isInTable ? '35px' : '50px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? '6px 8px' : '0';
+      replacement.style.padding = isInTable ? '10px' : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -173,9 +197,12 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? '12px' : '15px';
+      span.style.fontSize = isInTable ? '13px' : '15px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = 'left';
+      span.style.wordWrap = 'break-word';
+      span.style.overflowWrap = 'break-word';
+      span.style.lineHeight = '1.4';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
@@ -257,7 +284,7 @@ export async function generatePDF(
 
     // Create canvas with optimized settings
     const canvas = await html2canvas(clonedContainer, {
-      scale: 1.5, // Reduced from 2 for smaller file size
+      scale: 2, // Higher quality rendering for sharper text and borders
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
