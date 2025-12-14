@@ -370,7 +370,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               />
-              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
+              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
             </div>
             <div>
               <label className="form-label text-sm">RE-TRANSFER TIME</label>
@@ -384,7 +384,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               />
-              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
+              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
             </div>
             <div>
               <label className="form-label text-sm">COOLDOWN</label>
@@ -398,7 +398,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               />
-              <p className="text-xs text-gray-500 mt-1">Hours: 00–12, Minutes: 00–59, Seconds: 00–59</p>
+              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
             </div>
           </div>
 
