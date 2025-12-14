@@ -20,27 +20,34 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
   const [isCollapsed, setIsCollapsed] = useState(true);
   const batteryReadings = formData.battery_health_readings || [];
 
-  const validateAndFormatTime = (value: string): string => {
-    if (!value) return '00:00:00';
-
-    const parts = value.split(':');
-    if (parts.length !== 3) return value;
-
-    let [hours, minutes, seconds] = parts.map(p => parseInt(p, 10));
-
-    if (hours > 12) hours = 12;
-    if (hours < 0) hours = 0;
-    if (minutes > 59) minutes = 59;
-    if (minutes < 0) minutes = 0;
-    if (seconds > 59) seconds = 59;
-    if (seconds < 0) seconds = 0;
-
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const parseTime = (timeStr: string) => {
+    const parts = timeStr.split(':');
+    return {
+      hours: parseInt(parts[0] || '0', 10),
+      minutes: parseInt(parts[1] || '0', 10),
+      seconds: parseInt(parts[2] || '0', 10)
+    };
   };
 
-  const handleTimeChange = (field: string, value: string) => {
-    const formattedValue = validateAndFormatTime(value);
-    onChange(field, formattedValue);
+  const handleTimePartChange = (field: string, part: 'hours' | 'minutes' | 'seconds', value: string) => {
+    const numValue = parseInt(value, 10) || 0;
+    let clampedValue = numValue;
+
+    // Enforce limits
+    if (part === 'hours') {
+      clampedValue = Math.max(0, Math.min(12, numValue));
+    } else {
+      clampedValue = Math.max(0, Math.min(59, numValue));
+    }
+
+    const currentTime = parseTime((formData as any)[field] || '00:00:00');
+
+    if (part === 'hours') currentTime.hours = clampedValue;
+    if (part === 'minutes') currentTime.minutes = clampedValue;
+    if (part === 'seconds') currentTime.seconds = clampedValue;
+
+    const formattedTime = `${currentTime.hours.toString().padStart(2, '0')}:${currentTime.minutes.toString().padStart(2, '0')}:${currentTime.seconds.toString().padStart(2, '0')}`;
+    onChange(field, formattedTime);
   };
 
   const addBattery = () => {
@@ -358,48 +365,49 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="form-label text-sm">TRANSFER TIME</label>
-              <input
-                type="time"
-                step="1"
-                max="12:59:59"
-                value={(formData as any).transfer_time || '00:00:00'}
-                onChange={(e) => handleTimeChange('transfer_time', e.target.value)}
-                onBlur={(e) => handleTimeChange('transfer_time', e.target.value)}
-                disabled={readOnly}
-                className="form-input"
-              />
-              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
-            </div>
-            <div>
-              <label className="form-label text-sm">RE-TRANSFER TIME</label>
-              <input
-                type="time"
-                step="1"
-                max="12:59:59"
-                value={(formData as any).re_transfer_time || '00:00:00'}
-                onChange={(e) => handleTimeChange('re_transfer_time', e.target.value)}
-                onBlur={(e) => handleTimeChange('re_transfer_time', e.target.value)}
-                disabled={readOnly}
-                className="form-input"
-              />
-              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
-            </div>
-            <div>
-              <label className="form-label text-sm">COOLDOWN</label>
-              <input
-                type="time"
-                step="1"
-                max="12:59:59"
-                value={(formData as any).cooldown || '00:00:00'}
-                onChange={(e) => handleTimeChange('cooldown', e.target.value)}
-                onBlur={(e) => handleTimeChange('cooldown', e.target.value)}
-                disabled={readOnly}
-                className="form-input"
-              />
-              <p className="text-xs text-gray-500 mt-1">Format: 0-12 hours, 0-59 minutes, 0-59 seconds</p>
-            </div>
+            {[
+              { field: 'transfer_time', label: 'TRANSFER TIME' },
+              { field: 're_transfer_time', label: 'RE-TRANSFER TIME' },
+              { field: 'cooldown', label: 'COOLDOWN' }
+            ].map(({ field, label }) => {
+              const time = parseTime((formData as any)[field] || '00:00:00');
+              return (
+                <div key={field}>
+                  <label className="form-label text-sm">{label}</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="12"
+                      value={time.hours}
+                      onChange={(e) => handleTimePartChange(field, 'hours', e.target.value)}
+                      disabled={readOnly}
+                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    />
+                    <span className="text-gray-600 font-semibold">:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={time.minutes}
+                      onChange={(e) => handleTimePartChange(field, 'minutes', e.target.value)}
+                      disabled={readOnly}
+                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    />
+                    <span className="text-gray-600 font-semibold">:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={time.seconds}
+                      onChange={(e) => handleTimePartChange(field, 'seconds', e.target.value)}
+                      disabled={readOnly}
+                      className="w-16 px-2 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-center"
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="mt-3">
