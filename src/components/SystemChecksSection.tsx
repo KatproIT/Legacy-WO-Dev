@@ -306,7 +306,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               >
-                <option value="">SELECT LEVEL</option>
+                <option value="">SELECT LEVEL <span className="text-red-600">*</span></option>
                 {coolantLevelOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
               <select
@@ -315,7 +315,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               >
-                <option value="">SELECT TEMPERATURE</option>
+                <option value="">SELECT TEMPERATURE<span className="text-red-600">*</span></option>
                 {tempOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
               <select
@@ -324,7 +324,7 @@ export function SystemChecksSection({ formData, onChange, readOnly }: SystemChec
                 disabled={readOnly}
                 className="form-input"
               >
-                <option value="">SELECT STATUS</option>
+                <option value="">SELECT STATUS<span className="text-red-600">*</span></option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
             </div>
