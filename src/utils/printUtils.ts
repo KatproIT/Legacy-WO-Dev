@@ -83,6 +83,9 @@ export async function generatePDF(
     const originalInputs = printContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
     const inputValues = Array.from(originalInputs).map(input => (input as HTMLInputElement).value || '');
 
+    const originalCheckboxes = printContainer.querySelectorAll('input[type="checkbox"]');
+    const checkboxValues = Array.from(originalCheckboxes).map(checkbox => (checkbox as HTMLInputElement).checked);
+
     const originalTextareas = printContainer.querySelectorAll('textarea');
     const textareaValues = Array.from(originalTextareas).map(textarea => (textarea as HTMLTextAreaElement).value || '');
 
@@ -98,6 +101,14 @@ export async function generatePDF(
     // Remove all no-print elements from clone
     const noPrintElements = clonedContainer.querySelectorAll('.no-print');
     noPrintElements.forEach(el => el.remove());
+
+    // Fix table layouts after removing no-print columns
+    const tables = clonedContainer.querySelectorAll('table');
+    tables.forEach(table => {
+      (table as HTMLElement).style.tableLayout = 'auto';
+      (table as HTMLElement).style.width = '100%';
+      (table as HTMLElement).style.borderCollapse = 'collapse';
+    });
 
     // Show ALL hidden elements in the clone
     const hiddenElements = clonedContainer.querySelectorAll('.hidden');
@@ -142,29 +153,50 @@ export async function generatePDF(
     const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
     inputElements.forEach((input, index) => {
       const inputValue = inputValues[index] || '';
+      const isInTable = input.closest('table') !== null;
 
       // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
-      replacement.style.border = '1px solid #d1d5db';
+      replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
-      replacement.style.height = '50px';
+      replacement.style.height = isInTable ? 'auto' : '50px';
       replacement.style.boxSizing = 'border-box';
-      replacement.style.display = 'table';
+      replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
+      replacement.style.padding = isInTable ? '6px 8px' : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
       span.textContent = inputValue;
-      span.style.display = 'table-cell';
+      span.style.display = isInTable ? 'block' : 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = '14px';
-      span.style.paddingRight = '14px';
+      span.style.paddingLeft = isInTable ? '0' : '14px';
+      span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = '15px';
+      span.style.fontSize = isInTable ? '12px' : '15px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      span.style.textAlign = 'left';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
+    });
+
+    // Convert checkboxes to visible checked/unchecked symbols
+    const checkboxElements = clonedContainer.querySelectorAll('input[type="checkbox"]');
+    checkboxElements.forEach((checkbox, index) => {
+      const isChecked = checkboxValues[index] || false;
+
+      const replacement = document.createElement('span');
+      replacement.textContent = isChecked ? '☑' : '☐';
+      replacement.style.fontSize = '18px';
+      replacement.style.color = '#000';
+      replacement.style.display = 'inline-block';
+      replacement.style.width = '20px';
+      replacement.style.height = '20px';
+      replacement.style.textAlign = 'center';
+      replacement.style.lineHeight = '20px';
+
+      checkbox.parentNode?.replaceChild(replacement, checkbox);
     });
 
     // Convert textareas using extracted values
