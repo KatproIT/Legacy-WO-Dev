@@ -230,7 +230,7 @@ export async function generatePDF(
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 32px !important;
+            height: auto !important;
             background-color: ${rowIndex === 0 ? '#d1d5db' : '#e5e7eb'} !important;
           `;
 
@@ -243,21 +243,26 @@ export async function generatePDF(
             const rowSpan = thElement.getAttribute('rowspan');
             const colSpan = thElement.getAttribute('colspan');
 
-            // Force inline styles with !important
+            const isRowSpan2 = rowSpan === '2';
+            const isColSpan = colSpan && parseInt(colSpan) > 1;
+
+            // Force inline styles with !important - EXTRA aggressive for rowspan cells
             thElement.style.cssText = `
               display: table-cell !important;
               visibility: visible !important;
               opacity: 1 !important;
-              color: #000 !important;
-              font-size: 11px !important;
+              color: #000000 !important;
+              font-size: ${isRowSpan2 ? '12px' : '10px'} !important;
               font-weight: bold !important;
-              border: 1px solid #9ca3af !important;
-              padding: 8px 4px !important;
+              border: 2px solid #6b7280 !important;
+              padding: ${isRowSpan2 ? '12px 6px' : '6px 4px'} !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: inherit !important;
-              height: ${rowSpan === '2' ? '64px' : '32px'} !important;
-              min-height: ${rowSpan === '2' ? '64px' : '32px'} !important;
+              background-color: ${isRowSpan2 ? '#d1d5db' : (isColSpan ? '#d1d5db' : '#e5e7eb')} !important;
+              height: ${isRowSpan2 ? '64px' : 'auto'} !important;
+              min-height: ${isRowSpan2 ? '64px' : '32px'} !important;
+              line-height: 1.4 !important;
+              white-space: nowrap !important;
             `;
 
             // Re-apply rowspan and colspan after style changes
@@ -268,6 +273,12 @@ export async function generatePDF(
             if (colSpan) {
               thElement.setAttribute('colspan', colSpan);
               thElement.colSpan = parseInt(colSpan);
+            }
+
+            // Add explicit text rendering for rowspan cells
+            if (isRowSpan2 && thElement.textContent) {
+              const textContent = thElement.textContent.trim();
+              thElement.innerHTML = `<div style="display: block; width: 100%; height: 100%; line-height: 64px; color: #000;">${textContent}</div>`;
             }
           });
         });
