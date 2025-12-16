@@ -236,7 +236,7 @@ export async function generatePDF(
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 40px !important;
+            height: 50px !important;
             background-color: #d1d5db !important;
             page-break-inside: avoid !important;
           `;
@@ -254,12 +254,12 @@ export async function generatePDF(
               font-size: 11px !important;
               font-weight: 700 !important;
               border: 1px solid #000 !important;
-              padding: 10px 4px !important;
+              padding: 12px 4px !important;
               text-align: center !important;
               vertical-align: middle !important;
               background-color: #d1d5db !important;
-              height: 40px !important;
-              line-height: 1.2 !important;
+              height: 50px !important;
+              line-height: 1.3 !important;
               white-space: nowrap !important;
             `;
 
@@ -282,7 +282,7 @@ export async function generatePDF(
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 30px !important;
+            height: 38px !important;
             background-color: #e5e7eb !important;
             page-break-inside: avoid !important;
           `;
@@ -299,12 +299,12 @@ export async function generatePDF(
               font-size: 10px !important;
               font-weight: 600 !important;
               border: 1px solid #000 !important;
-              padding: 6px 2px !important;
+              padding: 8px 2px !important;
               text-align: center !important;
               vertical-align: middle !important;
               background-color: #e5e7eb !important;
-              height: 30px !important;
-              line-height: 1.2 !important;
+              height: 38px !important;
+              line-height: 1.3 !important;
               white-space: nowrap !important;
               width: 50px !important;
             `;
