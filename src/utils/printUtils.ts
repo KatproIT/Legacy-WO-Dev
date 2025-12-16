@@ -142,10 +142,13 @@ export async function generatePDF(
         (cell as HTMLElement).style.textAlign = 'center';
         (cell as HTMLElement).style.fontSize = '11px';
         (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? 'bold' : 'normal';
+        (cell as HTMLElement).style.color = '#000';
+        (cell as HTMLElement).style.display = ''; // Ensure cell is displayed
 
         // Header cells background
         if (cell.tagName === 'TH') {
           (cell as HTMLElement).style.backgroundColor = '#e5e7eb';
+          (cell as HTMLElement).style.fontWeight = 'bold';
         }
       } else {
         // Default styling for other tables
@@ -153,6 +156,28 @@ export async function generatePDF(
         (cell as HTMLElement).style.minHeight = '42px';
         (cell as HTMLElement).style.lineHeight = '1.5';
         (cell as HTMLElement).style.verticalAlign = 'middle';
+      }
+    });
+
+    // Ensure Load Bank table headers are visible and properly structured
+    const loadBankTables = clonedContainer.querySelectorAll('table[data-table-type="load-bank"]');
+    loadBankTables.forEach(table => {
+      const thead = table.querySelector('thead');
+      if (thead) {
+        (thead as HTMLElement).style.display = 'table-header-group';
+        (thead as HTMLElement).style.visibility = 'visible';
+
+        const headerRows = thead.querySelectorAll('tr');
+        headerRows.forEach(row => {
+          (row as HTMLElement).style.display = 'table-row';
+          (row as HTMLElement).style.visibility = 'visible';
+        });
+      }
+
+      const tbody = table.querySelector('tbody');
+      if (tbody) {
+        (tbody as HTMLElement).style.display = 'table-row-group';
+        (tbody as HTMLElement).style.visibility = 'visible';
       }
     });
 
