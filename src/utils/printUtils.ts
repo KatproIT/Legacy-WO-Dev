@@ -111,7 +111,7 @@ export async function generatePDF(
     // Fix table layouts after removing no-print columns
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
-      (table as HTMLElement).style.tableLayout = 'auto';
+      (table as HTMLElement).style.tableLayout = 'fixed';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
       (table as HTMLElement).style.marginBottom = '20px';
@@ -121,10 +121,12 @@ export async function generatePDF(
     // Enhanced table cell spacing and page break handling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
-      (cell as HTMLElement).style.padding = '14px 12px';
-      (cell as HTMLElement).style.minHeight = '42px';
-      (cell as HTMLElement).style.lineHeight = '1.5';
+      (cell as HTMLElement).style.padding = '6px 4px';
+      (cell as HTMLElement).style.minHeight = '28px';
+      (cell as HTMLElement).style.lineHeight = '1.3';
       (cell as HTMLElement).style.verticalAlign = 'middle';
+      (cell as HTMLElement).style.fontSize = '11px';
+      (cell as HTMLElement).style.border = '1px solid #d1d5db';
     });
 
     // Prevent mid-row page breaks
@@ -189,11 +191,11 @@ export async function generatePDF(
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.height = isInTable ? 'auto' : '52px';
-      replacement.style.minHeight = isInTable ? '38px' : '52px';
+      replacement.style.minHeight = isInTable ? '28px' : '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? '11px' : '0';
+      replacement.style.padding = isInTable ? '6px 4px' : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -203,12 +205,12 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? '14px' : '16px';
+      span.style.fontSize = isInTable ? '10px' : '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      span.style.textAlign = 'left';
+      span.style.textAlign = 'center';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = '1.4';
+      span.style.lineHeight = '1.3';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
