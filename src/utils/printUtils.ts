@@ -49,29 +49,49 @@ export async function generatePDF(
       throw new Error('Print container not found');
     }
 
-    // Expand ALL collapsible sections before capturing
-    const collapsibleHeaders = printContainer.querySelectorAll('.section-header.cursor-pointer');
+    const hasATSData = hasAdditionalATSData(formData);
+    const hasLBData = hasLoadBankData(formData);
 
-    collapsibleHeaders.forEach((header) => {
-      const parent = header.parentElement;
-      if (parent) {
-        // Look for the content div which should be a sibling of the header
-        // If there are only 1 or 2 children in parent, section is likely collapsed
-        const children = Array.from(parent.children);
-        const hasContent = children.some(child =>
-          child !== header &&
-          child.querySelector('input, select, textarea, .grid')
-        );
+    if (hasATSData || hasLBData) {
+      const atsSection = printContainer.querySelector('[data-section="additional-ats"]');
+      const loadBankSection = printContainer.querySelector('[data-section="load-bank"]');
 
-        // If no form content found, section is collapsed - click to expand
-        if (!hasContent) {
-          (header as HTMLElement).click();
+      if (hasATSData && atsSection) {
+        const atsHeader = atsSection.querySelector('.section-header.cursor-pointer, h2.cursor-pointer');
+        if (atsHeader) {
+          const parent = atsHeader.parentElement;
+          if (parent) {
+            const children = Array.from(parent.children);
+            const hasContent = children.some(child =>
+              child !== atsHeader &&
+              child.querySelector('input, select, textarea, .grid')
+            );
+            if (!hasContent) {
+              (atsHeader as HTMLElement).click();
+            }
+          }
         }
       }
-    });
 
-    // Wait for sections to expand and content to render fully
-    await new Promise(resolve => setTimeout(resolve, 1500));
+      if (hasLBData && loadBankSection) {
+        const lbHeader = loadBankSection.querySelector('.section-header.cursor-pointer, h2.cursor-pointer');
+        if (lbHeader) {
+          const parent = lbHeader.parentElement;
+          if (parent) {
+            const children = Array.from(parent.children);
+            const hasContent = children.some(child =>
+              child !== lbHeader &&
+              child.querySelector('input, select, textarea, .grid')
+            );
+            if (!hasContent) {
+              (lbHeader as HTMLElement).click();
+            }
+          }
+        }
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
 
     // Extract all form values from the ORIGINAL (expanded) DOM
     const originalSelects = printContainer.querySelectorAll('select');

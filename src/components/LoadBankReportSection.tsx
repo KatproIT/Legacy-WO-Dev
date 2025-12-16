@@ -14,6 +14,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
   const [isCollapsed, setIsCollapsed] = useState(true);
   const entries = formData.load_bank_entries || [];
   const isRequired = isLoadBankRequired(formData);
+  const isLoadBankChecked = (formData.type_of_service || '').includes('LOAD BANK');
 
   const addEntry = () => {
     const newEntry: LoadBankEntry = {
@@ -74,8 +75,8 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                 type="text"
                 value={formData.load_bank_customer || ''}
                 onChange={(e) => onChange('load_bank_customer', e.target.value.toUpperCase())}
-                disabled={readOnly}
-                className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly)}
+                disabled={readOnly || isLoadBankChecked}
+                className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -101,8 +102,8 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                 type="text"
                 value={formData.load_bank_site_name || ''}
                 onChange={(e) => onChange('load_bank_site_name', e.target.value.toUpperCase())}
-                disabled={readOnly}
-                className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly)}
+                disabled={readOnly || isLoadBankChecked}
+                className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -128,8 +129,8 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                 type="text"
                 value={formData.load_bank_site_address || ''}
                 onChange={(e) => onChange('load_bank_site_address', e.target.value.toUpperCase())}
-                disabled={readOnly}
-                className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly)}
+                disabled={readOnly || isLoadBankChecked}
+                className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>

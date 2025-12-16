@@ -510,15 +510,23 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     const updated = { ...prev };
     setByPath(updated, field, value);
 
-    // Live sync: Auto-populate Load Bank fields if Load Bank is checked and fields are empty
+    const wasLoadBankChecked = (prev.type_of_service || '').includes('LOAD BANK');
     const isLoadBankChecked = (updated.type_of_service || '').includes('LOAD BANK');
 
+    if (field === 'type_of_service') {
+      if (isLoadBankChecked && !wasLoadBankChecked) {
+        updated.load_bank_customer = updated.customer || '';
+        updated.load_bank_site_name = updated.site_name || '';
+        updated.load_bank_site_address = updated.site_address || '';
+      }
+    }
+
     if (isLoadBankChecked) {
-      if (field === 'customer' && !updated.load_bank_customer) {
+      if (field === 'customer') {
         updated.load_bank_customer = value;
-      } else if (field === 'site_name' && !updated.load_bank_site_name) {
+      } else if (field === 'site_name') {
         updated.load_bank_site_name = value;
-      } else if (field === 'site_address' && !updated.load_bank_site_address) {
+      } else if (field === 'site_address') {
         updated.load_bank_site_address = value;
       }
     }
@@ -704,30 +712,6 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
     setHasUnsavedChanges(hasChanges);
   }, [formData, initialFormData]);
-
-  // Auto-populate Load Bank fields when navigating to Load Bank tab
-  useEffect(() => {
-    // Only run when user navigates to Load Bank tab (activeTab === 2)
-    if (activeTab !== 2) return;
-
-    const isLoadBankChecked = (formData.type_of_service || '').includes('LOAD BANK');
-    if (!isLoadBankChecked) return;
-
-    // Check if Load Bank fields are empty and auto-populate from Service Report
-    const needsUpdate =
-      (!formData.load_bank_customer && formData.customer) ||
-      (!formData.load_bank_site_name && formData.site_name) ||
-      (!formData.load_bank_site_address && formData.site_address);
-
-    if (needsUpdate) {
-      setFormData(prev => ({
-        ...prev,
-        load_bank_customer: prev.load_bank_customer || prev.customer || '',
-        load_bank_site_name: prev.load_bank_site_name || prev.site_name || '',
-        load_bank_site_address: prev.load_bank_site_address || prev.site_address || ''
-      }));
-    }
-  }, [activeTab, formData.type_of_service, formData.customer, formData.site_name, formData.site_address, formData.load_bank_customer, formData.load_bank_site_name, formData.load_bank_site_address]);
 
   const checkUnsavedChanges = (): { hasChanges: boolean; isDraft: boolean; hasNewData: boolean } => {
     if (!initialFormData) {
