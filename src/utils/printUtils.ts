@@ -244,13 +244,7 @@ export async function generatePDF(
           const firstRowCells = firstRow.querySelectorAll('th');
           firstRowCells.forEach(cell => {
             const thElement = cell as HTMLTableCellElement;
-            const rowSpan = thElement.getAttribute('rowspan');
-            const colSpan = thElement.getAttribute('colspan');
             const text = thElement.textContent?.trim() || '';
-
-            // Remove rowspan temporarily for html2canvas
-            thElement.removeAttribute('rowspan');
-            thElement.removeAttribute('colspan');
 
             thElement.style.cssText = `
               display: table-cell !important;
@@ -273,20 +267,11 @@ export async function generatePDF(
             if (text === 'TIME') thElement.style.width = '60px';
             else if (text === 'KW') thElement.style.width = '50px';
             else if (text === 'HZ') thElement.style.width = '50px';
-            else if (text === 'VOLTS') {
-              thElement.style.width = '300px';
-              thElement.setAttribute('colspan', '6');
-              thElement.colSpan = 6;
-            }
-            else if (text === 'AMPS') {
-              thElement.style.width = '150px';
-              thElement.setAttribute('colspan', '3');
-              thElement.colSpan = 3;
-            }
+            else if (text === 'VOLTS') thElement.style.width = '300px';
+            else if (text === 'AMPS') thElement.style.width = '150px';
             else if (text === 'OIL PSI') thElement.style.width = '60px';
             else if (text === 'H2O °F') thElement.style.width = '60px';
             else if (text === 'BATT V') thElement.style.width = '60px';
-            else if (text === 'DEL') thElement.style.width = '40px';
           });
         }
 
