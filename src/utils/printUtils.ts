@@ -205,48 +205,70 @@ export async function generatePDF(
 
     // Ensure Load Bank table headers are visible and properly structured
     clonedContainer.querySelectorAll('table[data-table-type="load-bank"]').forEach(table => {
+      // Force table to be visible and properly styled
+      (table as HTMLElement).style.cssText = `
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1px solid #9ca3af !important;
+        background-color: #fff !important;
+      `;
+
       const thead = table.querySelector('thead');
       if (thead) {
-        (thead as HTMLElement).style.display = 'table-header-group';
-        (thead as HTMLElement).style.visibility = 'visible';
-        (thead as HTMLElement).style.opacity = '1';
-        (thead as HTMLElement).style.height = 'auto';
+        (thead as HTMLElement).style.cssText = `
+          display: table-header-group !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          height: auto !important;
+          background-color: #e5e7eb !important;
+        `;
 
         const headerRows = thead.querySelectorAll('tr');
-        headerRows.forEach(row => {
-          (row as HTMLElement).style.display = 'table-row';
-          (row as HTMLElement).style.visibility = 'visible';
-          (row as HTMLElement).style.opacity = '1';
-          (row as HTMLElement).style.height = 'auto';
+        headerRows.forEach((row, rowIndex) => {
+          (row as HTMLElement).style.cssText = `
+            display: table-row !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: 32px !important;
+            background-color: ${rowIndex === 0 ? '#d1d5db' : '#e5e7eb'} !important;
+          `;
 
           // Ensure all header cells maintain their rowspan/colspan
           const headerCells = row.querySelectorAll('th');
           headerCells.forEach(cell => {
             const thElement = cell as HTMLTableCellElement;
 
-            // Force display
-            thElement.style.display = 'table-cell';
-            thElement.style.visibility = 'visible';
-            thElement.style.opacity = '1';
-
-            // Preserve rowspan and colspan attributes
+            // Get and preserve rowspan and colspan
             const rowSpan = thElement.getAttribute('rowspan');
             const colSpan = thElement.getAttribute('colspan');
 
+            // Force inline styles with !important
+            thElement.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              color: #000 !important;
+              font-size: 11px !important;
+              font-weight: bold !important;
+              border: 1px solid #9ca3af !important;
+              padding: 8px 4px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: inherit !important;
+              height: ${rowSpan === '2' ? '64px' : '32px'} !important;
+              min-height: ${rowSpan === '2' ? '64px' : '32px'} !important;
+            `;
+
+            // Re-apply rowspan and colspan after style changes
             if (rowSpan) {
               thElement.setAttribute('rowspan', rowSpan);
+              thElement.rowSpan = parseInt(rowSpan);
             }
             if (colSpan) {
               thElement.setAttribute('colspan', colSpan);
+              thElement.colSpan = parseInt(colSpan);
             }
-
-            // Ensure content is visible
-            thElement.style.color = '#000';
-            thElement.style.fontSize = '11px';
-            thElement.style.fontWeight = 'bold';
-            thElement.style.whiteSpace = 'normal';
-            thElement.style.height = 'auto';
-            thElement.style.minHeight = '32px';
           });
         });
       }
