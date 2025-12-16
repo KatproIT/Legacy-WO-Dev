@@ -209,9 +209,11 @@ export async function generatePDF(
       (table as HTMLElement).style.cssText = `
         display: table !important;
         width: 100% !important;
-        border-collapse: collapse !important;
-        border: 1px solid #9ca3af !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        border: 2px solid #000 !important;
         background-color: #fff !important;
+        table-layout: fixed !important;
       `;
 
       const thead = table.querySelector('thead');
@@ -221,67 +223,108 @@ export async function generatePDF(
           visibility: visible !important;
           opacity: 1 !important;
           height: auto !important;
-          background-color: #e5e7eb !important;
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
         `;
 
         const headerRows = thead.querySelectorAll('tr');
-        headerRows.forEach((row, rowIndex) => {
-          (row as HTMLElement).style.cssText = `
+
+        // Process first row (with rowspan headers)
+        const firstRow = headerRows[0];
+        if (firstRow) {
+          (firstRow as HTMLElement).style.cssText = `
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: auto !important;
-            background-color: ${rowIndex === 0 ? '#d1d5db' : '#e5e7eb'} !important;
+            height: 40px !important;
+            background-color: #d1d5db !important;
+            page-break-inside: avoid !important;
           `;
 
-          // Ensure all header cells maintain their rowspan/colspan
-          const headerCells = row.querySelectorAll('th');
-          headerCells.forEach(cell => {
+          const firstRowCells = firstRow.querySelectorAll('th');
+          firstRowCells.forEach(cell => {
             const thElement = cell as HTMLTableCellElement;
-
-            // Get and preserve rowspan and colspan
             const rowSpan = thElement.getAttribute('rowspan');
             const colSpan = thElement.getAttribute('colspan');
+            const text = thElement.textContent?.trim() || '';
 
-            const isRowSpan2 = rowSpan === '2';
-            const isColSpan = colSpan && parseInt(colSpan) > 1;
+            // Remove rowspan temporarily for html2canvas
+            thElement.removeAttribute('rowspan');
+            thElement.removeAttribute('colspan');
 
-            // Force inline styles with !important - EXTRA aggressive for rowspan cells
             thElement.style.cssText = `
               display: table-cell !important;
               visibility: visible !important;
               opacity: 1 !important;
-              color: #000000 !important;
-              font-size: ${isRowSpan2 ? '12px' : '10px'} !important;
-              font-weight: bold !important;
-              border: 2px solid #6b7280 !important;
-              padding: ${isRowSpan2 ? '12px 6px' : '6px 4px'} !important;
+              color: #000 !important;
+              font-size: 11px !important;
+              font-weight: 700 !important;
+              border: 1px solid #000 !important;
+              padding: 10px 4px !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: ${isRowSpan2 ? '#d1d5db' : (isColSpan ? '#d1d5db' : '#e5e7eb')} !important;
-              height: ${isRowSpan2 ? '64px' : 'auto'} !important;
-              min-height: ${isRowSpan2 ? '64px' : '32px'} !important;
-              line-height: 1.4 !important;
+              background-color: #d1d5db !important;
+              height: 40px !important;
+              line-height: 1.2 !important;
               white-space: nowrap !important;
             `;
 
-            // Re-apply rowspan and colspan after style changes
-            if (rowSpan) {
-              thElement.setAttribute('rowspan', rowSpan);
-              thElement.rowSpan = parseInt(rowSpan);
+            // Set explicit widths based on content
+            if (text === 'TIME') thElement.style.width = '60px';
+            else if (text === 'KW') thElement.style.width = '50px';
+            else if (text === 'HZ') thElement.style.width = '50px';
+            else if (text === 'VOLTS') {
+              thElement.style.width = '300px';
+              thElement.setAttribute('colspan', '6');
+              thElement.colSpan = 6;
             }
-            if (colSpan) {
-              thElement.setAttribute('colspan', colSpan);
-              thElement.colSpan = parseInt(colSpan);
+            else if (text === 'AMPS') {
+              thElement.style.width = '150px';
+              thElement.setAttribute('colspan', '3');
+              thElement.colSpan = 3;
             }
-
-            // Add explicit text rendering for rowspan cells
-            if (isRowSpan2 && thElement.textContent) {
-              const textContent = thElement.textContent.trim();
-              thElement.innerHTML = `<div style="display: block; width: 100%; height: 100%; line-height: 64px; color: #000;">${textContent}</div>`;
-            }
+            else if (text === 'OIL PSI') thElement.style.width = '60px';
+            else if (text === 'H2O °F') thElement.style.width = '60px';
+            else if (text === 'BATT V') thElement.style.width = '60px';
+            else if (text === 'DEL') thElement.style.width = '40px';
           });
-        });
+        }
+
+        // Process second row (subheaders)
+        const secondRow = headerRows[1];
+        if (secondRow) {
+          (secondRow as HTMLElement).style.cssText = `
+            display: table-row !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: 30px !important;
+            background-color: #e5e7eb !important;
+            page-break-inside: avoid !important;
+          `;
+
+          const secondRowCells = secondRow.querySelectorAll('th');
+          secondRowCells.forEach(cell => {
+            const thElement = cell as HTMLTableCellElement;
+
+            thElement.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              color: #000 !important;
+              font-size: 10px !important;
+              font-weight: 600 !important;
+              border: 1px solid #000 !important;
+              padding: 6px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #e5e7eb !important;
+              height: 30px !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: 50px !important;
+            `;
+          });
+        }
       }
 
       const tbody = table.querySelector('tbody');
