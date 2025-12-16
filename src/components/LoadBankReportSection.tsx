@@ -205,10 +205,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
         </div>
       ) : (
         <div className="overflow-x-auto lg:overflow-visible">
-          <table className="w-full border-collapse border border-gray-300 text-sm">
+          <table className="w-full border-collapse border border-gray-300 text-sm load-bank-table" data-table-type="load-bank">
             <thead>
               <tr className="bg-gray-200">
-                <th rowSpan={2} className="border border-gray-300  font-semibold text-xs">TIME</th>
+                <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">TIME</th>
                 <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">KW</th>
                 <th rowSpan={2} className="border border-gray-300 px-2 py-2 font-semibold text-xs">HZ</th>
                 <th colSpan={6} className="border border-gray-300 px-2 py-2 font-semibold text-xs">VOLTS</th>
@@ -221,7 +221,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                 )}
               </tr>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 text-xs font-medium">A/B</th>
+                <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/B</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">B/C</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">C/A</th>
                 <th className="border border-gray-300 px-1 py-1 text-xs font-medium">A/N</th>

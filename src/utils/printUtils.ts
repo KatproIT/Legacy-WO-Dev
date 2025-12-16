@@ -111,20 +111,49 @@ export async function generatePDF(
     // Fix table layouts after removing no-print columns
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
+      const isLoadBankTable = table.getAttribute('data-table-type') === 'load-bank';
+
       (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
       (table as HTMLElement).style.marginBottom = '20px';
       (table as HTMLElement).style.marginTop = '10px';
+
+      // Special handling for Load Bank table
+      if (isLoadBankTable) {
+        (table as HTMLElement).style.border = '2px solid #000';
+        (table as HTMLElement).style.fontSize = '11px';
+      }
     });
 
     // Enhanced table cell spacing and page break handling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
-      (cell as HTMLElement).style.padding = '14px 12px';
-      (cell as HTMLElement).style.minHeight = '42px';
-      (cell as HTMLElement).style.lineHeight = '1.5';
-      (cell as HTMLElement).style.verticalAlign = 'middle';
+      const table = cell.closest('table');
+      const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
+
+      if (isLoadBankTable) {
+        // Special styling for Load Bank table cells
+        (cell as HTMLElement).style.border = '1px solid #000';
+        (cell as HTMLElement).style.padding = '8px 6px';
+        (cell as HTMLElement).style.minHeight = '32px';
+        (cell as HTMLElement).style.lineHeight = '1.3';
+        (cell as HTMLElement).style.verticalAlign = 'middle';
+        (cell as HTMLElement).style.textAlign = 'center';
+        (cell as HTMLElement).style.fontSize = '11px';
+        (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? 'bold' : 'normal';
+
+        // Header cells background
+        if (cell.tagName === 'TH') {
+          (cell as HTMLElement).style.backgroundColor = '#e5e7eb';
+        }
+      } else {
+        // Default styling for other tables
+        (cell as HTMLElement).style.padding = '14px 12px';
+        (cell as HTMLElement).style.minHeight = '42px';
+        (cell as HTMLElement).style.lineHeight = '1.5';
+        (cell as HTMLElement).style.verticalAlign = 'middle';
+      }
     });
 
     // Prevent mid-row page breaks
@@ -183,17 +212,19 @@ export async function generatePDF(
     inputElements.forEach((input, index) => {
       const inputValue = inputValues[index] || '';
       const isInTable = input.closest('table') !== null;
+      const table = input.closest('table');
+      const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
 
       // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.height = isInTable ? 'auto' : '52px';
-      replacement.style.minHeight = isInTable ? '38px' : '52px';
+      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '38px') : '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? '11px' : '0';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '11px') : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -203,9 +234,9 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? '14px' : '16px';
+      span.style.fontSize = isInTable ? (isLoadBankTable ? '11px' : '14px') : '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      span.style.textAlign = 'left';
+      span.style.textAlign = isLoadBankTable ? 'center' : 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
       span.style.lineHeight = '1.4';
