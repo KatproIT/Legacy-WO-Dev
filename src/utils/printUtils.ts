@@ -92,7 +92,29 @@ export async function generatePDF(
     clonedContainer.style.backgroundColor = '#ffffff';
     document.body.appendChild(clonedContainer);
 
-    // Remove all no-print elements from clone
+    // Handle Load Bank table DEL column removal BEFORE other no-print elements
+    const loadBankTables = clonedContainer.querySelectorAll('table[data-table-type="load-bank"]');
+    loadBankTables.forEach(table => {
+      // Remove DEL header cells from Load Bank table
+      const delHeaders = table.querySelectorAll('thead th:last-child');
+      delHeaders.forEach(th => {
+        const headerText = th.textContent?.trim();
+        if (headerText === 'DEL') {
+          th.remove();
+        }
+      });
+
+      // Remove DEL column cells from Load Bank table body
+      const bodyRows = table.querySelectorAll('tbody tr');
+      bodyRows.forEach(row => {
+        const lastCell = row.querySelector('td:last-child');
+        if (lastCell && lastCell.querySelector('button, .no-print')) {
+          lastCell.remove();
+        }
+      });
+    });
+
+    // Remove all other no-print elements from clone
     const noPrintElements = clonedContainer.querySelectorAll('.no-print');
     noPrintElements.forEach(el => el.remove());
 
@@ -160,17 +182,26 @@ export async function generatePDF(
     });
 
     // Ensure Load Bank table headers are visible and properly structured
-    const loadBankTables = clonedContainer.querySelectorAll('table[data-table-type="load-bank"]');
-    loadBankTables.forEach(table => {
+    clonedContainer.querySelectorAll('table[data-table-type="load-bank"]').forEach(table => {
       const thead = table.querySelector('thead');
       if (thead) {
         (thead as HTMLElement).style.display = 'table-header-group';
         (thead as HTMLElement).style.visibility = 'visible';
+        (thead as HTMLElement).style.opacity = '1';
 
         const headerRows = thead.querySelectorAll('tr');
         headerRows.forEach(row => {
           (row as HTMLElement).style.display = 'table-row';
           (row as HTMLElement).style.visibility = 'visible';
+          (row as HTMLElement).style.opacity = '1';
+
+          // Ensure all header cells maintain their rowspan/colspan
+          const headerCells = row.querySelectorAll('th');
+          headerCells.forEach(cell => {
+            (cell as HTMLElement).style.display = 'table-cell';
+            (cell as HTMLElement).style.visibility = 'visible';
+            (cell as HTMLElement).style.opacity = '1';
+          });
         });
       }
 
@@ -178,6 +209,16 @@ export async function generatePDF(
       if (tbody) {
         (tbody as HTMLElement).style.display = 'table-row-group';
         (tbody as HTMLElement).style.visibility = 'visible';
+        (tbody as HTMLElement).style.opacity = '1';
+
+        const bodyRows = tbody.querySelectorAll('tr');
+        bodyRows.forEach(row => {
+          (row as HTMLElement).style.display = 'table-row';
+          const bodyCells = row.querySelectorAll('td');
+          bodyCells.forEach(cell => {
+            (cell as HTMLElement).style.display = 'table-cell';
+          });
+        });
       }
     });
 
@@ -232,9 +273,14 @@ export async function generatePDF(
       select.parentNode?.replaceChild(replacement, select);
     });
 
-    // Convert all input fields using extracted values
+    // Convert all input fields using extracted values (but NOT in table headers)
     const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
     inputElements.forEach((input, index) => {
+      // Skip if this input is inside a thead
+      if (input.closest('thead')) {
+        return;
+      }
+
       const inputValue = inputValues[index] || '';
       const isInTable = input.closest('table') !== null;
       const table = input.closest('table');
