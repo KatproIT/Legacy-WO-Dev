@@ -118,15 +118,30 @@ export async function generatePDF(
       (table as HTMLElement).style.marginTop = '10px';
     });
 
+    // Ensure thead sections are visible
+    const tableHeads = clonedContainer.querySelectorAll('thead');
+    tableHeads.forEach(thead => {
+      (thead as HTMLElement).style.display = 'table-header-group';
+      (thead as HTMLElement).style.backgroundColor = '#e5e7eb';
+    });
+
     // Enhanced table cell spacing and page break handling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
-      (cell as HTMLElement).style.padding = '6px 4px';
-      (cell as HTMLElement).style.minHeight = '28px';
+      const isHeader = cell.tagName === 'TH';
+      (cell as HTMLElement).style.padding = isHeader ? '8px 4px' : '6px 4px';
+      (cell as HTMLElement).style.minHeight = isHeader ? '32px' : '28px';
+      (cell as HTMLElement).style.height = isHeader ? 'auto' : '28px';
       (cell as HTMLElement).style.lineHeight = '1.3';
       (cell as HTMLElement).style.verticalAlign = 'middle';
-      (cell as HTMLElement).style.fontSize = '11px';
+      (cell as HTMLElement).style.fontSize = isHeader ? '9px' : '10px';
+      (cell as HTMLElement).style.fontWeight = isHeader ? 'bold' : 'normal';
       (cell as HTMLElement).style.border = '1px solid #d1d5db';
+      (cell as HTMLElement).style.textAlign = 'center';
+      (cell as HTMLElement).style.backgroundColor = isHeader ? '#e5e7eb' : '#ffffff';
+      (cell as HTMLElement).style.color = '#000000';
+      (cell as HTMLElement).style.whiteSpace = isHeader ? 'normal' : 'nowrap';
+      (cell as HTMLElement).style.wordWrap = isHeader ? 'break-word' : 'normal';
     });
 
     // Prevent mid-row page breaks
