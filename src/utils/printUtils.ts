@@ -95,23 +95,45 @@ export async function generatePDF(
     // Handle Load Bank table DEL column removal BEFORE other no-print elements
     const loadBankTables = clonedContainer.querySelectorAll('table[data-table-type="load-bank"]');
     loadBankTables.forEach(table => {
-      // Remove DEL header cells from Load Bank table
-      const delHeaders = table.querySelectorAll('thead th:last-child');
-      delHeaders.forEach(th => {
-        const headerText = th.textContent?.trim();
-        if (headerText === 'DEL') {
-          th.remove();
+      const thead = table.querySelector('thead');
+      if (thead) {
+        // Remove DEL header from first row only (it has rowspan=2)
+        const firstRow = thead.querySelector('tr:first-child');
+        if (firstRow) {
+          const cells = firstRow.querySelectorAll('th');
+          cells.forEach(th => {
+            const headerText = th.textContent?.trim();
+            if (headerText === 'DEL') {
+              th.remove();
+            }
+          });
         }
-      });
+      }
 
       // Remove DEL column cells from Load Bank table body
       const bodyRows = table.querySelectorAll('tbody tr');
       bodyRows.forEach(row => {
         const lastCell = row.querySelector('td:last-child');
-        if (lastCell && lastCell.querySelector('button, .no-print')) {
+        if (lastCell && lastCell.querySelector('button')) {
           lastCell.remove();
         }
       });
+
+      // IMMEDIATELY preserve thead structure after DEL removal
+      const theadAfter = table.querySelector('thead');
+      if (theadAfter) {
+        (theadAfter as HTMLElement).style.cssText = 'display: table-header-group !important; visibility: visible !important;';
+
+        const rows = theadAfter.querySelectorAll('tr');
+        rows.forEach(row => {
+          (row as HTMLElement).style.cssText = 'display: table-row !important; visibility: visible !important;';
+
+          const cells = row.querySelectorAll('th');
+          cells.forEach(cell => {
+            (cell as HTMLElement).style.cssText = 'display: table-cell !important; visibility: visible !important; color: #000 !important;';
+          });
+        });
+      }
     });
 
     // Remove all other no-print elements from clone
@@ -188,19 +210,43 @@ export async function generatePDF(
         (thead as HTMLElement).style.display = 'table-header-group';
         (thead as HTMLElement).style.visibility = 'visible';
         (thead as HTMLElement).style.opacity = '1';
+        (thead as HTMLElement).style.height = 'auto';
 
         const headerRows = thead.querySelectorAll('tr');
         headerRows.forEach(row => {
           (row as HTMLElement).style.display = 'table-row';
           (row as HTMLElement).style.visibility = 'visible';
           (row as HTMLElement).style.opacity = '1';
+          (row as HTMLElement).style.height = 'auto';
 
           // Ensure all header cells maintain their rowspan/colspan
           const headerCells = row.querySelectorAll('th');
           headerCells.forEach(cell => {
-            (cell as HTMLElement).style.display = 'table-cell';
-            (cell as HTMLElement).style.visibility = 'visible';
-            (cell as HTMLElement).style.opacity = '1';
+            const thElement = cell as HTMLTableCellElement;
+
+            // Force display
+            thElement.style.display = 'table-cell';
+            thElement.style.visibility = 'visible';
+            thElement.style.opacity = '1';
+
+            // Preserve rowspan and colspan attributes
+            const rowSpan = thElement.getAttribute('rowspan');
+            const colSpan = thElement.getAttribute('colspan');
+
+            if (rowSpan) {
+              thElement.setAttribute('rowspan', rowSpan);
+            }
+            if (colSpan) {
+              thElement.setAttribute('colspan', colSpan);
+            }
+
+            // Ensure content is visible
+            thElement.style.color = '#000';
+            thElement.style.fontSize = '11px';
+            thElement.style.fontWeight = 'bold';
+            thElement.style.whiteSpace = 'normal';
+            thElement.style.height = 'auto';
+            thElement.style.minHeight = '32px';
           });
         });
       }
