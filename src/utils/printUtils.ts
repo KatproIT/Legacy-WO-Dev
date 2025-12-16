@@ -111,59 +111,20 @@ export async function generatePDF(
     // Fix table layouts after removing no-print columns
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
-      (table as HTMLElement).style.tableLayout = 'fixed';
+      (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
       (table as HTMLElement).style.marginBottom = '20px';
       (table as HTMLElement).style.marginTop = '10px';
     });
 
-    // Ensure thead sections are visible
-    const tableHeads = clonedContainer.querySelectorAll('thead');
-    tableHeads.forEach(thead => {
-      (thead as HTMLElement).style.display = 'table-header-group';
-      (thead as HTMLElement).style.backgroundColor = '#d1d5db';
-    });
-
-    // Ensure all header rows (tr within thead) are visible
-    const headerRows = clonedContainer.querySelectorAll('thead tr');
-    headerRows.forEach(row => {
-      (row as HTMLElement).style.display = 'table-row';
-      (row as HTMLElement).style.height = 'auto';
-      (row as HTMLElement).style.minHeight = '20px';
-      (row as HTMLElement).style.visibility = 'visible';
-      (row as HTMLElement).style.pageBreakInside = 'avoid';
-    });
-
     // Enhanced table cell spacing and page break handling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
-      const isHeader = cell.tagName === 'TH';
-      const rowSpan = cell.getAttribute('rowspan');
-      const colSpan = cell.getAttribute('colspan');
-
-      (cell as HTMLElement).style.padding = isHeader ? '6px 3px' : '5px 3px';
-      (cell as HTMLElement).style.minHeight = isHeader ? (rowSpan === '2' ? '40px' : '20px') : '26px';
-      (cell as HTMLElement).style.height = isHeader ? 'auto' : '26px';
-      (cell as HTMLElement).style.lineHeight = '1.2';
+      (cell as HTMLElement).style.padding = '14px 12px';
+      (cell as HTMLElement).style.minHeight = '42px';
+      (cell as HTMLElement).style.lineHeight = '1.5';
       (cell as HTMLElement).style.verticalAlign = 'middle';
-      (cell as HTMLElement).style.fontSize = isHeader ? '8px' : '9px';
-      (cell as HTMLElement).style.fontWeight = isHeader ? 'bold' : 'normal';
-      (cell as HTMLElement).style.border = '1px solid #333';
-      (cell as HTMLElement).style.textAlign = 'center';
-      (cell as HTMLElement).style.backgroundColor = isHeader ? '#d1d5db' : '#ffffff';
-      (cell as HTMLElement).style.color = '#000000';
-      (cell as HTMLElement).style.whiteSpace = 'normal';
-      (cell as HTMLElement).style.wordWrap = 'break-word';
-      (cell as HTMLElement).style.overflow = 'visible';
-
-      // Ensure rowspan and colspan attributes are preserved
-      if (rowSpan) {
-        cell.setAttribute('rowspan', rowSpan);
-      }
-      if (colSpan) {
-        cell.setAttribute('colspan', colSpan);
-      }
     });
 
     // Prevent mid-row page breaks
@@ -228,11 +189,11 @@ export async function generatePDF(
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.height = isInTable ? 'auto' : '52px';
-      replacement.style.minHeight = isInTable ? '26px' : '52px';
+      replacement.style.minHeight = isInTable ? '38px' : '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? '5px 3px' : '0';
+      replacement.style.padding = isInTable ? '11px' : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -242,12 +203,12 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? '9px' : '16px';
+      span.style.fontSize = isInTable ? '14px' : '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      span.style.textAlign = 'center';
+      span.style.textAlign = 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = '1.2';
+      span.style.lineHeight = '1.4';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
