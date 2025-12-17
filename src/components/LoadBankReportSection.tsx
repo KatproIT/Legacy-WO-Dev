@@ -186,7 +186,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">LOAD BANK TEST ENTRIES</h3>
+        <h3 className="text-xl font-bold">LOAD BANK TEST ENTRIES</h3>
         {!readOnly && (
           <button
             type="button"
