@@ -202,115 +202,88 @@ export async function generatePDF(
 
       const thead = table.querySelector('thead');
       if (thead) {
-        // Store original structure
-        const originalRows = Array.from(thead.querySelectorAll('tr'));
-        
-        // Clear thead and rebuild it for html2canvas
+        // Clear thead and rebuild it completely
         thead.innerHTML = '';
 
-        // Define the complete header structure explicitly
-        const headerStructure = [
-          { text: 'TIME', width: '5%', rowspan: 2 },
-          { text: 'KW', width: '4%', rowspan: 2 },
-          { text: 'HZ', width: '4%', rowspan: 2 },
-          { text: 'VOLTS', width: '30%', colspan: 6, subHeaders: ['A/B', 'B/C', 'C/A', 'A/N', 'B/N', 'C/N'] },
-          { text: 'AMPS', width: '13%', colspan: 3, subHeaders: ['A', 'B', 'C'] },
-          { text: 'OIL PSI', width: '6%', rowspan: 2 },
-          { text: 'H2O °F', width: '6%', rowspan: 2 },
-          { text: 'BATT V', width: '6%', rowspan: 2 }
-        ];
-
-        // Create first row
+        // Create TWO separate rows to simulate the rowspan effect
+        // Row 1: Main headers with category labels
         const firstRow = document.createElement('tr');
         firstRow.style.cssText = `
           display: table-row !important;
-          height: 32px !important;
-          background-color: #d1d5db !important;
+          height: 28px !important;
         `;
 
-        headerStructure.forEach(header => {
-          const th = document.createElement('th');
-          th.textContent = header.text;
-          th.style.cssText = `
+        // Row 2: All column headers (sub-headers for VOLTS/AMPS, repeated for others)
+        const secondRow = document.createElement('tr');
+        secondRow.style.cssText = `
+          display: table-row !important;
+          height: 28px !important;
+        `;
+
+        // Define structure
+        const structure = [
+          { main: 'TIME', sub: '', width: '5%' },
+          { main: 'KW', sub: '', width: '4%' },
+          { main: 'HZ', sub: '', width: '4%' },
+          { main: 'VOLTS', sub: 'A/B', width: '5%' },
+          { main: '', sub: 'B/C', width: '5%' },
+          { main: '', sub: 'C/A', width: '5%' },
+          { main: '', sub: 'A/N', width: '5%' },
+          { main: '', sub: 'B/N', width: '5%' },
+          { main: '', sub: 'C/N', width: '5%' },
+          { main: 'AMPS', sub: 'A', width: '4.3%' },
+          { main: '', sub: 'B', width: '4.3%' },
+          { main: '', sub: 'C', width: '4.3%' },
+          { main: 'OIL PSI', sub: '', width: '6%' },
+          { main: 'H2O °F', sub: '', width: '6%' },
+          { main: 'BATT V', sub: '', width: '6%' }
+        ];
+
+        structure.forEach(col => {
+          // First row cell
+          const th1 = document.createElement('th');
+          th1.textContent = col.main;
+          th1.style.cssText = `
             display: table-cell !important;
             visibility: visible !important;
             color: #000 !important;
-            font-size: 9px !important;
+            font-size: ${col.main ? '9px' : '8px'} !important;
             font-weight: bold !important;
             border: 1px solid #000 !important;
-            padding: 6px 2px !important;
+            padding: 4px 2px !important;
             text-align: center !important;
             vertical-align: middle !important;
             background-color: #d1d5db !important;
             line-height: 1.2 !important;
             white-space: nowrap !important;
-            width: ${header.width} !important;
+            width: ${col.width} !important;
+            height: 28px !important;
           `;
+          firstRow.appendChild(th1);
 
-          if (header.colspan) {
-            th.setAttribute('colspan', header.colspan.toString());
-          }
-          if (header.rowspan) {
-            th.setAttribute('rowspan', header.rowspan.toString());
-          }
-
-          firstRow.appendChild(th);
+          // Second row cell
+          const th2 = document.createElement('th');
+          th2.textContent = col.sub;
+          th2.style.cssText = `
+            display: table-cell !important;
+            visibility: visible !important;
+            color: #000 !important;
+            font-size: 8px !important;
+            font-weight: 600 !important;
+            border: 1px solid #000 !important;
+            padding: 4px 2px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            background-color: #e5e7eb !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            width: ${col.width} !important;
+            height: 28px !important;
+          `;
+          secondRow.appendChild(th2);
         });
 
         thead.appendChild(firstRow);
-
-        // Create second row (sub-headers)
-        const secondRow = document.createElement('tr');
-        secondRow.style.cssText = `
-          display: table-row !important;
-          height: 28px !important;
-          background-color: #e5e7eb !important;
-        `;
-
-        // Add VOLTS sub-headers
-        headerStructure.find(h => h.text === 'VOLTS')?.subHeaders?.forEach(subHeader => {
-          const th = document.createElement('th');
-          th.textContent = subHeader;
-          th.style.cssText = `
-            display: table-cell !important;
-            visibility: visible !important;
-            color: #000 !important;
-            font-size: 9px !important;
-            font-weight: 600 !important;
-            border: 1px solid #000 !important;
-            padding: 4px 2px !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            background-color: #e5e7eb !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-            width: 5% !important;
-          `;
-          secondRow.appendChild(th);
-        });
-
-        // Add AMPS sub-headers
-        headerStructure.find(h => h.text === 'AMPS')?.subHeaders?.forEach(subHeader => {
-          const th = document.createElement('th');
-          th.textContent = subHeader;
-          th.style.cssText = `
-            display: table-cell !important;
-            visibility: visible !important;
-            color: #000 !important;
-            font-size: 9px !important;
-            font-weight: 600 !important;
-            border: 1px solid #000 !important;
-            padding: 4px 2px !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            background-color: #e5e7eb !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-            width: 4.3% !important;
-          `;
-          secondRow.appendChild(th);
-        });
-
         thead.appendChild(secondRow);
 
         // Style the entire thead
