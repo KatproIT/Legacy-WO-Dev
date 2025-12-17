@@ -213,7 +213,6 @@ export async function generatePDF(
         border-spacing: 0 !important;
         border: 1px solid #000 !important;
         background-color: #fff !important;
-        table-layout: fixed !important;
       `;
 
       const thead = table.querySelector('thead');
@@ -269,11 +268,10 @@ export async function generatePDF(
             if (text === 'TIME') thElement.style.width = '60px';
             else if (text === 'KW') thElement.style.width = '45px';
             else if (text === 'HZ') thElement.style.width = '40px';
-            else if (text === 'VOLTS') thElement.style.width = '270px';
-            else if (text === 'AMPS') thElement.style.width = '120px';
             else if (text === 'OIL PSI') thElement.style.width = '55px';
             else if (text === 'H2O °F') thElement.style.width = '55px';
             else if (text === 'BATT V') thElement.style.width = '55px';
+
           });
         }
 
