@@ -118,22 +118,6 @@ export async function generatePDF(
           lastCell.remove();
         }
       });
-
-      // IMMEDIATELY preserve thead structure after DEL removal
-      const theadAfter = table.querySelector('thead');
-      if (theadAfter) {
-        (theadAfter as HTMLElement).style.cssText = 'display: table-header-group !important; visibility: visible !important;';
-
-        const rows = theadAfter.querySelectorAll('tr');
-        rows.forEach(row => {
-          (row as HTMLElement).style.cssText = 'display: table-row !important; visibility: visible !important;';
-
-          const cells = row.querySelectorAll('th');
-          cells.forEach(cell => {
-            (cell as HTMLElement).style.cssText = 'display: table-cell !important; visibility: visible !important; color: #000 !important;';
-          });
-        });
-      }
     });
 
     // Remove all other no-print elements from clone
@@ -203,7 +187,7 @@ export async function generatePDF(
       }
     });
 
-    // Ensure Load Bank table headers are visible and properly structured
+    // FIXED: Ensure Load Bank table headers are visible and properly structured
     clonedContainer.querySelectorAll('table[data-table-type="load-bank"]').forEach(table => {
       // Force table to be visible and properly styled
       (table as HTMLElement).style.cssText = `
@@ -213,6 +197,7 @@ export async function generatePDF(
         border-spacing: 0 !important;
         border: 1px solid #000 !important;
         background-color: #fff !important;
+        table-layout: auto !important;
       `;
 
       const thead = table.querySelector('thead');
@@ -228,69 +213,27 @@ export async function generatePDF(
 
         const headerRows = thead.querySelectorAll('tr');
 
-        // Process first row (with rowspan headers)
-        const firstRow = headerRows[0];
-        if (firstRow) {
-          (firstRow as HTMLElement).style.cssText = `
+        // Process all header rows while preserving rowspan and colspan
+        headerRows.forEach((row, rowIndex) => {
+          (row as HTMLElement).style.cssText = `
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 32px !important;
-            min-height: 32px !important;
-            background-color: #d1d5db !important;
-            page-break-inside: avoid !important;
-          `;
-
-          const firstRowCells = firstRow.querySelectorAll('th');
-          firstRowCells.forEach(cell => {
-            const thElement = cell as HTMLTableCellElement;
-            const text = thElement.textContent?.trim() || '';
-
-            thElement.style.cssText = `
-              display: table-cell !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: 700 !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
-              text-align: center !important;
-              vertical-align: middle !important;
-              background-color: #d1d5db !important;
-              height: 32px !important;
-              min-height: 32px !important;
-              line-height: 1.2 !important;
-              white-space: nowrap !important;
-            `;
-
-            // Set explicit widths based on content
-            if (text === 'TIME') thElement.style.width = '60px';
-            else if (text === 'KW') thElement.style.width = '45px';
-            else if (text === 'HZ') thElement.style.width = '40px';
-            else if (text === 'OIL PSI') thElement.style.width = '55px';
-            else if (text === 'H2O °F') thElement.style.width = '55px';
-            else if (text === 'BATT V') thElement.style.width = '55px';
-
-          });
-        }
-
-        // Process second row (subheaders)
-        const secondRow = headerRows[1];
-        if (secondRow) {
-          (secondRow as HTMLElement).style.cssText = `
-            display: table-row !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: 28px !important;
             min-height: 28px !important;
-            background-color: #e5e7eb !important;
             page-break-inside: avoid !important;
           `;
 
-          const secondRowCells = secondRow.querySelectorAll('th');
-          secondRowCells.forEach(cell => {
+          const cells = row.querySelectorAll('th');
+          cells.forEach(cell => {
             const thElement = cell as HTMLTableCellElement;
+            
+            // Get rowspan and colspan attributes
+            const rowspan = thElement.getAttribute('rowspan');
+            const colspan = thElement.getAttribute('colspan');
+            const rowspanNum = rowspan ? parseInt(rowspan) : 1;
+            
+            // Determine background color based on rowspan (first row headers have rowspan=2)
+            const bgColor = rowspanNum > 1 ? '#d1d5db' : '#e5e7eb';
 
             thElement.style.cssText = `
               display: table-cell !important;
@@ -298,20 +241,30 @@ export async function generatePDF(
               opacity: 1 !important;
               color: #000 !important;
               font-size: 9px !important;
-              font-weight: 600 !important;
+              font-weight: bold !important;
               border: 1px solid #000 !important;
               padding: 4px 2px !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: #e5e7eb !important;
-              height: 28px !important;
+              background-color: ${bgColor} !important;
               min-height: 28px !important;
               line-height: 1.2 !important;
-              white-space: nowrap !important;
-              width: 45px !important;
+              white-space: normal !important;
+              word-wrap: break-word !important;
             `;
+            
+            // IMPORTANT: Re-apply rowspan and colspan after styling
+            if (rowspan) {
+              thElement.setAttribute('rowspan', rowspan);
+              thElement.rowSpan = rowspanNum;
+            }
+            if (colspan) {
+              const colspanNum = parseInt(colspan);
+              thElement.setAttribute('colspan', colspan);
+              thElement.colSpan = colspanNum;
+            }
           });
-        }
+        });
       }
 
       const tbody = table.querySelector('tbody');
