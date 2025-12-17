@@ -187,7 +187,7 @@ export async function generatePDF(
       }
     });
 
-    // FIXED: Ensure Load Bank table headers are visible and properly structured
+    // FIXED: Restructure Load Bank table headers for html2canvas compatibility
     clonedContainer.querySelectorAll('table[data-table-type="load-bank"]').forEach(table => {
       // Force table to be visible and properly styled
       (table as HTMLElement).style.cssText = `
@@ -197,74 +197,128 @@ export async function generatePDF(
         border-spacing: 0 !important;
         border: 1px solid #000 !important;
         background-color: #fff !important;
-        table-layout: auto !important;
+        table-layout: fixed !important;
       `;
 
       const thead = table.querySelector('thead');
       if (thead) {
+        // Store original structure
+        const originalRows = Array.from(thead.querySelectorAll('tr'));
+        
+        // Clear thead and rebuild it for html2canvas
+        thead.innerHTML = '';
+
+        // Define the complete header structure explicitly
+        const headerStructure = [
+          { text: 'TIME', width: '5%', rowspan: 2 },
+          { text: 'KW', width: '4%', rowspan: 2 },
+          { text: 'HZ', width: '4%', rowspan: 2 },
+          { text: 'VOLTS', width: '30%', colspan: 6, subHeaders: ['A/B', 'B/C', 'C/A', 'A/N', 'B/N', 'C/N'] },
+          { text: 'AMPS', width: '13%', colspan: 3, subHeaders: ['A', 'B', 'C'] },
+          { text: 'OIL PSI', width: '6%', rowspan: 2 },
+          { text: 'H2O °F', width: '6%', rowspan: 2 },
+          { text: 'BATT V', width: '6%', rowspan: 2 }
+        ];
+
+        // Create first row
+        const firstRow = document.createElement('tr');
+        firstRow.style.cssText = `
+          display: table-row !important;
+          height: 32px !important;
+          background-color: #d1d5db !important;
+        `;
+
+        headerStructure.forEach(header => {
+          const th = document.createElement('th');
+          th.textContent = header.text;
+          th.style.cssText = `
+            display: table-cell !important;
+            visibility: visible !important;
+            color: #000 !important;
+            font-size: 9px !important;
+            font-weight: bold !important;
+            border: 1px solid #000 !important;
+            padding: 6px 2px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            background-color: #d1d5db !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            width: ${header.width} !important;
+          `;
+
+          if (header.colspan) {
+            th.setAttribute('colspan', header.colspan.toString());
+          }
+          if (header.rowspan) {
+            th.setAttribute('rowspan', header.rowspan.toString());
+          }
+
+          firstRow.appendChild(th);
+        });
+
+        thead.appendChild(firstRow);
+
+        // Create second row (sub-headers)
+        const secondRow = document.createElement('tr');
+        secondRow.style.cssText = `
+          display: table-row !important;
+          height: 28px !important;
+          background-color: #e5e7eb !important;
+        `;
+
+        // Add VOLTS sub-headers
+        headerStructure.find(h => h.text === 'VOLTS')?.subHeaders?.forEach(subHeader => {
+          const th = document.createElement('th');
+          th.textContent = subHeader;
+          th.style.cssText = `
+            display: table-cell !important;
+            visibility: visible !important;
+            color: #000 !important;
+            font-size: 9px !important;
+            font-weight: 600 !important;
+            border: 1px solid #000 !important;
+            padding: 4px 2px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            background-color: #e5e7eb !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            width: 5% !important;
+          `;
+          secondRow.appendChild(th);
+        });
+
+        // Add AMPS sub-headers
+        headerStructure.find(h => h.text === 'AMPS')?.subHeaders?.forEach(subHeader => {
+          const th = document.createElement('th');
+          th.textContent = subHeader;
+          th.style.cssText = `
+            display: table-cell !important;
+            visibility: visible !important;
+            color: #000 !important;
+            font-size: 9px !important;
+            font-weight: 600 !important;
+            border: 1px solid #000 !important;
+            padding: 4px 2px !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            background-color: #e5e7eb !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            width: 4.3% !important;
+          `;
+          secondRow.appendChild(th);
+        });
+
+        thead.appendChild(secondRow);
+
+        // Style the entire thead
         (thead as HTMLElement).style.cssText = `
           display: table-header-group !important;
           visibility: visible !important;
           opacity: 1 !important;
-          height: auto !important;
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
         `;
-
-        const headerRows = thead.querySelectorAll('tr');
-
-        // Process all header rows while preserving rowspan and colspan
-        headerRows.forEach((row, rowIndex) => {
-          (row as HTMLElement).style.cssText = `
-            display: table-row !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            min-height: 28px !important;
-            page-break-inside: avoid !important;
-          `;
-
-          const cells = row.querySelectorAll('th');
-          cells.forEach(cell => {
-            const thElement = cell as HTMLTableCellElement;
-            
-            // Get rowspan and colspan attributes
-            const rowspan = thElement.getAttribute('rowspan');
-            const colspan = thElement.getAttribute('colspan');
-            const rowspanNum = rowspan ? parseInt(rowspan) : 1;
-            
-            // Determine background color based on rowspan (first row headers have rowspan=2)
-            const bgColor = rowspanNum > 1 ? '#d1d5db' : '#e5e7eb';
-
-            thElement.style.cssText = `
-              display: table-cell !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: bold !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
-              text-align: center !important;
-              vertical-align: middle !important;
-              background-color: ${bgColor} !important;
-              min-height: 28px !important;
-              line-height: 1.2 !important;
-              white-space: normal !important;
-              word-wrap: break-word !important;
-            `;
-            
-            // IMPORTANT: Re-apply rowspan and colspan after styling
-            if (rowspan) {
-              thElement.setAttribute('rowspan', rowspan);
-              thElement.rowSpan = rowspanNum;
-            }
-            if (colspan) {
-              const colspanNum = parseInt(colspan);
-              thElement.setAttribute('colspan', colspan);
-              thElement.colSpan = colspanNum;
-            }
-          });
-        });
       }
 
       const tbody = table.querySelector('tbody');
