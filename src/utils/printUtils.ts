@@ -165,8 +165,8 @@ export async function generatePDF(
 
       // Special handling for Load Bank table
       if (isLoadBankTable) {
-        (table as HTMLElement).style.border = '2px solid #000';
-        (table as HTMLElement).style.fontSize = '11px';
+        (table as HTMLElement).style.border = '1px solid #000';
+        (table as HTMLElement).style.fontSize = '9px';
       }
     });
 
@@ -179,12 +179,12 @@ export async function generatePDF(
       if (isLoadBankTable) {
         // Special styling for Load Bank table cells
         (cell as HTMLElement).style.border = '1px solid #000';
-        (cell as HTMLElement).style.padding = '8px 6px';
-        (cell as HTMLElement).style.minHeight = '32px';
-        (cell as HTMLElement).style.lineHeight = '1.3';
+        (cell as HTMLElement).style.padding = '4px 2px';
+        (cell as HTMLElement).style.minHeight = '24px';
+        (cell as HTMLElement).style.lineHeight = '1.2';
         (cell as HTMLElement).style.verticalAlign = 'middle';
         (cell as HTMLElement).style.textAlign = 'center';
-        (cell as HTMLElement).style.fontSize = '11px';
+        (cell as HTMLElement).style.fontSize = '9px';
         (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? 'bold' : 'normal';
         (cell as HTMLElement).style.color = '#000';
         (cell as HTMLElement).style.display = ''; // Ensure cell is displayed
@@ -209,9 +209,9 @@ export async function generatePDF(
       (table as HTMLElement).style.cssText = `
         display: table !important;
         width: 100% !important;
-        border-collapse: separate !important;
+        border-collapse: collapse !important;
         border-spacing: 0 !important;
-        border: 2px solid #000 !important;
+        border: 1px solid #000 !important;
         background-color: #fff !important;
         table-layout: fixed !important;
       `;
@@ -236,8 +236,8 @@ export async function generatePDF(
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 120px !important;
-            min-height: 120px !important;
+            height: 32px !important;
+            min-height: 32px !important;
             background-color: #d1d5db !important;
             page-break-inside: avoid !important;
           `;
@@ -252,28 +252,28 @@ export async function generatePDF(
               visibility: visible !important;
               opacity: 1 !important;
               color: #000 !important;
-              font-size: 13px !important;
+              font-size: 9px !important;
               font-weight: 700 !important;
               border: 1px solid #000 !important;
-              padding: 30px 8px !important;
+              padding: 4px 2px !important;
               text-align: center !important;
               vertical-align: middle !important;
               background-color: #d1d5db !important;
-              height: 120px !important;
-              min-height: 120px !important;
-              line-height: 1.5 !important;
+              height: 32px !important;
+              min-height: 32px !important;
+              line-height: 1.2 !important;
               white-space: nowrap !important;
             `;
 
             // Set explicit widths based on content
             if (text === 'TIME') thElement.style.width = '60px';
-            else if (text === 'KW') thElement.style.width = '50px';
-            else if (text === 'HZ') thElement.style.width = '50px';
-            else if (text === 'VOLTS') thElement.style.width = '300px';
-            else if (text === 'AMPS') thElement.style.width = '150px';
-            else if (text === 'OIL PSI') thElement.style.width = '60px';
-            else if (text === 'H2O °F') thElement.style.width = '60px';
-            else if (text === 'BATT V') thElement.style.width = '60px';
+            else if (text === 'KW') thElement.style.width = '45px';
+            else if (text === 'HZ') thElement.style.width = '40px';
+            else if (text === 'VOLTS') thElement.style.width = '270px';
+            else if (text === 'AMPS') thElement.style.width = '120px';
+            else if (text === 'OIL PSI') thElement.style.width = '55px';
+            else if (text === 'H2O °F') thElement.style.width = '55px';
+            else if (text === 'BATT V') thElement.style.width = '55px';
           });
         }
 
@@ -284,8 +284,8 @@ export async function generatePDF(
             display: table-row !important;
             visibility: visible !important;
             opacity: 1 !important;
-            height: 90px !important;
-            min-height: 90px !important;
+            height: 28px !important;
+            min-height: 28px !important;
             background-color: #e5e7eb !important;
             page-break-inside: avoid !important;
           `;
@@ -299,18 +299,18 @@ export async function generatePDF(
               visibility: visible !important;
               opacity: 1 !important;
               color: #000 !important;
-              font-size: 12px !important;
+              font-size: 9px !important;
               font-weight: 600 !important;
               border: 1px solid #000 !important;
-              padding: 24px 4px !important;
+              padding: 4px 2px !important;
               text-align: center !important;
               vertical-align: middle !important;
               background-color: #e5e7eb !important;
-              height: 90px !important;
-              min-height: 90px !important;
-              line-height: 1.5 !important;
+              height: 28px !important;
+              min-height: 28px !important;
+              line-height: 1.2 !important;
               white-space: nowrap !important;
-              width: 50px !important;
+              width: 45px !important;
             `;
           });
         }
@@ -402,11 +402,11 @@ export async function generatePDF(
       replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
       replacement.style.backgroundColor = '#fff';
       replacement.style.height = isInTable ? 'auto' : '52px';
-      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '38px') : '52px';
+      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '24px' : '38px') : '52px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '11px') : '0';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '4px 2px' : '11px') : '0';
 
       // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
@@ -416,12 +416,12 @@ export async function generatePDF(
       span.style.paddingLeft = isInTable ? '0' : '14px';
       span.style.paddingRight = isInTable ? '0' : '14px';
       span.style.color = '#000';
-      span.style.fontSize = isInTable ? (isLoadBankTable ? '11px' : '14px') : '16px';
+      span.style.fontSize = isInTable ? (isLoadBankTable ? '9px' : '14px') : '16px';
       span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = isLoadBankTable ? 'center' : 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = '1.4';
+      span.style.lineHeight = '1.2';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
