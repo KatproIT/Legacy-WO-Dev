@@ -10,10 +10,10 @@ interface SystemChecksSectionProps {
 }
 
 const statusOptions = ['GOOD', 'REPLACED', 'SEE NOTES', 'N/A'];
-const coolantLevelOptions = ['ADDED', 'FULL'];
+const coolantLevelOptions = ['ADDED', 'FULL', 'N/A'];
 const tempOptions = [
   '-50°F', '-45°F', '-40°F', '-35°F', '-30°F', '-25°F', '-20°F', '-15°F', '-10°F', '-5°F',
-  '0°F', '5°F', '10°F', '15°F', '20°F'
+  '0°F', '5°F', '10°F', '15°F', '20°F', 'N/A'
 ];
 
 export function SystemChecksSection({ formData, onChange, readOnly }: SystemChecksSectionProps) {
