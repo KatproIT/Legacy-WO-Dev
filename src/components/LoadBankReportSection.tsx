@@ -205,193 +205,193 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
         </div>
       ) : (
         <div className="overflow-x-auto lg:overflow-visible">
-          <table className="w-full border-collapse border-2 border-gray-400 load-bank-table" data-table-type="load-bank">
+          <table className="w-full border-collapse border border-gray-400 load-bank-table" data-table-type="load-bank">
             <thead>
               <tr className="bg-gray-200">
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">TIME</th>
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">KW</th>
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">HZ</th>
-                <th colSpan={6} className="border-2 border-gray-400 px-4 py-3 font-bold text-base align-middle">VOLTS</th>
-                <th colSpan={3} className="border-2 border-gray-400 px-4 py-3 font-bold text-base align-middle">AMPS</th>
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">OIL PSI</th>
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">H2O °F</th>
-                <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">BATT V</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle min-w-[60px]">TIME</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle min-w-[50px]">KW</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle min-w-[40px]">HZ</th>
+                <th colSpan={6} className="border border-gray-400 px-1 py-1 font-bold text-sm align-middle">VOLTS</th>
+                <th colSpan={3} className="border border-gray-400 px-1 py-1 font-bold text-sm align-middle">AMPS</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle whitespace-nowrap min-w-[60px]">OIL PSI</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle whitespace-nowrap min-w-[60px]">H2O °F</th>
+                <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle whitespace-nowrap min-w-[60px]">BATT V</th>
                 {!readOnly && (
-                  <th rowSpan={2} className="border-2 border-gray-400 px-4 py-3 font-bold text-sm align-middle">DEL</th>
+                  <th rowSpan={2} className="border border-gray-400 px-1 py-1 font-bold text-xs align-middle min-w-[40px]">DEL</th>
                 )}
               </tr>
               <tr className="bg-gray-100">
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">A/B</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">B/C</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">C/A</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">A/N</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">B/N</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">C/N</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">A</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">B</th>
-                <th className="border-2 border-gray-400 px-3 py-2 text-sm font-semibold">C</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">A/B</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">B/C</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">C/A</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">A/N</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">B/N</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[50px]">C/N</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[40px]">A</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[40px]">B</th>
+                <th className="border border-gray-400 px-1 py-0.5 text-xs font-medium min-w-[40px]">C</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry: LoadBankEntry) => (
-                <tr key={entry.id} className="bg-white">
-                  <td className="border-2 border-gray-400 p-0">
+                <tr key={entry.id} className="bg-white h-8">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="time"
                       value={entry.time || ''}
                       onChange={(e) => updateEntry(entry.id, 'time', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.kw || ''}
                       onChange={(e) => updateEntry(entry.id, 'kw', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.hertz || ''}
                       onChange={(e) => updateEntry(entry.id, 'hertz', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.ab || ''}
                       onChange={(e) => updateEntry(entry.id, 'ab', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.bc || ''}
                       onChange={(e) => updateEntry(entry.id, 'bc', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.ca || ''}
                       onChange={(e) => updateEntry(entry.id, 'ca', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.an || ''}
                       onChange={(e) => updateEntry(entry.id, 'an', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.bn || ''}
                       onChange={(e) => updateEntry(entry.id, 'bn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.cn || ''}
                       onChange={(e) => updateEntry(entry.id, 'cn', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.amps_a || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_a', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.amps_b || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_b', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.amps_c || ''}
                       onChange={(e) => updateEntry(entry.id, 'amps_c', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.oil_pressure || ''}
                       onChange={(e) => updateEntry(entry.id, 'oil_pressure', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.water_temp || ''}
                       onChange={(e) => updateEntry(entry.id, 'water_temp', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
-                  <td className="border-2 border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0">
                     <input
                       type="text"
                       value={entry.batt_charger_voltage || ''}
                       onChange={(e) => updateEntry(entry.id, 'batt_charger_voltage', e.target.value)}
                       disabled={readOnly}
-                      className="w-full px-2 py-2 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-sm text-center"
+                      className="w-full h-8 px-1 py-0.5 border-0 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 text-xs text-center"
                       style={{ textTransform: 'uppercase' }}
                     />
                   </td>
                   {!readOnly && (
-                    <td className="border-2 border-gray-400 p-2 text-center">
+                    <td className="border border-gray-400 p-1 text-center">
                       <button
                         type="button"
                         onClick={() => removeEntry(entry.id)}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </td>
                   )}
