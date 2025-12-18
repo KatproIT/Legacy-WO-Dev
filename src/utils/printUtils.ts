@@ -222,34 +222,46 @@ export async function generatePDF(
 
         // Define structure
         const structure = [
-          { main: 'TIME', sub: '', width: '5%' },
-          { main: 'KW', sub: '', width: '4%' },
-          { main: 'HZ', sub: '', width: '4%' },
-          { main: 'VOLTS', sub: 'A/B', width: '5%' },
-          { main: '', sub: 'B/C', width: '5%' },
-          { main: '', sub: 'C/A', width: '5%' },
-          { main: '', sub: 'A/N', width: '5%' },
-          { main: '', sub: 'B/N', width: '5%' },
-          { main: '', sub: 'C/N', width: '5%' },
-          { main: 'AMPS', sub: 'A', width: '4.3%' },
-          { main: '', sub: 'B', width: '4.3%' },
-          { main: '', sub: 'C', width: '4.3%' },
-          { main: 'OIL PSI', sub: '', width: '6%' },
-          { main: 'H2O °F', sub: '', width: '6%' },
-          { main: 'BATT V', sub: '', width: '6%' }
+          { main: 'TIME', sub: '', width: '5%', group: 'single' },
+          { main: 'KW', sub: '', width: '4%', group: 'single' },
+          { main: 'HZ', sub: '', width: '4%', group: 'single' },
+          { main: 'VOLTS', sub: 'A/B', width: '5%', group: 'volts-start' },
+          { main: '', sub: 'B/C', width: '5%', group: 'volts-middle' },
+          { main: '', sub: 'C/A', width: '5%', group: 'volts-middle' },
+          { main: '', sub: 'A/N', width: '5%', group: 'volts-middle' },
+          { main: '', sub: 'B/N', width: '5%', group: 'volts-middle' },
+          { main: '', sub: 'C/N', width: '5%', group: 'volts-end' },
+          { main: 'AMPS', sub: 'A', width: '4.3%', group: 'amps-start' },
+          { main: '', sub: 'B', width: '4.3%', group: 'amps-middle' },
+          { main: '', sub: 'C', width: '4.3%', group: 'amps-end' },
+          { main: 'OIL PSI', sub: '', width: '6%', group: 'single' },
+          { main: 'H2O °F', sub: '', width: '6%', group: 'single' },
+          { main: 'BATT V', sub: '', width: '6%', group: 'single' }
         ];
 
         structure.forEach(col => {
           // First row cell
           const th1 = document.createElement('th');
           th1.textContent = col.main;
+          
+          // Determine border styling based on group
+          let borderRight = '1px solid #000';
+          if (col.group === 'volts-start' || col.group === 'volts-middle') {
+            borderRight = 'none'; // Remove right border for VOLTS cells except last
+          } else if (col.group === 'amps-start' || col.group === 'amps-middle') {
+            borderRight = 'none'; // Remove right border for AMPS cells except last
+          }
+          
           th1.style.cssText = `
             display: table-cell !important;
             visibility: visible !important;
             color: #000 !important;
             font-size: ${col.main ? '9px' : '8px'} !important;
             font-weight: bold !important;
-            border: 1px solid #000 !important;
+            border-top: 1px solid #000 !important;
+            border-bottom: 1px solid #000 !important;
+            border-left: 1px solid #000 !important;
+            border-right: ${borderRight} !important;
             padding: 4px 2px !important;
             text-align: center !important;
             vertical-align: middle !important;
