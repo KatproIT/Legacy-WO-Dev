@@ -90,6 +90,7 @@ export async function generatePDF(
     clonedContainer.style.top = '0';
     clonedContainer.style.width = '1200px';
     clonedContainer.style.backgroundColor = '#ffffff';
+    clonedContainer.style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
     document.body.appendChild(clonedContainer);
 
     // Handle Load Bank table DEL column removal BEFORE other no-print elements
@@ -97,7 +98,6 @@ export async function generatePDF(
     loadBankTables.forEach(table => {
       const thead = table.querySelector('thead');
       if (thead) {
-        // Remove DEL header from first row only (it has rowspan=2)
         const firstRow = thead.querySelector('tr:first-child');
         if (firstRow) {
           const cells = firstRow.querySelectorAll('th');
@@ -110,7 +110,6 @@ export async function generatePDF(
         }
       }
 
-      // Remove DEL column cells from Load Bank table body
       const bodyRows = table.querySelectorAll('tbody tr');
       bodyRows.forEach(row => {
         const lastCell = row.querySelector('td:last-child');
@@ -124,19 +123,16 @@ export async function generatePDF(
     const noPrintElements = clonedContainer.querySelectorAll('.no-print');
     noPrintElements.forEach(el => el.remove());
 
-    // Remove all buttons and interactive elements to make it look like a proper form
     const buttons = clonedContainer.querySelectorAll('button');
     buttons.forEach(btn => btn.remove());
 
-    // Remove navigation and UI controls
     const navElements = clonedContainer.querySelectorAll('nav, .navigation, .nav-bar');
     navElements.forEach(el => el.remove());
 
-    // Remove any action menus, dropdowns, or control panels
     const controlElements = clonedContainer.querySelectorAll('.action-menu, .dropdown-menu, .controls, .toolbar');
     controlElements.forEach(el => el.remove());
 
-    // Fix table layouts after removing no-print columns
+    // Enhanced table styling for professional invoice look
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
       const isLoadBankTable = table.getAttribute('data-table-type') === 'load-bank';
@@ -144,81 +140,91 @@ export async function generatePDF(
       (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
-      (table as HTMLElement).style.marginBottom = '20px';
-      (table as HTMLElement).style.marginTop = '10px';
+      (table as HTMLElement).style.marginBottom = '24px';
+      (table as HTMLElement).style.marginTop = '12px';
+      (table as HTMLElement).style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif';
 
-      // Special handling for Load Bank table
       if (isLoadBankTable) {
-        (table as HTMLElement).style.border = '1px solid #000';
-        (table as HTMLElement).style.fontSize = '9px';
+        (table as HTMLElement).style.border = '1.5px solid #1e293b';
+        (table as HTMLElement).style.fontSize = '10px';
+        (table as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+      } else {
+        (table as HTMLElement).style.border = '1px solid #cbd5e1';
+        (table as HTMLElement).style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
       }
     });
 
-    // Enhanced table cell spacing and page break handling
+    // Professional table cell styling with better spacing
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
       const table = cell.closest('table');
       const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
 
       if (isLoadBankTable) {
-        // Special styling for Load Bank table cells
-        (cell as HTMLElement).style.border = '1px solid #000';
-        (cell as HTMLElement).style.padding = '4px 2px';
-        (cell as HTMLElement).style.minHeight = '24px';
-        (cell as HTMLElement).style.lineHeight = '1.2';
+        (cell as HTMLElement).style.border = '1px solid #475569';
+        (cell as HTMLElement).style.padding = '6px 4px';
+        (cell as HTMLElement).style.minHeight = '28px';
+        (cell as HTMLElement).style.lineHeight = '1.4';
         (cell as HTMLElement).style.verticalAlign = 'middle';
         (cell as HTMLElement).style.textAlign = 'center';
-        (cell as HTMLElement).style.fontSize = '9px';
-        (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? 'bold' : 'normal';
-        (cell as HTMLElement).style.color = '#000';
-        (cell as HTMLElement).style.display = ''; // Ensure cell is displayed
+        (cell as HTMLElement).style.fontSize = '10px';
+        (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? '600' : '500';
+        (cell as HTMLElement).style.color = '#0f172a';
+        (cell as HTMLElement).style.display = '';
+        (cell as HTMLElement).style.fontFamily = '"Inter", sans-serif';
 
-        // Header cells background
         if (cell.tagName === 'TH') {
-          (cell as HTMLElement).style.backgroundColor = '#e5e7eb';
-          (cell as HTMLElement).style.fontWeight = 'bold';
+          (cell as HTMLElement).style.backgroundColor = '#e2e8f0';
+          (cell as HTMLElement).style.fontWeight = '600';
+          (cell as HTMLElement).style.letterSpacing = '0.02em';
         }
       } else {
-        // Default styling for other tables
-        (cell as HTMLElement).style.padding = '14px 12px';
-        (cell as HTMLElement).style.minHeight = '42px';
-        (cell as HTMLElement).style.lineHeight = '1.5';
+        (cell as HTMLElement).style.padding = '16px 14px';
+        (cell as HTMLElement).style.minHeight = '48px';
+        (cell as HTMLElement).style.lineHeight = '1.6';
         (cell as HTMLElement).style.verticalAlign = 'middle';
+        (cell as HTMLElement).style.fontSize = '15px';
+        (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? '600' : '400';
+        (cell as HTMLElement).style.color = '#1e293b';
+        (cell as HTMLElement).style.fontFamily = '"Inter", sans-serif';
+
+        if (cell.tagName === 'TH') {
+          (cell as HTMLElement).style.backgroundColor = '#f1f5f9';
+          (cell as HTMLElement).style.borderBottom = '2px solid #cbd5e1';
+          (cell as HTMLElement).style.letterSpacing = '0.025em';
+        }
       }
     });
 
-    // FIXED: Restructure Load Bank table headers for html2canvas compatibility
+    // FIXED: Restructure Load Bank table headers
     clonedContainer.querySelectorAll('table[data-table-type="load-bank"]').forEach(table => {
-      // Force table to be visible and properly styled
       (table as HTMLElement).style.cssText = `
         display: table !important;
         width: 100% !important;
         border-collapse: collapse !important;
         border-spacing: 0 !important;
-        border: 1px solid #000 !important;
+        border: 1.5px solid #1e293b !important;
         background-color: #fff !important;
         table-layout: fixed !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
       `;
 
       const thead = table.querySelector('thead');
       if (thead) {
-        // Clear thead and rebuild it completely
         thead.innerHTML = '';
 
-        // Create TWO separate rows with proper structure
         const firstRow = document.createElement('tr');
         firstRow.style.cssText = `
           display: table-row !important;
-          height: 28px !important;
+          height: 32px !important;
         `;
 
         const secondRow = document.createElement('tr');
         secondRow.style.cssText = `
           display: table-row !important;
-          height: 28px !important;
+          height: 32px !important;
         `;
 
-        // Define the 15-column structure matching tbody
         const structure = [
           { main: 'TIME', sub: '', width: '5%', colspan: 1, type: 'single' },
           { main: 'KW', sub: '', width: '4%', colspan: 1, type: 'single' },
@@ -237,81 +243,78 @@ export async function generatePDF(
           { main: 'BATT V', sub: '', width: '6%', colspan: 1, type: 'single' }
         ];
 
-        structure.forEach((col, index) => {
-          // First row
+        structure.forEach((col) => {
           if (col.type === 'single') {
-            // Single header - spans both rows
             const th1 = document.createElement('th');
             th1.textContent = col.main;
             th1.setAttribute('rowspan', '2');
             th1.style.cssText = `
               display: table-cell !important;
               visibility: visible !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: bold !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
+              color: #0f172a !important;
+              font-size: 10px !important;
+              font-weight: 600 !important;
+              border: 1px solid #475569 !important;
+              padding: 6px 4px !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: #d1d5db !important;
-              line-height: 1.2 !important;
+              background-color: #cbd5e1 !important;
+              line-height: 1.3 !important;
               white-space: nowrap !important;
               width: ${col.width} !important;
+              font-family: "Inter", sans-serif !important;
+              letter-spacing: 0.02em !important;
             `;
             firstRow.appendChild(th1);
           } else if (col.type === 'group-start') {
-            // Group header (VOLTS or AMPS) - spans columns
             const th1 = document.createElement('th');
             th1.textContent = col.main;
             th1.setAttribute('colspan', col.colspan.toString());
             th1.style.cssText = `
               display: table-cell !important;
               visibility: visible !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: bold !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
+              color: #0f172a !important;
+              font-size: 10px !important;
+              font-weight: 600 !important;
+              border: 1px solid #475569 !important;
+              padding: 6px 4px !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: #d1d5db !important;
-              line-height: 1.2 !important;
+              background-color: #cbd5e1 !important;
+              line-height: 1.3 !important;
               white-space: nowrap !important;
+              font-family: "Inter", sans-serif !important;
+              letter-spacing: 0.02em !important;
             `;
             firstRow.appendChild(th1);
           }
-          // group-sub cells don't appear in first row (they're covered by colspan)
 
-          // Second row
           if (col.type === 'group-start' || col.type === 'group-sub') {
-            // Sub-headers
             const th2 = document.createElement('th');
             th2.textContent = col.sub;
             th2.style.cssText = `
               display: table-cell !important;
               visibility: visible !important;
-              color: #000 !important;
-              font-size: 8px !important;
+              color: #0f172a !important;
+              font-size: 9px !important;
               font-weight: 600 !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
+              border: 1px solid #475569 !important;
+              padding: 6px 4px !important;
               text-align: center !important;
               vertical-align: middle !important;
-              background-color: #e5e7eb !important;
-              line-height: 1.2 !important;
+              background-color: #e2e8f0 !important;
+              line-height: 1.3 !important;
               white-space: nowrap !important;
               width: ${col.width} !important;
+              font-family: "Inter", sans-serif !important;
             `;
             secondRow.appendChild(th2);
           }
-          // single cells don't appear in second row (covered by rowspan)
         });
 
         thead.appendChild(firstRow);
         thead.appendChild(secondRow);
 
-        // Style the entire thead
         (thead as HTMLElement).style.cssText = `
           display: table-header-group !important;
           visibility: visible !important;
@@ -330,7 +333,6 @@ export async function generatePDF(
           (row as HTMLElement).style.display = 'table-row';
           const bodyCells = row.querySelectorAll('td');
           
-          // Set consistent widths for body cells matching header
           const widths = ['5%', '4%', '4%', '5%', '5%', '5%', '5%', '5%', '5%', '4.3%', '4.3%', '4.3%', '6%', '6%', '6%'];
           bodyCells.forEach((cell, index) => {
             (cell as HTMLElement).style.display = 'table-cell';
@@ -342,19 +344,18 @@ export async function generatePDF(
       }
     });
 
-    // Prevent mid-row page breaks
     const tableRows = clonedContainer.querySelectorAll('tr');
     tableRows.forEach(row => {
       (row as HTMLElement).style.pageBreakInside = 'avoid';
     });
 
-    // Add spacing between major sections
+    // Enhanced section spacing
     const sections = clonedContainer.querySelectorAll('[data-section]');
     sections.forEach(section => {
-      (section as HTMLElement).style.marginBottom = '25px';
+      (section as HTMLElement).style.marginBottom = '32px';
+      (section as HTMLElement).style.paddingBottom = '8px';
     });
 
-    // Show ALL hidden elements in the clone
     const hiddenElements = clonedContainer.querySelectorAll('.hidden');
     hiddenElements.forEach((el) => {
       const htmlEl = el as HTMLElement;
@@ -364,39 +365,39 @@ export async function generatePDF(
       htmlEl.style.opacity = '1';
     });
 
-    // Convert all select dropdowns using extracted values
+    // Professional select styling with larger fonts
     const selectElements = clonedContainer.querySelectorAll('select');
     selectElements.forEach((select, index) => {
       const selectedText = selectValues[index] || '';
 
-      // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
-      replacement.style.border = '1px solid #d1d5db';
-      replacement.style.backgroundColor = '#fff';
-      replacement.style.height = '52px';
+      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.backgroundColor = '#ffffff';
+      replacement.style.height = '58px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
+      replacement.style.borderRadius = '4px';
 
-      // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
       span.textContent = selectedText;
       span.style.display = 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = '14px';
-      span.style.paddingRight = '14px';
-      span.style.color = '#000';
+      span.style.paddingLeft = '16px';
+      span.style.paddingRight = '16px';
+      span.style.color = '#1e293b';
       span.style.fontSize = '16px';
-      span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      span.style.fontWeight = '500';
+      span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      span.style.letterSpacing = '0.01em';
 
       replacement.appendChild(span);
       select.parentNode?.replaceChild(replacement, select);
     });
 
-    // Convert all input fields using extracted values (but NOT in table headers)
+    // Professional input styling with larger fonts
     const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
     inputElements.forEach((input, index) => {
-      // Skip if this input is inside a thead
       if (input.closest('thead')) {
         return;
       }
@@ -406,79 +407,82 @@ export async function generatePDF(
       const table = input.closest('table');
       const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
 
-      // Create a div wrapper using table-cell for perfect centering
       const replacement = document.createElement('div');
-      replacement.style.border = isInTable ? 'none' : '1px solid #d1d5db';
-      replacement.style.backgroundColor = '#fff';
-      replacement.style.height = isInTable ? 'auto' : '52px';
-      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '24px' : '38px') : '52px';
+      replacement.style.border = isInTable ? 'none' : '1.5px solid #cbd5e1';
+      replacement.style.backgroundColor = '#ffffff';
+      replacement.style.height = isInTable ? 'auto' : '58px';
+      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '44px') : '58px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? (isLoadBankTable ? '4px 2px' : '11px') : '0';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '13px') : '0';
+      replacement.style.borderRadius = isInTable ? '0' : '4px';
 
-      // Create inner span with table-cell display for true vertical centering
       const span = document.createElement('span');
       span.textContent = inputValue;
       span.style.display = isInTable ? 'block' : 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = isInTable ? '0' : '14px';
-      span.style.paddingRight = isInTable ? '0' : '14px';
-      span.style.color = '#000';
-      span.style.fontSize = isInTable ? (isLoadBankTable ? '9px' : '14px') : '16px';
-      span.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      span.style.paddingLeft = isInTable ? '0' : '16px';
+      span.style.paddingRight = isInTable ? '0' : '16px';
+      span.style.color = '#1e293b';
+      span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '15px') : '16px';
+      span.style.fontWeight = isInTable ? '400' : '500';
+      span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = isLoadBankTable ? 'center' : 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = '1.2';
+      span.style.lineHeight = isLoadBankTable ? '1.3' : '1.5';
+      span.style.letterSpacing = '0.01em';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
     });
 
-    // Convert checkboxes to visible checked/unchecked symbols
+    // Enhanced checkbox styling
     const checkboxElements = clonedContainer.querySelectorAll('input[type="checkbox"]');
     checkboxElements.forEach((checkbox, index) => {
       const isChecked = checkboxValues[index] || false;
 
       const replacement = document.createElement('span');
       replacement.textContent = isChecked ? '☑' : '☐';
-      replacement.style.fontSize = '20px';
-      replacement.style.color = '#000';
+      replacement.style.fontSize = '22px';
+      replacement.style.color = isChecked ? '#1e40af' : '#64748b';
       replacement.style.display = 'inline-block';
-      replacement.style.width = '22px';
-      replacement.style.height = '22px';
+      replacement.style.width = '24px';
+      replacement.style.height = '24px';
       replacement.style.textAlign = 'center';
-      replacement.style.lineHeight = '22px';
+      replacement.style.lineHeight = '24px';
+      replacement.style.fontWeight = '600';
 
       checkbox.parentNode?.replaceChild(replacement, checkbox);
     });
 
-    // Convert textareas using extracted values
+    // Professional textarea styling
     const textareaElements = clonedContainer.querySelectorAll('textarea');
     textareaElements.forEach((textarea, index) => {
       const textareaValue = textareaValues[index] || '';
 
-      // Create a div that looks like the textarea
       const replacement = document.createElement('div');
       replacement.textContent = textareaValue;
-      replacement.style.padding = '14px';
-      replacement.style.border = '1px solid #d1d5db';
-      replacement.style.backgroundColor = '#fff';
-      replacement.style.color = '#000';
+      replacement.style.padding = '16px';
+      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.backgroundColor = '#ffffff';
+      replacement.style.color = '#1e293b';
       replacement.style.fontSize = '15px';
-      replacement.style.lineHeight = '1.5';
-      replacement.style.minHeight = '80px';
+      replacement.style.fontWeight = '400';
+      replacement.style.lineHeight = '1.6';
+      replacement.style.minHeight = '90px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'block';
       replacement.style.whiteSpace = 'pre-wrap';
       replacement.style.wordWrap = 'break-word';
-      replacement.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      replacement.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      replacement.style.borderRadius = '4px';
+      replacement.style.letterSpacing = '0.01em';
 
       textarea.parentNode?.replaceChild(replacement, textarea);
     });
 
-    // Hide financial sections for customer copy
     if (!options.includeFinancialData) {
       const financialSections = [
         '[data-section="parts-supplies"]',
@@ -495,7 +499,6 @@ export async function generatePDF(
       });
     }
 
-    // Hide empty sections
     const atsSection = clonedContainer.querySelector('[data-section="additional-ats"]');
     const loadBankSection = clonedContainer.querySelector('[data-section="load-bank"]');
 
@@ -507,12 +510,10 @@ export async function generatePDF(
       loadBankSection.remove();
     }
 
-    // Wait for any images or fonts to load
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Create canvas with optimized settings
     const canvas = await html2canvas(clonedContainer, {
-      scale: 2, // Higher quality rendering for sharper text and borders
+      scale: 2.5,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
@@ -521,20 +522,17 @@ export async function generatePDF(
       removeContainer: false,
     });
 
-    // Remove cloned container
     document.body.removeChild(clonedContainer);
 
-    // PDF setup
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
+    const pageWidth = 210;
+    const pageHeight = 297;
 
-    const firstPageHeaderHeight = 30; // Full header with addresses and locations
-    const subsequentPageHeaderHeight = 20; // Just logo
+    const firstPageHeaderHeight = 30;
+    const subsequentPageHeaderHeight = 20;
     const footerHeight = 10;
     const contentMargin = 10;
 
-    // Load logo and footer image
     const logo = new Image();
     logo.src = '/image.png';
     const footerImage = new Image();
@@ -553,20 +551,16 @@ export async function generatePDF(
       })
     ]);
 
-    // Convert canvas to base64 with JPEG compression for smaller size
-    const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG with 85% quality instead of PNG
+    const imgData = canvas.toDataURL('image/jpeg', 0.88);
 
-    // Calculate content dimensions
     const imgWidth = pageWidth - (contentMargin * 2);
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     let currentY = 0;
     let pageNumber = 1;
 
-    // Function to add header
     const addHeader = (pdf: jsPDF, isFirstPage: boolean = false) => {
       if (!isFirstPage) {
-        // Subsequent pages: only logo
         const simpleHeaderHeight = 20;
         pdf.setFillColor(248, 249, 250);
         pdf.rect(0, 0, pageWidth, simpleHeaderHeight, 'F');
@@ -580,18 +574,15 @@ export async function generatePDF(
           console.warn('Could not add logo');
         }
 
-        // Bottom separator line
         pdf.setDrawColor(30, 58, 138);
         pdf.setLineWidth(0.8);
         pdf.line(contentMargin, simpleHeaderHeight, pageWidth - contentMargin, simpleHeaderHeight);
         return;
       }
 
-      // First page: Full header with logo, job number, addresses, and branch locations
       pdf.setFillColor(248, 249, 250);
       pdf.rect(0, 0, pageWidth, firstPageHeaderHeight - 2, 'F');
 
-      // Add logo
       try {
         const logoWidth = 40;
         const logoAspectRatio = logo.naturalWidth / logo.naturalHeight;
@@ -601,7 +592,6 @@ export async function generatePDF(
         console.warn('Could not add logo');
       }
 
-      // Job number section - single line format
       const jobBoxWidth = 60;
       const jobBoxHeight = 8;
       const jobBoxX = pageWidth - contentMargin - jobBoxWidth;
@@ -616,12 +606,10 @@ export async function generatePDF(
       const jobText = `Job No# ${formData.job_po_number || 'N/A'}`;
       pdf.text(jobText, jobBoxX + jobBoxWidth / 2, jobBoxY + 5.5, { align: 'center' });
 
-      // Professional divider line after logo/job section
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.5);
       pdf.line(contentMargin, 16, pageWidth - contentMargin, 16);
 
-      // Branch locations
       const locationsStartY = 20;
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
@@ -657,7 +645,6 @@ export async function generatePDF(
         xPos += colWidth;
       });
 
-      // Bottom separator line
       pdf.setDrawColor(30, 58, 138);
       pdf.setLineWidth(0.8);
       pdf.line(contentMargin, 30, pageWidth - contentMargin, 30);
