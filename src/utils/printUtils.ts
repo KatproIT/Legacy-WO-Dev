@@ -193,7 +193,7 @@ export async function generatePDF(
       (table as HTMLElement).style.cssText = `
         display: table !important;
         width: 100% !important;
-        border-collapse: separate !important;
+        border-collapse: collapse !important;
         border-spacing: 0 !important;
         border: 1px solid #000 !important;
         background-color: #fff !important;
@@ -205,115 +205,111 @@ export async function generatePDF(
         // Clear thead and rebuild it completely
         thead.innerHTML = '';
 
-        // Wrapper for custom positioning
-        const theadWrapper = document.createElement('div');
-        theadWrapper.style.cssText = `
-          position: relative;
-          width: 100%;
-          height: 56px;
-          border-bottom: 1px solid #000;
+        // Create TWO separate rows with proper structure
+        const firstRow = document.createElement('tr');
+        firstRow.style.cssText = `
+          display: table-row !important;
+          height: 28px !important;
         `;
 
-        // Define column widths
-        const columns = [
-          { label: 'TIME', width: 5, type: 'single' },
-          { label: 'KW', width: 4, type: 'single' },
-          { label: 'HZ', width: 4, type: 'single' },
-          { label: 'VOLTS', width: 30, type: 'group', subs: ['A/B', 'B/C', 'C/A', 'A/N', 'B/N', 'C/N'] },
-          { label: 'AMPS', width: 13, type: 'group', subs: ['A', 'B', 'C'] },
-          { label: 'OIL PSI', width: 6, type: 'single' },
-          { label: 'H2O °F', width: 6, type: 'single' },
-          { label: 'BATT V', width: 6, type: 'single' }
+        const secondRow = document.createElement('tr');
+        secondRow.style.cssText = `
+          display: table-row !important;
+          height: 28px !important;
+        `;
+
+        // Define the 15-column structure matching tbody
+        const structure = [
+          { main: 'TIME', sub: '', width: '5%', colspan: 1, type: 'single' },
+          { main: 'KW', sub: '', width: '4%', colspan: 1, type: 'single' },
+          { main: 'HZ', sub: '', width: '4%', colspan: 1, type: 'single' },
+          { main: 'VOLTS', sub: 'A/B', width: '5%', colspan: 6, type: 'group-start' },
+          { main: '', sub: 'B/C', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'C/A', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'A/N', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'B/N', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'C/N', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: 'AMPS', sub: 'A', width: '4.3%', colspan: 3, type: 'group-start' },
+          { main: '', sub: 'B', width: '4.3%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'C', width: '4.3%', colspan: 0, type: 'group-sub' },
+          { main: 'OIL PSI', sub: '', width: '6%', colspan: 1, type: 'single' },
+          { main: 'H2O °F', sub: '', width: '6%', colspan: 1, type: 'single' },
+          { main: 'BATT V', sub: '', width: '6%', colspan: 1, type: 'single' }
         ];
 
-        let currentX = 0;
-        const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
-
-        columns.forEach(col => {
-          const colWidthPercent = (col.width / totalWidth) * 100;
-          
+        structure.forEach((col, index) => {
+          // First row
           if (col.type === 'single') {
-            // Single header spanning full height
-            const headerDiv = document.createElement('div');
-            headerDiv.textContent = col.label;
-            headerDiv.style.cssText = `
-              position: absolute;
-              left: ${currentX}%;
-              top: 0;
-              width: ${colWidthPercent}%;
-              height: 56px;
-              border-right: 1px solid #000;
-              border-bottom: none;
-              background-color: #d1d5db;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 9px;
-              font-weight: bold;
-              color: #000;
+            // Single header - spans both rows
+            const th1 = document.createElement('th');
+            th1.textContent = col.main;
+            th1.setAttribute('rowspan', '2');
+            th1.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 9px !important;
+              font-weight: bold !important;
+              border: 1px solid #000 !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #d1d5db !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: ${col.width} !important;
             `;
-            theadWrapper.appendChild(headerDiv);
-          } else if (col.type === 'group') {
-            // Group header with subs
-            const groupHeader = document.createElement('div');
-            groupHeader.textContent = col.label;
-            groupHeader.style.cssText = `
-              position: absolute;
-              left: ${currentX}%;
-              top: 0;
-              width: ${colWidthPercent}%;
-              height: 28px;
-              border-right: 1px solid #000;
-              border-bottom: 1px solid #000;
-              background-color: #d1d5db;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 9px;
-              font-weight: bold;
-              color: #000;
+            firstRow.appendChild(th1);
+          } else if (col.type === 'group-start') {
+            // Group header (VOLTS or AMPS) - spans columns
+            const th1 = document.createElement('th');
+            th1.textContent = col.main;
+            th1.setAttribute('colspan', col.colspan.toString());
+            th1.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 9px !important;
+              font-weight: bold !important;
+              border: 1px solid #000 !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #d1d5db !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
             `;
-            theadWrapper.appendChild(groupHeader);
-
-            // Sub-headers
-            const subWidth = colWidthPercent / col.subs.length;
-            col.subs.forEach((sub, subIndex) => {
-              const subHeader = document.createElement('div');
-              subHeader.textContent = sub;
-              subHeader.style.cssText = `
-                position: absolute;
-                left: ${currentX + (subIndex * subWidth)}%;
-                top: 28px;
-                width: ${subWidth}%;
-                height: 28px;
-                border-right: 1px solid #000;
-                background-color: #e5e7eb;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 8px;
-                font-weight: 600;
-                color: #000;
-              `;
-              theadWrapper.appendChild(subHeader);
-            });
+            firstRow.appendChild(th1);
           }
-          
-          currentX += colWidthPercent;
+          // group-sub cells don't appear in first row (they're covered by colspan)
+
+          // Second row
+          if (col.type === 'group-start' || col.type === 'group-sub') {
+            // Sub-headers
+            const th2 = document.createElement('th');
+            th2.textContent = col.sub;
+            th2.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 8px !important;
+              font-weight: 600 !important;
+              border: 1px solid #000 !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #e5e7eb !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: ${col.width} !important;
+            `;
+            secondRow.appendChild(th2);
+          }
+          // single cells don't appear in second row (covered by rowspan)
         });
 
-        // Create a single row in thead to hold the wrapper
-        const row = document.createElement('tr');
-        const cell = document.createElement('th');
-        cell.setAttribute('colspan', '15');
-        cell.style.cssText = `
-          padding: 0;
-          margin: 0;
-          border: none;
-        `;
-        cell.appendChild(theadWrapper);
-        row.appendChild(cell);
-        thead.appendChild(row);
+        thead.appendChild(firstRow);
+        thead.appendChild(secondRow);
 
         // Style the entire thead
         (thead as HTMLElement).style.cssText = `
@@ -333,8 +329,14 @@ export async function generatePDF(
         bodyRows.forEach(row => {
           (row as HTMLElement).style.display = 'table-row';
           const bodyCells = row.querySelectorAll('td');
-          bodyCells.forEach(cell => {
+          
+          // Set consistent widths for body cells matching header
+          const widths = ['5%', '4%', '4%', '5%', '5%', '5%', '5%', '5%', '5%', '4.3%', '4.3%', '4.3%', '6%', '6%', '6%'];
+          bodyCells.forEach((cell, index) => {
             (cell as HTMLElement).style.display = 'table-cell';
+            if (widths[index]) {
+              (cell as HTMLElement).style.width = widths[index];
+            }
           });
         });
       }
