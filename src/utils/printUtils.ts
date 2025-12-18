@@ -205,93 +205,142 @@ export async function generatePDF(
         // Clear thead and rebuild it completely
         thead.innerHTML = '';
 
-        // Create TWO separate rows to simulate the rowspan effect
-        // Row 1: Main headers with category labels
+        // Create TWO separate rows
         const firstRow = document.createElement('tr');
         firstRow.style.cssText = `
           display: table-row !important;
           height: 28px !important;
         `;
 
-        // Row 2: All column headers (sub-headers for VOLTS/AMPS, repeated for others)
         const secondRow = document.createElement('tr');
         secondRow.style.cssText = `
           display: table-row !important;
           height: 28px !important;
         `;
 
-        // Define structure
+        // Define structure with visual merging
         const structure = [
-          { main: 'TIME', sub: '', width: '5%', group: 'single' },
-          { main: 'KW', sub: '', width: '4%', group: 'single' },
-          { main: 'HZ', sub: '', width: '4%', group: 'single' },
-          { main: 'VOLTS', sub: 'A/B', width: '5%', group: 'volts-start' },
-          { main: '', sub: 'B/C', width: '5%', group: 'volts-middle' },
-          { main: '', sub: 'C/A', width: '5%', group: 'volts-middle' },
-          { main: '', sub: 'A/N', width: '5%', group: 'volts-middle' },
-          { main: '', sub: 'B/N', width: '5%', group: 'volts-middle' },
-          { main: '', sub: 'C/N', width: '5%', group: 'volts-end' },
-          { main: 'AMPS', sub: 'A', width: '4.3%', group: 'amps-start' },
-          { main: '', sub: 'B', width: '4.3%', group: 'amps-middle' },
-          { main: '', sub: 'C', width: '4.3%', group: 'amps-end' },
-          { main: 'OIL PSI', sub: '', width: '6%', group: 'single' },
-          { main: 'H2O °F', sub: '', width: '6%', group: 'single' },
-          { main: 'BATT V', sub: '', width: '6%', group: 'single' }
+          { main: 'TIME', sub: null, width: '5%', type: 'single' },
+          { main: 'KW', sub: null, width: '4%', type: 'single' },
+          { main: 'HZ', sub: null, width: '4%', type: 'single' },
+          { main: 'VOLTS', sub: 'A/B', width: '5%', type: 'group-start', groupSize: 6 },
+          { main: null, sub: 'B/C', width: '5%', type: 'group-mid' },
+          { main: null, sub: 'C/A', width: '5%', type: 'group-mid' },
+          { main: null, sub: 'A/N', width: '5%', type: 'group-mid' },
+          { main: null, sub: 'B/N', width: '5%', type: 'group-mid' },
+          { main: null, sub: 'C/N', width: '5%', type: 'group-end' },
+          { main: 'AMPS', sub: 'A', width: '4.3%', type: 'group-start', groupSize: 3 },
+          { main: null, sub: 'B', width: '4.3%', type: 'group-mid' },
+          { main: null, sub: 'C', width: '4.3%', type: 'group-end' },
+          { main: 'OIL PSI', sub: null, width: '6%', type: 'single' },
+          { main: 'H2O °F', sub: null, width: '6%', type: 'single' },
+          { main: 'BATT V', sub: null, width: '6%', type: 'single' }
         ];
 
-        structure.forEach(col => {
+        structure.forEach((col, index) => {
           // First row cell
           const th1 = document.createElement('th');
-          th1.textContent = col.main;
           
-          // Determine border styling based on group
-          let borderRight = '1px solid #000';
-          if (col.group === 'volts-start' || col.group === 'volts-middle') {
-            borderRight = 'none'; // Remove right border for VOLTS cells except last
-          } else if (col.group === 'amps-start' || col.group === 'amps-middle') {
-            borderRight = 'none'; // Remove right border for AMPS cells except last
+          if (col.type === 'single') {
+            // Single cells span both rows visually
+            th1.textContent = col.main || '';
+            th1.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 9px !important;
+              font-weight: bold !important;
+              border: 1px solid #000 !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #d1d5db !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: ${col.width} !important;
+              height: 56px !important;
+              position: relative !important;
+            `;
+          } else if (col.type === 'group-start') {
+            // Group header (VOLTS or AMPS)
+            th1.textContent = col.main || '';
+            const totalWidth = structure
+              .slice(index, index + (col.groupSize || 1))
+              .reduce((sum, c) => sum + parseFloat(c.width), 0);
+            
+            th1.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 9px !important;
+              font-weight: bold !important;
+              border: 1px solid #000 !important;
+              border-bottom: none !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #d1d5db !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: ${col.width} !important;
+              height: 28px !important;
+              position: relative !important;
+            `;
+          } else {
+            // Middle or end of group - make invisible but maintain structure
+            th1.textContent = '';
+            th1.style.cssText = `
+              display: table-cell !important;
+              visibility: hidden !important;
+              border: none !important;
+              border-top: 1px solid #000 !important;
+              padding: 0 !important;
+              width: ${col.width} !important;
+              height: 28px !important;
+              background-color: #d1d5db !important;
+            `;
           }
           
-          th1.style.cssText = `
-            display: table-cell !important;
-            visibility: visible !important;
-            color: #000 !important;
-            font-size: ${col.main ? '9px' : '8px'} !important;
-            font-weight: bold !important;
-            border-top: 1px solid #000 !important;
-            border-bottom: 1px solid #000 !important;
-            border-left: 1px solid #000 !important;
-            border-right: ${borderRight} !important;
-            padding: 4px 2px !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            background-color: #d1d5db !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-            width: ${col.width} !important;
-            height: 28px !important;
-          `;
           firstRow.appendChild(th1);
 
           // Second row cell
           const th2 = document.createElement('th');
-          th2.textContent = col.sub;
-          th2.style.cssText = `
-            display: table-cell !important;
-            visibility: visible !important;
-            color: #000 !important;
-            font-size: 8px !important;
-            font-weight: 600 !important;
-            border: 1px solid #000 !important;
-            padding: 4px 2px !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            background-color: #e5e7eb !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-            width: ${col.width} !important;
-            height: 28px !important;
-          `;
+          
+          if (col.type === 'single') {
+            // For single cells, hide the second row cell
+            th2.textContent = '';
+            th2.style.cssText = `
+              display: table-cell !important;
+              visibility: hidden !important;
+              border: none !important;
+              padding: 0 !important;
+              width: ${col.width} !important;
+              height: 0px !important;
+              line-height: 0 !important;
+              overflow: hidden !important;
+            `;
+          } else {
+            // Sub-headers for VOLTS and AMPS
+            th2.textContent = col.sub || '';
+            th2.style.cssText = `
+              display: table-cell !important;
+              visibility: visible !important;
+              color: #000 !important;
+              font-size: 8px !important;
+              font-weight: 600 !important;
+              border: 1px solid #000 !important;
+              border-top: none !important;
+              padding: 4px 2px !important;
+              text-align: center !important;
+              vertical-align: middle !important;
+              background-color: #e5e7eb !important;
+              line-height: 1.2 !important;
+              white-space: nowrap !important;
+              width: ${col.width} !important;
+              height: 28px !important;
+            `;
+          }
+          
           secondRow.appendChild(th2);
         });
 
