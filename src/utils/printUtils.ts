@@ -193,7 +193,7 @@ export async function generatePDF(
       (table as HTMLElement).style.cssText = `
         display: table !important;
         width: 100% !important;
-        border-collapse: collapse !important;
+        border-collapse: separate !important;
         border-spacing: 0 !important;
         border: 1px solid #000 !important;
         background-color: #fff !important;
@@ -205,147 +205,115 @@ export async function generatePDF(
         // Clear thead and rebuild it completely
         thead.innerHTML = '';
 
-        // Create TWO separate rows
-        const firstRow = document.createElement('tr');
-        firstRow.style.cssText = `
-          display: table-row !important;
-          height: 28px !important;
+        // Wrapper for custom positioning
+        const theadWrapper = document.createElement('div');
+        theadWrapper.style.cssText = `
+          position: relative;
+          width: 100%;
+          height: 56px;
+          border-bottom: 1px solid #000;
         `;
 
-        const secondRow = document.createElement('tr');
-        secondRow.style.cssText = `
-          display: table-row !important;
-          height: 28px !important;
-        `;
-
-        // Define structure with visual merging
-        const structure = [
-          { main: 'TIME', sub: null, width: '5%', type: 'single' },
-          { main: 'KW', sub: null, width: '4%', type: 'single' },
-          { main: 'HZ', sub: null, width: '4%', type: 'single' },
-          { main: 'VOLTS', sub: 'A/B', width: '5%', type: 'group-start', groupSize: 6 },
-          { main: null, sub: 'B/C', width: '5%', type: 'group-mid' },
-          { main: null, sub: 'C/A', width: '5%', type: 'group-mid' },
-          { main: null, sub: 'A/N', width: '5%', type: 'group-mid' },
-          { main: null, sub: 'B/N', width: '5%', type: 'group-mid' },
-          { main: null, sub: 'C/N', width: '5%', type: 'group-end' },
-          { main: 'AMPS', sub: 'A', width: '4.3%', type: 'group-start', groupSize: 3 },
-          { main: null, sub: 'B', width: '4.3%', type: 'group-mid' },
-          { main: null, sub: 'C', width: '4.3%', type: 'group-end' },
-          { main: 'OIL PSI', sub: null, width: '6%', type: 'single' },
-          { main: 'H2O °F', sub: null, width: '6%', type: 'single' },
-          { main: 'BATT V', sub: null, width: '6%', type: 'single' }
+        // Define column widths
+        const columns = [
+          { label: 'TIME', width: 5, type: 'single' },
+          { label: 'KW', width: 4, type: 'single' },
+          { label: 'HZ', width: 4, type: 'single' },
+          { label: 'VOLTS', width: 30, type: 'group', subs: ['A/B', 'B/C', 'C/A', 'A/N', 'B/N', 'C/N'] },
+          { label: 'AMPS', width: 13, type: 'group', subs: ['A', 'B', 'C'] },
+          { label: 'OIL PSI', width: 6, type: 'single' },
+          { label: 'H2O °F', width: 6, type: 'single' },
+          { label: 'BATT V', width: 6, type: 'single' }
         ];
 
-        structure.forEach((col, index) => {
-          // First row cell
-          const th1 = document.createElement('th');
-          
-          if (col.type === 'single') {
-            // Single cells span both rows visually
-            th1.textContent = col.main || '';
-            th1.style.cssText = `
-              display: table-cell !important;
-              visibility: visible !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: bold !important;
-              border: 1px solid #000 !important;
-              padding: 4px 2px !important;
-              text-align: center !important;
-              vertical-align: middle !important;
-              background-color: #d1d5db !important;
-              line-height: 1.2 !important;
-              white-space: nowrap !important;
-              width: ${col.width} !important;
-              height: 56px !important;
-              position: relative !important;
-            `;
-          } else if (col.type === 'group-start') {
-            // Group header (VOLTS or AMPS)
-            th1.textContent = col.main || '';
-            const totalWidth = structure
-              .slice(index, index + (col.groupSize || 1))
-              .reduce((sum, c) => sum + parseFloat(c.width), 0);
-            
-            th1.style.cssText = `
-              display: table-cell !important;
-              visibility: visible !important;
-              color: #000 !important;
-              font-size: 9px !important;
-              font-weight: bold !important;
-              border: 1px solid #000 !important;
-              border-bottom: none !important;
-              padding: 4px 2px !important;
-              text-align: center !important;
-              vertical-align: middle !important;
-              background-color: #d1d5db !important;
-              line-height: 1.2 !important;
-              white-space: nowrap !important;
-              width: ${col.width} !important;
-              height: 28px !important;
-              position: relative !important;
-            `;
-          } else {
-            // Middle or end of group - make invisible but maintain structure
-            th1.textContent = '';
-            th1.style.cssText = `
-              display: table-cell !important;
-              visibility: hidden !important;
-              border: none !important;
-              border-top: 1px solid #000 !important;
-              padding: 0 !important;
-              width: ${col.width} !important;
-              height: 28px !important;
-              background-color: #d1d5db !important;
-            `;
-          }
-          
-          firstRow.appendChild(th1);
+        let currentX = 0;
+        const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
 
-          // Second row cell
-          const th2 = document.createElement('th');
+        columns.forEach(col => {
+          const colWidthPercent = (col.width / totalWidth) * 100;
           
           if (col.type === 'single') {
-            // For single cells, hide the second row cell
-            th2.textContent = '';
-            th2.style.cssText = `
-              display: table-cell !important;
-              visibility: hidden !important;
-              border: none !important;
-              padding: 0 !important;
-              width: ${col.width} !important;
-              height: 0px !important;
-              line-height: 0 !important;
-              overflow: hidden !important;
+            // Single header spanning full height
+            const headerDiv = document.createElement('div');
+            headerDiv.textContent = col.label;
+            headerDiv.style.cssText = `
+              position: absolute;
+              left: ${currentX}%;
+              top: 0;
+              width: ${colWidthPercent}%;
+              height: 56px;
+              border-right: 1px solid #000;
+              border-bottom: none;
+              background-color: #d1d5db;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 9px;
+              font-weight: bold;
+              color: #000;
             `;
-          } else {
-            // Sub-headers for VOLTS and AMPS
-            th2.textContent = col.sub || '';
-            th2.style.cssText = `
-              display: table-cell !important;
-              visibility: visible !important;
-              color: #000 !important;
-              font-size: 8px !important;
-              font-weight: 600 !important;
-              border: 1px solid #000 !important;
-              border-top: none !important;
-              padding: 4px 2px !important;
-              text-align: center !important;
-              vertical-align: middle !important;
-              background-color: #e5e7eb !important;
-              line-height: 1.2 !important;
-              white-space: nowrap !important;
-              width: ${col.width} !important;
-              height: 28px !important;
+            theadWrapper.appendChild(headerDiv);
+          } else if (col.type === 'group') {
+            // Group header with subs
+            const groupHeader = document.createElement('div');
+            groupHeader.textContent = col.label;
+            groupHeader.style.cssText = `
+              position: absolute;
+              left: ${currentX}%;
+              top: 0;
+              width: ${colWidthPercent}%;
+              height: 28px;
+              border-right: 1px solid #000;
+              border-bottom: 1px solid #000;
+              background-color: #d1d5db;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 9px;
+              font-weight: bold;
+              color: #000;
             `;
+            theadWrapper.appendChild(groupHeader);
+
+            // Sub-headers
+            const subWidth = colWidthPercent / col.subs.length;
+            col.subs.forEach((sub, subIndex) => {
+              const subHeader = document.createElement('div');
+              subHeader.textContent = sub;
+              subHeader.style.cssText = `
+                position: absolute;
+                left: ${currentX + (subIndex * subWidth)}%;
+                top: 28px;
+                width: ${subWidth}%;
+                height: 28px;
+                border-right: 1px solid #000;
+                background-color: #e5e7eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8px;
+                font-weight: 600;
+                color: #000;
+              `;
+              theadWrapper.appendChild(subHeader);
+            });
           }
           
-          secondRow.appendChild(th2);
+          currentX += colWidthPercent;
         });
 
-        thead.appendChild(firstRow);
-        thead.appendChild(secondRow);
+        // Create a single row in thead to hold the wrapper
+        const row = document.createElement('tr');
+        const cell = document.createElement('th');
+        cell.setAttribute('colspan', '15');
+        cell.style.cssText = `
+          padding: 0;
+          margin: 0;
+          border: none;
+        `;
+        cell.appendChild(theadWrapper);
+        row.appendChild(cell);
+        thead.appendChild(row);
 
         // Style the entire thead
         (thead as HTMLElement).style.cssText = `
