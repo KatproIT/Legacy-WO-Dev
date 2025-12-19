@@ -204,38 +204,38 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
           NO LOAD BANK TEST ENTRIES ADDED. CLICK "ADD ENTRY" TO ADD ONE.
         </div>
       ) : (
-        <div className="overflow-x-auto lg:overflow-visible">
-          <table className="w-full border-collapse border border-gray-400 load-bank-table" data-table-type="load-bank" style={{ tableLayout: 'fixed' }}>
+        <div className="overflow-x-auto">
+          <table className="border-collapse border border-gray-400 load-bank-table" data-table-type="load-bank" style={{ minWidth: '900px', width: 'max-content' }}>
             <thead>
               <tr className="bg-gray-200">
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle" style={{ width: '60px', lineHeight: '1.2' }}>TIME</th>
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle" style={{ width: '45px', lineHeight: '1.2' }}>KW</th>
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle" style={{ width: '40px', lineHeight: '1.2' }}>HZ</th>
-                <th colSpan={6} className="border border-gray-400 p-1 font-bold text-xs align-middle" style={{ lineHeight: '1.2' }}>VOLTS</th>
-                <th colSpan={3} className="border border-gray-400 p-1 font-bold text-xs align-middle" style={{ lineHeight: '1.2' }}>AMPS</th>
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '55px', lineHeight: '1.2' }}>OIL PSI</th>
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '55px', lineHeight: '1.2' }}>H2O °F</th>
-                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '55px', lineHeight: '1.2' }}>BATT V</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '60px', minWidth: '60px', lineHeight: '1.2' }}>TIME</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.2' }}>KW</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '40px', minWidth: '40px', lineHeight: '1.2' }}>HZ</th>
+                <th colSpan={6} className="border border-gray-400 p-1 font-bold text-xs align-middle whitespace-nowrap" style={{ minWidth: '270px', lineHeight: '1.2' }}>VOLTS</th>
+                <th colSpan={3} className="border border-gray-400 p-1 font-bold text-xs align-middle whitespace-nowrap" style={{ minWidth: '120px', lineHeight: '1.2' }}>AMPS</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '60px', minWidth: '60px', lineHeight: '1.2' }}>OIL PSI</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '60px', minWidth: '60px', lineHeight: '1.2' }}>H2O °F</th>
+                <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '60px', minWidth: '60px', lineHeight: '1.2' }}>BATT V</th>
                 {!readOnly && (
-                  <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle" style={{ width: '40px', lineHeight: '1.2' }}>DEL</th>
+                  <th rowSpan={2} className="border border-gray-400 p-1 font-bold text-[10px] align-middle whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.2' }}>DEL</th>
                 )}
               </tr>
               <tr className="bg-gray-100">
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>A/B</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>B/C</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>C/A</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>A/N</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>B/N</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '45px', lineHeight: '1.1' }}>C/N</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '40px', lineHeight: '1.1' }}>A</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '40px', lineHeight: '1.1' }}>B</th>
-                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium" style={{ width: '40px', lineHeight: '1.1' }}>C</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>A/B</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>B/C</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>C/A</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>A/N</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>B/N</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '45px', minWidth: '45px', lineHeight: '1.1' }}>C/N</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '40px', minWidth: '40px', lineHeight: '1.1' }}>A</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '40px', minWidth: '40px', lineHeight: '1.1' }}>B</th>
+                <th className="border border-gray-400 px-0.5 py-0.5 text-[10px] font-medium whitespace-nowrap" style={{ width: '40px', minWidth: '40px', lineHeight: '1.1' }}>C</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry: LoadBankEntry) => (
                 <tr key={entry.id} className="bg-white" style={{ height: '28px' }}>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '60px' }}>
                     <input
                       type="time"
                       value={entry.time || ''}
@@ -245,7 +245,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.kw || ''}
@@ -255,7 +255,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '40px' }}>
                     <input
                       type="text"
                       value={entry.hertz || ''}
@@ -265,7 +265,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.ab || ''}
@@ -275,7 +275,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.bc || ''}
@@ -285,7 +285,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.ca || ''}
@@ -295,7 +295,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.an || ''}
@@ -305,7 +305,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.bn || ''}
@@ -315,7 +315,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '45px' }}>
                     <input
                       type="text"
                       value={entry.cn || ''}
@@ -325,7 +325,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '40px' }}>
                     <input
                       type="text"
                       value={entry.amps_a || ''}
@@ -335,7 +335,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '40px' }}>
                     <input
                       type="text"
                       value={entry.amps_b || ''}
@@ -345,7 +345,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '40px' }}>
                     <input
                       type="text"
                       value={entry.amps_c || ''}
@@ -355,7 +355,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '60px' }}>
                     <input
                       type="text"
                       value={entry.oil_pressure || ''}
@@ -365,7 +365,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '60px' }}>
                     <input
                       type="text"
                       value={entry.water_temp || ''}
@@ -375,7 +375,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                       style={{ textTransform: 'uppercase', lineHeight: '1.2' }}
                     />
                   </td>
-                  <td className="border border-gray-400 p-0">
+                  <td className="border border-gray-400 p-0" style={{ minWidth: '60px' }}>
                     <input
                       type="text"
                       value={entry.batt_charger_voltage || ''}
@@ -386,7 +386,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
                     />
                   </td>
                   {!readOnly && (
-                    <td className="border border-gray-400 p-0.5 text-center">
+                    <td className="border border-gray-400 p-0.5 text-center" style={{ minWidth: '45px' }}>
                       <button
                         type="button"
                         onClick={() => removeEntry(entry.id)}
