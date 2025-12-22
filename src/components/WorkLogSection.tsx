@@ -276,10 +276,11 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
         <div className="p-4">
           <textarea
             value={formData.work_performed || ''}
-            onChange={(e) => onChange('work_performed', e.target.value)}
+            onChange={(e) => onChange('work_performed', e.target.value.toUpperCase())}
             disabled={readOnly}
             rows={6}
             className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-y"
+            style={{ textTransform: 'uppercase' }}
             placeholder="DESCRIBE THE WORK PERFORMED..."
           />
         </div>
