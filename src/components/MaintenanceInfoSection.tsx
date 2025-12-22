@@ -42,6 +42,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             <option value="FRIDAY">FRIDAY</option>
             <option value="SATURDAY">SATURDAY</option>
             <option value="SUNDAY">SUNDAY</option>
+            <option value="SITEBOSS">SITEBOSS</option>
             <option value="OFF">OFF</option>
             <option value="UNKNOWN">UNKNOWN</option>
           </select>
@@ -51,8 +52,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           <select
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
-            disabled={readOnly}
-            className={getInputClass(formData.with_load, hasValidationErrors, readOnly)}
+            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
+            className={getInputClass(formData.with_load, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
           >
             <option value="">SELECT WITH LOAD</option>
             <option value="YES">YES</option>
@@ -66,8 +67,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             type="time"
             value={formData.exercise_time || ''}
             onChange={(e) => onChange('exercise_time', e.target.value)}
-            disabled={readOnly || formData.exercise_day === 'OFF'}
-            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly || formData.exercise_day === 'OFF')}
+            disabled={readOnly || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS'}
+            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS')}
           />
         </div>
         <div>
@@ -75,8 +76,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           <select
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
-            disabled={readOnly}
-            className={getInputClass(formData.exercise_interval, hasValidationErrors, readOnly)}
+            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
+            className={getInputClass(formData.exercise_interval, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
           >
             <option value="">SELECT EXERCISE INTERVAL</option>
             <option value="WEEKLY">WEEKLY</option>
@@ -91,8 +92,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           <select
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
-            disabled={readOnly}
-            className={getInputClass(formData.load_bank_test, hasValidationErrors, readOnly)}
+            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
+            className={getInputClass(formData.load_bank_test, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
           >
             <option value="">SELECT LOAD BANK TEST</option>
             <option value="1 HR">1 HR</option>
@@ -106,8 +107,8 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           <select
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}
-            disabled={readOnly}
-            className={getInputClass(formData.transfer_test, hasValidationErrors, readOnly)}
+            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
+            className={getInputClass(formData.transfer_test, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
           >
             <option value="">SELECT TRANSFER TEST</option>
             <option value="YES">YES</option>
