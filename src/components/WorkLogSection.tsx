@@ -25,9 +25,11 @@ export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionP
     if (!startTime || !endTime) return 0;
 
     const start = new Date(`2000-01-01T${startTime}`);
-    const end = new Date(`2000-01-01T${endTime}`);
+    let end = new Date(`2000-01-01T${endTime}`);
 
-    if (end < start) return 0;
+    if (end < start) {
+      end = new Date(`2000-01-02T${endTime}`);
+    }
 
     const diffMs = end.getTime() - start.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
