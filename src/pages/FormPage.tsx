@@ -17,7 +17,7 @@ import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, CreditCard as Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
