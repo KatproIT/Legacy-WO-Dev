@@ -17,7 +17,7 @@ import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, CreditCard as Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -179,6 +179,7 @@ export function FormPage() {
   const [showDraftsModal, setShowDraftsModal] = useState(false);
   const [initialFormData, setInitialFormData] = useState<FormSubmission | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
 
   // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
@@ -206,13 +207,50 @@ export function FormPage() {
     } else {
       setIsNewForm(true);
       setIsReadOnly(false);
-      const newFormData: FormSubmission = {
-        job_po_number: jobNumber || '',
-        status: 'submitted',
-        transfer_time: '00:00:00',
-        re_transfer_time: '00:00:00',
-        cooldown: '00:00:00'
-      } as FormSubmission;
+
+      // Check if there's duplicated form data in localStorage
+      const duplicatedData = localStorage.getItem('duplicatedFormData');
+      let newFormData: FormSubmission;
+
+      if (duplicatedData) {
+        try {
+          newFormData = JSON.parse(duplicatedData);
+          // Remove id and submission-related fields
+          delete (newFormData as any).id;
+          delete (newFormData as any).submitted_at;
+          delete (newFormData as any).created_at;
+          delete (newFormData as any).updated_at;
+          delete (newFormData as any).http_post_sent;
+          delete (newFormData as any).is_rejected;
+          delete (newFormData as any).is_forwarded;
+          delete (newFormData as any).rejection_note;
+          delete (newFormData as any).forwarded_to_email;
+          delete (newFormData as any).workflow_timestamp;
+          delete (newFormData as any).is_draft;
+          newFormData.status = 'submitted';
+
+          // Clear the localStorage after using it
+          localStorage.removeItem('duplicatedFormData');
+        } catch (error) {
+          console.error('Error parsing duplicated form data:', error);
+          newFormData = {
+            job_po_number: jobNumber || '',
+            status: 'submitted',
+            transfer_time: '00:00:00',
+            re_transfer_time: '00:00:00',
+            cooldown: '00:00:00'
+          } as FormSubmission;
+        }
+      } else {
+        newFormData = {
+          job_po_number: jobNumber || '',
+          status: 'submitted',
+          transfer_time: '00:00:00',
+          re_transfer_time: '00:00:00',
+          cooldown: '00:00:00'
+        } as FormSubmission;
+      }
+
       if (isTech) {
         const techName = extractNameFromEmail(email);
         newFormData.technician = techName;
@@ -790,6 +828,22 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     navigate('/');
   };
 
+  const handleDuplicate = () => {
+    setShowDuplicateConfirm(true);
+  };
+
+  const confirmDuplicate = () => {
+    setShowDuplicateConfirm(false);
+
+    // Store form data in localStorage
+    localStorage.setItem('duplicatedFormData', JSON.stringify(formData));
+
+    // Open new tab with /form/new
+    window.open('/form/new', '_blank');
+
+    showToast('Form duplicated! Opening in new tab...', 'success');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -859,6 +913,17 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 <Download size={16} />
                 <span>CUSTOMER COPY</span>
               </button>
+
+              {/* Duplicate Button - Show only for existing forms */}
+              {formData.id && (
+                <button
+                  onClick={handleDuplicate}
+                  className="px-3 py-1.5 text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                >
+                  <Copy size={16} />
+                  <span>DUPLICATE</span>
+                </button>
+              )}
 
               {/* Divider */}
               <div className="h-6 w-px bg-gray-300 mx-1"></div>
@@ -1096,6 +1161,18 @@ const handleFieldChange = useCallback((field: string, value: any) => {
         onClose={() => setShowDraftsModal(false)}
         onLoadDraft={handleLoadDraft}
         userEmail={userEmail || ''}
+      />
+
+      {/* Duplicate Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDuplicateConfirm}
+        title="Duplicate Form?"
+        message="This will create a copy of this form with all data (including Job/PO Number) pre-filled in a new tab. You can then modify any field before submitting."
+        type="info"
+        onConfirm={confirmDuplicate}
+        onCancel={() => setShowDuplicateConfirm(false)}
+        confirmText="Duplicate"
+        cancelText="Cancel"
       />
     </div>
   );
