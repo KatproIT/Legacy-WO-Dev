@@ -189,9 +189,13 @@ export function FormPage() {
 
   // Initialize user info and load form
   useEffect(() => {
+    console.log('FormPage useEffect - uniqueId:', uniqueId, 'jobNumber:', jobNumber);
     const email = localStorage.getItem('userEmail');
     const role = localStorage.getItem('userRole');
-    if (!email) return;
+    if (!email) {
+      console.log('No email found in localStorage, skipping form load');
+      return;
+    }
 
     setUserEmail(email);
     setUserRole(role);
@@ -202,9 +206,11 @@ export function FormPage() {
     setIsUserTechnician(isTech);
 
     if (uniqueId && uniqueId !== 'new') {
+      console.log('Loading existing form:', uniqueId);
       loadFormData(uniqueId, email, role);
       setIsNewForm(false);
     } else {
+      console.log('Creating new form');
       setIsNewForm(true);
       setIsReadOnly(false);
 
@@ -259,20 +265,25 @@ export function FormPage() {
       setFormData(newFormData);
       setInitialFormData(JSON.parse(JSON.stringify(newFormData)));
     }
-  }, [uniqueId]);
+  }, [uniqueId, jobNumber, navigate]);
 
   const loadFormData = async (formId: string, email?: string | null, role?: string | null) => {
     try {
       setLoading(true);
+      console.log('Loading form with ID:', formId);
 
       const res = await authFetch(`${API}/forms/${encodeURIComponent(formId)}`, { cache: 'no-store' });
+      console.log('Form fetch response status:', res.status);
+
       if (!res.ok) {
         if (res.status === 404) {
+          console.error('Form not found (404):', formId);
           showToast('Form not found', 'error');
           navigate('/');
           return;
         }
         if (res.status === 401) {
+          console.error('Unauthorized (401)');
           localStorage.clear();
           navigate('/login');
           return;
