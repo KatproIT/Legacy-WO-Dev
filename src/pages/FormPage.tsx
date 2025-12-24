@@ -928,7 +928,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
                     >
                       <Save size={16} />
-                      <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                      <span>{saving ? 'Saving...' : 'SAVE CHANGES'}</span>
                     </button>
                   ) : (
                     <button
