@@ -73,13 +73,13 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
           </div>
 
           <p className="text-gray-600 mb-4">
-            Select a technician to forward this form to
+            SELECT A TECHNICIAN TO FORWARD THIS FORM TO
           </p>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="technician" className="block text-sm font-medium text-gray-700 mb-2">
-                Technician <span className="text-red-600">*</span>
+                TECHNICIAN <span className="text-red-600">*</span>
               </label>
               <select
                 id="technician"
@@ -89,20 +89,21 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
                   setError('');
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                style={{ textTransform: 'uppercase' }}
                 autoFocus
                 disabled={loading}
               >
                 <option value="">
-                  {loading ? 'Loading technicians...' : 'Select a technician...'}
+                  {loading ? 'LOADING TECHNICIANS...' : 'SELECT A TECHNICIAN...'}
                 </option>
                 {technicians.map((tech) => (
                   <option key={tech.email} value={tech.email}>
-                    {tech.name}
+                    {tech.name.toUpperCase()}
                   </option>
                 ))}
               </select>
               {error && (
-                <p className="mt-2 text-sm text-red-600">{error}</p>
+                <p className="mt-2 text-sm text-red-600">{error.toUpperCase()}</p>
               )}
             </div>
 
@@ -112,7 +113,7 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
                 onClick={onClose}
                 className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
               >
-                Cancel
+                CANCEL
               </button>
               <button
                 type="submit"

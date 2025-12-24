@@ -36,28 +36,29 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
           </div>
 
           <p className="text-gray-600 mb-4">
-            Please provide a reason for rejecting this form
+            PLEASE PROVIDE A REASON FOR REJECTING THIS FORM
           </p>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-2">
-                Rejection Reason <span className="text-red-600">*</span>
+                REJECTION REASON <span className="text-red-600">*</span>
               </label>
               <textarea
                 id="note"
                 value={note}
                 onChange={(e) => {
-                  setNote(e.target.value);
+                  setNote(e.target.value.toUpperCase());
                   setError('');
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
                 rows={4}
+                style={{ textTransform: 'uppercase' }}
                 placeholder="ENTER REASON FOR REJECTION..."
                 autoFocus
               />
               {error && (
-                <p className="mt-2 text-sm text-red-600">{error}</p>
+                <p className="mt-2 text-sm text-red-600">{error.toUpperCase()}</p>
               )}
             </div>
 
@@ -67,7 +68,7 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
                 onClick={onClose}
                 className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
               >
-                Cancel
+                CANCEL
               </button>
               <button
                 type="submit"
