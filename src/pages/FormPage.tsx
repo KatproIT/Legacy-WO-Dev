@@ -1,6 +1,6 @@
 // src/pages/FormPage.tsx
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
 import { FormTabs } from '../components/FormTabs';
 import { GeneralInfoSection } from '../components/GeneralInfoSection';
@@ -17,7 +17,7 @@ import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -146,6 +146,7 @@ function setByPath(obj: any, path: string, value: any) {
 export function FormPage() {
   const { uniqueId, jobNumber } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [formData, setFormData] = useState<FormSubmission>({
     job_po_number: jobNumber || '',
@@ -206,14 +207,45 @@ export function FormPage() {
     } else {
       setIsNewForm(true);
       setIsReadOnly(false);
-      const newFormData: FormSubmission = {
-        job_po_number: jobNumber || '',
-        status: 'submitted',
-        transfer_time: '00:00:00',
-        re_transfer_time: '00:00:00',
-        cooldown: '00:00:00'
-      } as FormSubmission;
-      if (isTech) {
+
+      const duplicateKey = searchParams.get('duplicate');
+      let newFormData: FormSubmission;
+
+      if (duplicateKey) {
+        const duplicateData = localStorage.getItem(duplicateKey);
+        if (duplicateData) {
+          try {
+            newFormData = JSON.parse(duplicateData);
+            localStorage.removeItem(duplicateKey);
+          } catch (e) {
+            newFormData = {
+              job_po_number: jobNumber || '',
+              status: 'submitted',
+              transfer_time: '00:00:00',
+              re_transfer_time: '00:00:00',
+              cooldown: '00:00:00'
+            } as FormSubmission;
+          }
+        } else {
+          newFormData = {
+            job_po_number: jobNumber || '',
+            status: 'submitted',
+            transfer_time: '00:00:00',
+            re_transfer_time: '00:00:00',
+            cooldown: '00:00:00'
+          } as FormSubmission;
+        }
+      } else {
+        newFormData = {
+          job_po_number: jobNumber || '',
+          status: 'submitted',
+          transfer_time: '00:00:00',
+          re_transfer_time: '00:00:00',
+          cooldown: '00:00:00'
+        } as FormSubmission;
+      }
+
+      if (isTech && !duplicateKey) {
         const techName = extractNameFromEmail(email);
         newFormData.technician = techName;
         newFormData.submitted_by_email = email;
@@ -221,7 +253,7 @@ export function FormPage() {
       setFormData(newFormData);
       setInitialFormData(JSON.parse(JSON.stringify(newFormData)));
     }
-  }, [uniqueId]);
+  }, [uniqueId, searchParams]);
 
   const loadFormData = async (formId: string, email?: string | null, role?: string | null) => {
     try {
@@ -790,6 +822,25 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     navigate('/');
   };
 
+  const handleDuplicate = () => {
+    const duplicateKey = `form-duplicate-${Date.now()}`;
+    const formDataCopy = { ...formData };
+    delete (formDataCopy as any).id;
+    delete (formDataCopy as any).http_post_sent;
+    delete (formDataCopy as any).submitted_at;
+    delete (formDataCopy as any).created_at;
+    delete (formDataCopy as any).updated_at;
+    delete (formDataCopy as any).is_rejected;
+    delete (formDataCopy as any).is_forwarded;
+    delete (formDataCopy as any).rejection_note;
+    delete (formDataCopy as any).forwarded_to_email;
+    delete (formDataCopy as any).workflow_timestamp;
+    formDataCopy.status = 'submitted';
+    formDataCopy.is_draft = false;
+    localStorage.setItem(duplicateKey, JSON.stringify(formDataCopy));
+    window.open(`/form/new?duplicate=${duplicateKey}`, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -858,6 +909,13 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               >
                 <Download size={16} />
                 <span>CUSTOMER COPY</span>
+              </button>
+              <button
+                onClick={handleDuplicate}
+                className="px-3 py-1.5 text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+              >
+                <Copy size={16} />
+                <span>DUPLICATE</span>
               </button>
 
               {/* Divider */}
