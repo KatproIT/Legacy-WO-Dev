@@ -18,6 +18,11 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   const errors: string[] = [];
   const isLoadBankChecked = isLoadBankRequired(formData);
 
+  console.log('validateServiceReport called:', {
+    type_of_service: formData.type_of_service,
+    isLoadBankChecked
+  });
+
   if (!formData.job_po_number) errors.push('JOB/PO # is required');
   if (!formData.date) errors.push('Date is required');
   if (!formData.technician) errors.push('Technician is required');
@@ -29,11 +34,14 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.next_inspection_due) errors.push('Next Inspection Due is required');
 
   if (isLoadBankChecked) {
+    console.log('Load Bank is checked - returning early with general info validation only. Errors:', errors);
     return {
       isValid: errors.length === 0,
       errors
     };
   }
+
+  console.log('Load Bank is NOT checked - continuing with full validation');
 
   if (!formData.equipment_generator?.make) errors.push('Generator Make is required');
   if (!formData.equipment_generator?.model) errors.push('Generator Model is required');
