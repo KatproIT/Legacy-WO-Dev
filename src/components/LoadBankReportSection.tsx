@@ -11,7 +11,7 @@ interface LoadBankReportSectionProps {
 }
 
 export function LoadBankReportSection({ formData, onChange, readOnly, hasValidationErrors }: LoadBankReportSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const entries = formData.load_bank_entries || [];
   const isRequired = isLoadBankRequired(formData);
   const isLoadBankChecked = (formData.type_of_service || '').includes('LOAD BANK');
