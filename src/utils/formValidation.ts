@@ -16,6 +16,7 @@ export const isLoadBankRequired = (formData: FormSubmission): boolean => {
 
 export const validateServiceReport = (formData: FormSubmission): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
+  const isLoadBankChecked = isLoadBankRequired(formData);
 
   if (!formData.job_po_number) errors.push('JOB/PO # is required');
   if (!formData.date) errors.push('Date is required');
@@ -26,6 +27,13 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.type_of_service) errors.push('Type of Service is required');
   if (!formData.contact_name) errors.push('Contact Name is required');
   if (!formData.next_inspection_due) errors.push('Next Inspection Due is required');
+
+  if (isLoadBankChecked) {
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
 
   if (!formData.equipment_generator?.make) errors.push('Generator Make is required');
   if (!formData.equipment_generator?.model) errors.push('Generator Model is required');
@@ -103,7 +111,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     }
   });
 
-  // Time fields validation - these are now time inputs instead of dropdowns
   const timeFields = [
     { field: 'transfer_time', label: 'Transfer Time' },
     { field: 're_transfer_time', label: 'Re-Transfer Time' },
