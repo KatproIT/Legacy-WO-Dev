@@ -55,6 +55,31 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 // Auth routes (LOGIN, RESET-PASSWORD, CREATE-USER)
 app.use("/api/auth", authRouter);
 
+// Public form view (no auth required) - only submitted forms
+app.get("/api/public/form/:id", async (req, res, next) => {
+  try {
+    const db = require('./db');
+    const result = await db.query(
+      'SELECT * FROM form_submissions WHERE id = $1 AND (is_draft = false OR is_draft IS NULL)',
+      [req.params.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Form not found or not accessible' });
+    }
+
+    res.set({
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /* -------------------------------------------------------
    Protected Endpoints (Require JWT)
 -------------------------------------------------------- */

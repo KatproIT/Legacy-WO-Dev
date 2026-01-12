@@ -1,6 +1,7 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { FormPage } from './pages/FormPage';
+import { ViewFormPage } from './pages/ViewFormPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
@@ -44,6 +45,9 @@ export default function App() {
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* Public view-only form route (no authentication required) */}
+        <Route path="/form/:uniqueId/view" element={<ViewFormPage />} />
 
         {/* Root redirect */}
         <Route
