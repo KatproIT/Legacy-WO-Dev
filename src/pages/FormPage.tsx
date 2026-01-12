@@ -895,31 +895,35 @@ const handleFieldChange = useCallback((field: string, value: any) => {
           {/* Bottom Row: Actions */}
           <div className="py-3">
             <div className="flex flex-wrap items-center gap-2">
-              {/* Print & Export */}
-              <button
-                onClick={handlePrint}
-                className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
-              >
-                <Printer size={16} />
-                <span>PRINT</span>
-              </button>
-              <button
-                onClick={handleCustomerCopy}
-                className="px-3 py-1.5 text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
-              >
-                <Download size={16} />
-                <span>CUSTOMER COPY</span>
-              </button>
-              <button
-                onClick={handleDuplicate}
-                className="px-3 py-1.5 text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
-              >
-                <Copy size={16} />
-                <span>DUPLICATE</span>
-              </button>
+              {/* Print & Export - Hidden for Technicians */}
+              {!isUserTechnician && (
+                <>
+                  <button
+                    onClick={handlePrint}
+                    className="px-3 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  >
+                    <Printer size={16} />
+                    <span>PRINT</span>
+                  </button>
+                  <button
+                    onClick={handleCustomerCopy}
+                    className="px-3 py-1.5 text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  >
+                    <Download size={16} />
+                    <span>CUSTOMER COPY</span>
+                  </button>
+                  <button
+                    onClick={handleDuplicate}
+                    className="px-3 py-1.5 text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  >
+                    <Copy size={16} />
+                    <span>DUPLICATE</span>
+                  </button>
 
-              {/* Divider */}
-              <div className="h-6 w-px bg-gray-300 mx-1"></div>
+                  {/* Divider */}
+                  <div className="h-6 w-px bg-gray-300 mx-1"></div>
+                </>
+              )}
 
               {/* Draft Actions */}
               {!isReadOnly && (
