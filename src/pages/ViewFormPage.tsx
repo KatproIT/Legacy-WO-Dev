@@ -11,7 +11,7 @@ import { WorkLogSection } from '../components/WorkLogSection';
 import { AdditionalATSSection } from '../components/AdditionalATSSection';
 import { LoadBankReportSection } from '../components/LoadBankReportSection';
 import { Printer, AlertCircle } from 'lucide-react';
-import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
+import { generatePDF } from '../utils/printUtils';
 
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
@@ -85,10 +85,13 @@ function unpackForm(raw: any): FormSubmission {
 
 export function ViewFormPage() {
   const { uniqueId, jobNumber } = useParams<{ uniqueId: string; jobNumber: string }>();
-  const [formData, setFormData] = useState<FormSubmission | null>(null);
+  const [formData, setFormData] = useState<FormSubmission>({
+    job_po_number: jobNumber || '',
+    status: 'submitted'
+  } as FormSubmission);
+  const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('general');
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -104,7 +107,8 @@ export function ViewFormPage() {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
+          cache: 'no-store'
         });
 
         if (!response.ok) {
@@ -114,8 +118,8 @@ export function ViewFormPage() {
           throw new Error('Failed to load form');
         }
 
-        const rawData = await response.json();
-        const unpacked = unpackForm(rawData);
+        const raw = await response.json();
+        const unpacked = unpackForm(raw);
         setFormData(unpacked);
       } catch (err: any) {
         setError(err.message || 'Failed to load form');
@@ -128,7 +132,6 @@ export function ViewFormPage() {
   }, [uniqueId]);
 
   const handlePrintFacilityCopy = async () => {
-    if (!formData) return;
     try {
       await generatePDF(formData, {
         includeFinancialData: true,
@@ -141,7 +144,6 @@ export function ViewFormPage() {
   };
 
   const handlePrintCustomerCopy = async () => {
-    if (!formData) return;
     try {
       await generatePDF(formData, {
         includeFinancialData: false,
@@ -155,134 +157,134 @@ export function ViewFormPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center">
-        <div className="text-lg text-slate-600">Loading form...</div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
-  if (error || !formData) {
+  if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
           <div className="flex items-center gap-3 text-red-600 mb-4">
             <AlertCircle size={24} />
             <h2 className="text-xl font-semibold">Error</h2>
           </div>
-          <p className="text-slate-600">{error || 'Form not found'}</p>
+          <p className="text-gray-600">{error}</p>
         </div>
       </div>
     );
   }
 
-  const showAdditionalATS = hasAdditionalATSData(formData);
-  const showLoadBank = hasLoadBankData(formData);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-6">
-            <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="bg-white shadow-md border-b border-gray-200 no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4 border-b border-gray-100">
+            <div className="flex items-center gap-6">
+              <img
+                src="/image.png"
+                alt="Legacy Power Systems"
+                className="h-14 sm:h-16 object-contain"
+              />
               <div>
-                <h1 className="text-2xl font-bold text-white mb-1">
-                  Work Order Form - View Only
-                </h1>
-                <p className="text-blue-100 text-sm">
-                  Job #{formData.job_po_number || 'N/A'}
-                </p>
+                <h1 className="text-lg font-semibold text-gray-900">Field Service Report</h1>
+                <p className="text-sm text-gray-600">Job #{formData.job_po_number || 'N/A'}</p>
               </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={handlePrintFacilityCopy}
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                >
-                  <Printer size={18} />
-                  Print Facility Copy
-                </button>
-                <button
-                  onClick={handlePrintCustomerCopy}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-colors font-medium"
-                >
-                  <Printer size={18} />
-                  Print Customer Copy
-                </button>
-              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrintFacilityCopy}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
+              >
+                <Printer size={18} />
+                <span className="hidden sm:inline">Print</span>
+              </button>
+              <button
+                onClick={handlePrintCustomerCopy}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm"
+              >
+                <Printer size={18} />
+                <span className="hidden sm:inline">Customer Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 print-container">
+        <div className="no-print">
+          <FormTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            hasServiceReportErrors={false}
+            hasLoadBankErrors={false}
+          />
+        </div>
+
+        <div className="mt-8">
+          <div className={activeTab !== 0 ? 'hidden print-all-tabs' : 'print-all-tabs'}>
+            <div className="space-y-6">
+              <GeneralInfoSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+                isExistingForm={true}
+              />
+              <EquipmentDetailsSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
+              <SystemChecksSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
+              <MaintenanceInfoSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
+              <DynamicTablesSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
+              <WorkLogSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
             </div>
           </div>
 
-          <div className="p-6 print-container">
-            <FormTabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              showAdditionalATS={showAdditionalATS}
-              showLoadBank={showLoadBank}
-            />
+          <div className={activeTab !== 1 ? 'hidden print:block' : ''} data-section="additional-ats">
+            <div className="section-card">
+              <AdditionalATSSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
+            </div>
+          </div>
 
-            <div className="mt-6">
-              {activeTab === 'general' && (
-                <GeneralInfoSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'equipment' && (
-                <EquipmentDetailsSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'maintenance' && (
-                <MaintenanceInfoSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'system-checks' && (
-                <SystemChecksSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'parts-and-time' && (
-                <DynamicTablesSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'work-log' && (
-                <WorkLogSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'additional-ats' && showAdditionalATS && (
-                <AdditionalATSSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
-
-              {activeTab === 'load-bank' && showLoadBank && (
-                <LoadBankReportSection
-                  formData={formData}
-                  onUpdate={() => {}}
-                  readOnly={true}
-                />
-              )}
+          <div className={activeTab !== 2 ? 'hidden print:block' : ''} data-section="load-bank">
+            <div className="section-card">
+              <LoadBankReportSection
+                formData={formData}
+                onChange={() => {}}
+                readOnly={true}
+                hasValidationErrors={false}
+              />
             </div>
           </div>
         </div>
