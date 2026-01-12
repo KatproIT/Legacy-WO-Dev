@@ -5,6 +5,48 @@ const PA_REJECT = process.env.REJECT_URL;
 const PA_FORWARD = process.env.FORWARD_URL;
 
 /**
+ * Calculates if the form should be escalated based on:
+ * 1. Any dropdown has "see notes"
+ * 2. Any battery reading has "Fail"
+ * 3. Any service interval checkbox is checked
+ */
+function calculateEscalation(formData) {
+  const data = formData.data || formData;
+
+  // Check if any dropdown has "see notes"
+  const dropdownFields = [
+    'oil_filter_status', 'fuel_filter_status', 'coolant_filter_status', 'air_filter_status',
+    'hoses_belts_cooling_fins', 'block_heater_status', 'ignition_system_status',
+    'governor_system', 'fuel_system_day_tank', 'fuel_line', 'check_all_systems_for_leaks',
+    'exhaust_system', 'charging_starting_system', 'instruments_lamps_wiring',
+    'generator_controls_safeties', 'enclosure_condition', 'ats_control_battery',
+    'ats_contactor', 'transfer_time', 're_transfer_time', 'cooldown',
+    'unit_in_auto_breakers_on', 'recommend_generator_be_replaced'
+  ];
+
+  const hasSeeNotes = dropdownFields.some(field => {
+    const value = data[field];
+    return value && value.toLowerCase().includes('see notes');
+  });
+
+  // Check if any battery reading has "Fail"
+  const batteryReadings = data.battery_health_readings || [];
+  const hasBatteryFail = batteryReadings.some(reading => {
+    return reading.passFail && reading.passFail.toLowerCase() === 'fail';
+  });
+
+  // Check if any service interval checkbox is checked
+  const hasServiceIntervalDue = !!(
+    data.service_coolant_flush_due ||
+    data.service_batteries_due ||
+    data.service_belts_due ||
+    data.service_hoses_due
+  );
+
+  return hasSeeNotes || hasBatteryFail || hasServiceIntervalDue;
+}
+
+/**
  * Sends a notification to Power Automate when a form is submitted.
  */
 async function sendPowerAutomateRequest(dataRow) {
@@ -12,6 +54,9 @@ async function sendPowerAutomateRequest(dataRow) {
     console.error("POWER_AUTOMATE_URL is not set");
     return false;
   }
+
+  // Calculate escalation flag
+  const escalation = calculateEscalation(dataRow);
 
   // Build payload safely
   const payload = {
@@ -22,7 +67,8 @@ async function sendPowerAutomateRequest(dataRow) {
     customer: dataRow.customer || dataRow.data?.customer || null,
     siteName: dataRow.site_name || dataRow.data?.site_name || null,
     formUniqueId: dataRow.id || null,
-    editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.id}/${dataRow.job_po_number}`
+    editLink: `${process.env.FRONTEND_ORIGIN}/form/${dataRow.id}/${dataRow.job_po_number}`,
+    escalation: escalation
   };
 
   try {
