@@ -84,7 +84,7 @@ function unpackForm(raw: any): FormSubmission {
 }
 
 export function ViewFormPage() {
-  const { uniqueId } = useParams<{ uniqueId: string }>();
+  const { uniqueId, jobNumber } = useParams<{ uniqueId: string; jobNumber: string }>();
   const [formData, setFormData] = useState<FormSubmission | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

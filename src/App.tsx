@@ -47,7 +47,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Public view-only form route (no authentication required) */}
-        <Route path="/form/:uniqueId/view" element={<ViewFormPage />} />
+        <Route path="/form/:uniqueId/:jobNumber/view" element={<ViewFormPage />} />
 
         {/* Root redirect */}
         <Route
