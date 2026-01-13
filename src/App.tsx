@@ -6,6 +6,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import ForgotPassword from './pages/ForgotPassword';
 import UserManagementPage from './pages/UserManagementPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 function isAuthenticated(): boolean {
   return Boolean(localStorage.getItem('token'));
@@ -32,7 +33,7 @@ function PrivateRoute({
 
   if (superadminOnly) {
     const role = getUserRole();
-    if (role !== 'superadmin') return <Navigate to="/admin" replace />;
+    if (role !== 'superadmin') return <Navigate to="/404" replace />;
   }
 
   return children;
@@ -54,16 +55,18 @@ export default function App() {
           path="/"
           element={
             isAuthenticated()
-              ? <Navigate to="/admin" replace />
+              ? (getUserRole() === 'superadmin'
+                  ? <Navigate to="/admin" replace />
+                  : <Navigate to="/form/new" replace />)
               : <Navigate to="/login" replace />
           }
         />
 
-        {/* Admin Dashboard */}
+        {/* Admin Dashboard - Superadmin Only */}
         <Route
           path="/admin"
           element={
-            <PrivateRoute>
+            <PrivateRoute superadminOnly={true}>
               <AdminDashboard />
             </PrivateRoute>
           }
@@ -99,8 +102,11 @@ export default function App() {
           }
         />
 
+        {/* 404 Page */}
+        <Route path="/404" element={<NotFoundPage />} />
+
         {/* Fallback for any unknown route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
