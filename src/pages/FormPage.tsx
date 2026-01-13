@@ -1,5 +1,5 @@
 // src/pages/FormPage.tsx
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
 import { FormTabs } from '../components/FormTabs';
@@ -180,6 +180,9 @@ export function FormPage() {
   const [showDraftsModal, setShowDraftsModal] = useState(false);
   const [initialFormData, setInitialFormData] = useState<FormSubmission | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState<Date | null>(null);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
@@ -737,13 +740,94 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     }
   };
 
-  // Track form changes
+  // Auto-save function
+  const performAutoSave = async () => {
+    if (!formData.job_po_number?.trim()) {
+      return;
+    }
+
+    if (isReadOnly) {
+      return;
+    }
+
+    if ((formData as any).http_post_sent) {
+      return;
+    }
+
+    setIsAutoSaving(true);
+
+    try {
+      const submissionPayload = packForm({
+        ...formData,
+        status: 'draft',
+        is_draft: true,
+        submitted_by_email: userEmail || (formData as any).submitted_by_email
+      });
+
+      let savedData: any = null;
+
+      if (formData.id) {
+        const res = await authFetch(`${API}/forms/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionPayload)
+        });
+        if (res.ok) {
+          savedData = await res.json();
+        }
+      } else {
+        const res = await authFetch(`${API}/forms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionPayload)
+        });
+        if (res.ok) {
+          savedData = await res.json();
+        }
+      }
+
+      if (savedData) {
+        const unpacked = unpackForm(savedData);
+        setFormData(unpacked);
+        setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
+        setLastAutoSaveTime(new Date());
+
+        if (!uniqueId || uniqueId === 'new') {
+          navigate(`/form/${unpacked.id}/${unpacked.job_po_number}`, { replace: true });
+        }
+      }
+    } catch (error) {
+      console.error('Auto-save error:', error);
+    } finally {
+      setIsAutoSaving(false);
+    }
+  };
+
+  // Track form changes and trigger auto-save
   useEffect(() => {
     if (!initialFormData) return;
 
     const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialFormData);
     setHasUnsavedChanges(hasChanges);
-  }, [formData, initialFormData]);
+
+    if (hasChanges && !isReadOnly && !(formData as any).http_post_sent && formData.job_po_number?.trim()) {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+
+      const newTimer = setTimeout(() => {
+        performAutoSave();
+      }, 5000);
+
+      autoSaveTimerRef.current = newTimer;
+
+      return () => {
+        if (autoSaveTimerRef.current) {
+          clearTimeout(autoSaveTimerRef.current);
+        }
+      };
+    }
+  }, [formData, initialFormData, isReadOnly]);
 
   const checkUnsavedChanges = (): { hasChanges: boolean; isDraft: boolean; hasNewData: boolean } => {
     if (!initialFormData) {
@@ -874,7 +958,22 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     <span className="hidden sm:inline">Submitted</span>
                   </span>
                 )}
-                {hasUnsavedChanges && !isReadOnly && (
+                {isAutoSaving && (
+                  <span className="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="hidden sm:inline">Auto-saving...</span>
+                  </span>
+                )}
+                {!isAutoSaving && lastAutoSaveTime && !isReadOnly && (
+                  <span className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-md">
+                    <span className="hidden sm:inline">Auto-saved at {lastAutoSaveTime.toLocaleTimeString()}</span>
+                    <span className="sm:hidden">Saved</span>
+                  </span>
+                )}
+                {hasUnsavedChanges && !isReadOnly && !isAutoSaving && !lastAutoSaveTime && (
                   <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold rounded-md">
                     Unsaved Changes
                   </span>
