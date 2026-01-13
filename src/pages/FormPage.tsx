@@ -741,7 +741,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
   };
 
   // Auto-save function
-  const performAutoSave = async () => {
+  const performAutoSave = useCallback(async () => {
     if (!formData.job_po_number?.trim()) {
       return;
     }
@@ -801,7 +801,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     } finally {
       setIsAutoSaving(false);
     }
-  };
+  }, [formData, isReadOnly, userEmail, uniqueId, navigate]);
 
   // Track form changes and trigger auto-save
   useEffect(() => {
@@ -820,14 +820,14 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       }, 5000);
 
       autoSaveTimerRef.current = newTimer;
-
-      return () => {
-        if (autoSaveTimerRef.current) {
-          clearTimeout(autoSaveTimerRef.current);
-        }
-      };
     }
-  }, [formData, initialFormData, isReadOnly]);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [formData, initialFormData, isReadOnly, performAutoSave]);
 
   const checkUnsavedChanges = (): { hasChanges: boolean; isDraft: boolean; hasNewData: boolean } => {
     if (!initialFormData) {
