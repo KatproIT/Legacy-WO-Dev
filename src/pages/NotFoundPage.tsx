@@ -53,7 +53,7 @@ export function NotFoundPage() {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 hover:shadow-md"
               >
                 <Home size={20} />
-                Go to Home
+                New Form
               </button>
               <button
                 onClick={() => navigate(-1)}
