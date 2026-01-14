@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { FileText, Clock, CheckCircle, ExternalLink, Plus, Trash2, ChevronDown, ChevronUp, Search, Filter, Calendar, User, MapPin, Wrench, Battery, Zap, AlertCircle, Package, DollarSign, ClipboardList } from 'lucide-react';
+import { FileText, Clock, CheckCircle, ExternalLink, Plus, Trash2, ChevronDown, ChevronUp, Search, Filter, Calendar, User, MapPin, Wrench, Battery, Zap, AlertCircle, Package, DollarSign, ClipboardList, XCircle } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
 const API =
@@ -24,6 +24,14 @@ export function AdminDashboard() {
     message: string;
     onConfirm: () => void;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [technicianFilter, setTechnicianFilter] = useState<string>('all');
+  const [customerFilter, setCustomerFilter] = useState<string>('all');
+  const [siteFilter, setSiteFilter] = useState<string>('all');
+  const [serviceTypeFilter, setServiceTypeFilter] = useState<string>('all');
+  const [dateFromFilter, setDateFromFilter] = useState<string>('');
+  const [dateToFilter, setDateToFilter] = useState<string>('');
+  const [poNumberFilter, setPONumberFilter] = useState<string>('');
 
   useEffect(() => {
     loadSubmissions();
@@ -100,6 +108,26 @@ export function AdminDashboard() {
     setExpandedRows(newExpanded);
   };
 
+  // Extract unique values for filters
+  const uniqueTechnicians = Array.from(new Set(submissions.map(s => s.technician).filter(Boolean)));
+  const uniqueCustomers = Array.from(new Set(submissions.map(s => s.customer).filter(Boolean)));
+  const uniqueSites = Array.from(new Set(submissions.map(s => s.site_name).filter(Boolean)));
+  const uniqueServiceTypes = Array.from(new Set(
+    submissions.map(s => s.type_of_service).filter(Boolean).flatMap(s => s.split(',').map(t => t.trim()))
+  ));
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setTechnicianFilter('all');
+    setCustomerFilter('all');
+    setSiteFilter('all');
+    setServiceTypeFilter('all');
+    setDateFromFilter('');
+    setDateToFilter('');
+    setPONumberFilter('');
+  };
+
   const filteredSubmissions = submissions.filter(sub => {
     const matchesSearch =
       sub.job_po_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -112,8 +140,49 @@ export function AdminDashboard() {
       statusFilter === 'submitted' ? sub.http_post_sent :
       !sub.http_post_sent;
 
-    return matchesSearch && matchesStatus;
+    const matchesTechnician =
+      technicianFilter === 'all' ? true :
+      sub.technician === technicianFilter;
+
+    const matchesCustomer =
+      customerFilter === 'all' ? true :
+      sub.customer === customerFilter;
+
+    const matchesSite =
+      siteFilter === 'all' ? true :
+      sub.site_name === siteFilter;
+
+    const matchesServiceType =
+      serviceTypeFilter === 'all' ? true :
+      sub.type_of_service?.includes(serviceTypeFilter);
+
+    const matchesDateFrom =
+      !dateFromFilter ? true :
+      sub.date && sub.date >= dateFromFilter;
+
+    const matchesDateTo =
+      !dateToFilter ? true :
+      sub.date && sub.date <= dateToFilter;
+
+    const matchesPONumber =
+      !poNumberFilter ? true :
+      sub.job_po_number?.toLowerCase().includes(poNumberFilter.toLowerCase());
+
+    return matchesSearch && matchesStatus && matchesTechnician &&
+           matchesCustomer && matchesSite && matchesServiceType &&
+           matchesDateFrom && matchesDateTo && matchesPONumber;
   });
+
+  const activeFilterCount = [
+    technicianFilter !== 'all',
+    customerFilter !== 'all',
+    siteFilter !== 'all',
+    serviceTypeFilter !== 'all',
+    dateFromFilter !== '',
+    dateToFilter !== '',
+    poNumberFilter !== '',
+    statusFilter !== 'all'
+  ].filter(Boolean).length;
 
   if (loading) {
     return (
@@ -222,12 +291,13 @@ export function AdminDashboard() {
 
         {/* Search and Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+          {/* Main Search and Status Filters */}
+          <div className="flex flex-col lg:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
-                placeholder="Search by Job #, Customer, Site, or Technician..."
+                placeholder="Quick search by Job #, Customer, Site, or Technician..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -266,6 +336,216 @@ export function AdminDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Advanced Filters Toggle */}
+          <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+            >
+              <Filter size={18} />
+              <span>Advanced Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {activeFilterCount}
+                </span>
+              )}
+              {showAdvancedFilters ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearAllFilters}
+                className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+              >
+                <XCircle size={16} />
+                Clear All Filters
+              </button>
+            )}
+          </div>
+
+          {/* Advanced Filters Panel */}
+          {showAdvancedFilters && (
+            <div className="border-t border-gray-200 pt-6 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {/* PO Number Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <FileText size={16} className="text-gray-500" />
+                    Job/PO Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Filter by PO #..."
+                    value={poNumberFilter}
+                    onChange={(e) => setPONumberFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  />
+                </div>
+
+                {/* Technician Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <User size={16} className="text-gray-500" />
+                    Technician
+                  </label>
+                  <select
+                    value={technicianFilter}
+                    onChange={(e) => setTechnicianFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  >
+                    <option value="all">All Technicians ({uniqueTechnicians.length})</option>
+                    {uniqueTechnicians.sort().map((tech) => (
+                      <option key={tech} value={tech}>
+                        {tech} ({submissions.filter(s => s.technician === tech).length})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Customer Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <User size={16} className="text-gray-500" />
+                    Customer
+                  </label>
+                  <select
+                    value={customerFilter}
+                    onChange={(e) => setCustomerFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  >
+                    <option value="all">All Customers ({uniqueCustomers.length})</option>
+                    {uniqueCustomers.sort().map((customer) => (
+                      <option key={customer} value={customer}>
+                        {customer} ({submissions.filter(s => s.customer === customer).length})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Site Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <MapPin size={16} className="text-gray-500" />
+                    Site
+                  </label>
+                  <select
+                    value={siteFilter}
+                    onChange={(e) => setSiteFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  >
+                    <option value="all">All Sites ({uniqueSites.length})</option>
+                    {uniqueSites.sort().map((site) => (
+                      <option key={site} value={site}>
+                        {site} ({submissions.filter(s => s.site_name === site).length})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Service Type Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <Wrench size={16} className="text-gray-500" />
+                    Service Type
+                  </label>
+                  <select
+                    value={serviceTypeFilter}
+                    onChange={(e) => setServiceTypeFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  >
+                    <option value="all">All Service Types</option>
+                    {uniqueServiceTypes.sort().map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date From Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <Calendar size={16} className="text-gray-500" />
+                    Date From
+                  </label>
+                  <input
+                    type="date"
+                    value={dateFromFilter}
+                    onChange={(e) => setDateFromFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  />
+                </div>
+
+                {/* Date To Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <Calendar size={16} className="text-gray-500" />
+                    Date To
+                  </label>
+                  <input
+                    type="date"
+                    value={dateToFilter}
+                    onChange={(e) => setDateToFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Filter Summary */}
+              {activeFilterCount > 0 && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Filter size={16} className="text-blue-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-900">Active Filters ({activeFilterCount}):</p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {poNumberFilter && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            PO: {poNumberFilter}
+                          </span>
+                        )}
+                        {technicianFilter !== 'all' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            Tech: {technicianFilter}
+                          </span>
+                        )}
+                        {customerFilter !== 'all' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            Customer: {customerFilter}
+                          </span>
+                        )}
+                        {siteFilter !== 'all' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            Site: {siteFilter}
+                          </span>
+                        )}
+                        {serviceTypeFilter !== 'all' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            Service: {serviceTypeFilter}
+                          </span>
+                        )}
+                        {dateFromFilter && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            From: {dateFromFilter}
+                          </span>
+                        )}
+                        {dateToFilter && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            To: {dateToFilter}
+                          </span>
+                        )}
+                        {statusFilter !== 'all' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-blue-300 rounded text-xs font-medium text-blue-700">
+                            Status: {statusFilter}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Submissions List Container */}
