@@ -186,6 +186,21 @@ CREATE TABLE IF NOT EXISTS form_submissions (
 );
 
 -- ============================================================================
+-- TABLE: workflow_history
+-- ============================================================================
+-- Table to track all workflow actions for auditing and history display
+
+CREATE TABLE IF NOT EXISTS workflow_history (
+  id bigserial PRIMARY KEY,
+  form_id text NOT NULL,
+  action text NOT NULL,
+  actor_email text NOT NULL,
+  note text,
+  forwarded_to_email text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- ============================================================================
 -- INDEXES
 -- ============================================================================
 -- Create indexes for performance optimization
@@ -204,6 +219,10 @@ CREATE INDEX IF NOT EXISTS idx_form_submissions_customer
 
 CREATE INDEX IF NOT EXISTS idx_form_submissions_site_name
   ON form_submissions(site_name);
+
+CREATE INDEX IF NOT EXISTS idx_workflow_history_form_id ON workflow_history(form_id);
+
+CREATE INDEX IF NOT EXISTS idx_workflow_history_created_at ON workflow_history(created_at DESC);
 
 -- ============================================================================
 -- FUNCTIONS
