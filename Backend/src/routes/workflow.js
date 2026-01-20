@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { sendPowerAutomateRequest, sendRejectNotification, sendForwardNotification } = require('../utils/powerAutomate');
+const { sendPowerAutomateRequest, sendRejectNotification, sendForwardNotification, calculateEscalation } = require('../utils/powerAutomate');
 
 // submit (trigger Power Automate + mark submitted)
 router.post('/submit', async (req, res, next) => {
@@ -42,9 +42,10 @@ router.post('/submit', async (req, res, next) => {
     // send Power Automate notification
     try {
       if (isResubmission) {
-        // Send resubmission notification via REJECT_URL
-        const { sendRejectNotification } = require('../utils/powerAutomate');
-        await sendRejectNotification(saved, '', 'resubmitted');
+        // Calculate escalation for resubmission
+        const escalation = calculateEscalation(saved);
+        // Send resubmission notification via REJECT_URL with escalation flag
+        await sendRejectNotification(saved, '', 'resubmitted', escalation);
       } else {
         // Normal submission
         await sendPowerAutomateRequest(saved);
