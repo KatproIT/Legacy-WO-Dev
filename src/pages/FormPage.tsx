@@ -1179,7 +1179,16 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 </button>
               ) : (
                 <>
-                  {(formData as any).http_post_sent ? (
+                  {(formData as any).is_rejected ? (
+                    <button
+                      onClick={handleSubmit}
+                      disabled={saving}
+                      className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
+                    >
+                      <CheckCircle size={16} />
+                      <span>{saving ? 'Resubmitting...' : 'RESUBMIT FOR REVIEW'}</span>
+                    </button>
+                  ) : (formData as any).http_post_sent ? (
                     <button
                       onClick={handleSaveChanges}
                       disabled={saving}
@@ -1195,7 +1204,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center gap-2 text-sm shadow-sm disabled:opacity-50"
                     >
                       <CheckCircle size={16} />
-                      <span>{saving ? 'Submitting...' : 'SUBMIT WORK ORDER'}</span>
+                      <span>{saving ? 'Submitting...' : 'SUBMIT FOR REVIEW'}</span>
                     </button>
                   )}
                 </>
