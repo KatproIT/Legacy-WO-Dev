@@ -621,32 +621,53 @@ export function AdminDashboard() {
                           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 min-w-0">
                             {/* Job Number */}
                             <div className="min-w-0">
-                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Job/PO #</div>
-                              <div className="font-bold text-gray-900 truncate">{submission.job_po_number}</div>
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide flex items-center gap-1">
+                                <FileText size={12} />
+                                Job/PO #
+                              </div>
+                              <div className="font-bold text-gray-900 truncate text-base">{submission.job_po_number}</div>
                             </div>
 
                             {/* Customer */}
                             <div className="min-w-0">
-                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Customer</div>
-                              <div className="font-medium text-gray-800 truncate">{submission.customer || '-'}</div>
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide flex items-center gap-1">
+                                <User size={12} />
+                                Customer
+                              </div>
+                              <div className="font-semibold text-blue-700 truncate text-sm" title={submission.customer || 'Not specified'}>
+                                {submission.customer || <span className="text-gray-400 italic">Not specified</span>}
+                              </div>
                             </div>
 
                             {/* Site */}
                             <div className="min-w-0">
-                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Site</div>
-                              <div className="font-medium text-gray-800 truncate">{submission.site_name || '-'}</div>
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide flex items-center gap-1">
+                                <MapPin size={12} />
+                                Site
+                              </div>
+                              <div className="font-semibold text-green-700 truncate text-sm" title={submission.site_name || 'Not specified'}>
+                                {submission.site_name || <span className="text-gray-400 italic">Not specified</span>}
+                              </div>
                             </div>
 
                             {/* Technician */}
                             <div className="min-w-0">
-                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Technician</div>
-                              <div className="font-medium text-gray-800 truncate">{submission.technician || '-'}</div>
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide flex items-center gap-1">
+                                <Wrench size={12} />
+                                Technician
+                              </div>
+                              <div className="font-medium text-gray-800 truncate" title={submission.technician || 'Not specified'}>
+                                {submission.technician || <span className="text-gray-400 italic">Not specified</span>}
+                              </div>
                             </div>
 
                             {/* Date */}
                             <div className="min-w-0">
-                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">Service Date</div>
-                              <div className="font-medium text-gray-800 truncate">{submission.date || '-'}</div>
+                              <div className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide flex items-center gap-1">
+                                <Calendar size={12} />
+                                Service Date
+                              </div>
+                              <div className="font-medium text-gray-800 truncate">{submission.date || <span className="text-gray-400 italic">Not specified</span>}</div>
                             </div>
                           </div>
 
