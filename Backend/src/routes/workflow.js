@@ -31,6 +31,14 @@ router.post('/submit', async (req, res, next) => {
       [id, 'submitted', saved.data]
     );
 
+    // Insert workflow history
+    const action = isResubmission ? 'resubmitted' : 'submitted';
+    await db.query(
+      `INSERT INTO workflow_history (form_id, action, actor_email, created_at)
+       VALUES ($1, $2, $3, now())`,
+      [id, action, saved.submitted_by_email || 'unknown']
+    );
+
     // send Power Automate notification
     try {
       if (isResubmission) {
@@ -78,6 +86,14 @@ router.post('/reject', async (req, res, next) => {
       [id, note]
     );
 
+    // Insert workflow history
+    const actorEmail = req.user?.email || 'unknown';
+    await db.query(
+      `INSERT INTO workflow_history (form_id, action, actor_email, note, created_at)
+       VALUES ($1, $2, $3, $4, now())`,
+      [id, 'rejected', actorEmail, note]
+    );
+
     // Send Power Automate notification with status: "rejected"
     try {
       await sendRejectNotification(formData, note, 'rejected');
@@ -114,6 +130,14 @@ router.post('/forward', async (req, res, next) => {
         is_rejected = false
       WHERE id = $1`,
       [id, to]
+    );
+
+    // Insert workflow history
+    const actorEmail = req.user?.email || 'unknown';
+    await db.query(
+      `INSERT INTO workflow_history (form_id, action, actor_email, forwarded_to_email, created_at)
+       VALUES ($1, $2, $3, $4, now())`,
+      [id, 'forwarded', actorEmail, to]
     );
 
     // Send Power Automate notification
@@ -153,6 +177,14 @@ router.post('/approve', async (req, res, next) => {
       [id]
     );
 
+    // Insert workflow history
+    const actorEmail = req.user?.email || 'unknown';
+    await db.query(
+      `INSERT INTO workflow_history (form_id, action, actor_email, created_at)
+       VALUES ($1, $2, $3, now())`,
+      [id, 'approved', actorEmail]
+    );
+
     // Send Power Automate notification with status: "approved"
     try {
       await sendRejectNotification(formData, '', 'approved');
@@ -161,6 +193,26 @@ router.post('/approve', async (req, res, next) => {
     }
 
     res.json({ ok: true });
+
+  } catch (err) { next(err); }
+});
+
+// get workflow history for a form
+router.get('/history/:formId', async (req, res, next) => {
+  try {
+    const { formId } = req.params;
+
+    if (!formId)
+      return res.status(400).json({ message: 'formId required' });
+
+    const result = await db.query(
+      `SELECT * FROM workflow_history
+       WHERE form_id = $1
+       ORDER BY created_at ASC`,
+      [formId]
+    );
+
+    res.json(result.rows);
 
   } catch (err) { next(err); }
 });

@@ -15,9 +15,10 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
+import { HistoryModal } from '../components/HistoryModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport, isJobNumberValid } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -184,6 +185,7 @@ export function FormPage() {
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastAutoSaveTime, setLastAutoSaveTime] = useState<Date | null>(null);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // ✔ FIX: prevent navigate inside rendering
   useEffect(() => {
@@ -1121,6 +1123,17 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 </>
               )}
 
+              {/* View Logs - PM+ Only */}
+              {isUserPM && formData.id && (
+                <button
+                  onClick={() => setShowHistoryModal(true)}
+                  className="px-3 py-1.5 text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                >
+                  <History size={16} />
+                  <span>VIEW LOGS</span>
+                </button>
+              )}
+
               {/* PM Actions */}
               {isUserPM && !isReadOnly && formData.id && (
                 <>
@@ -1341,6 +1354,12 @@ const handleFieldChange = useCallback((field: string, value: any) => {
         onClose={() => setShowDraftsModal(false)}
         onLoadDraft={handleLoadDraft}
         userEmail={userEmail || ''}
+      />
+
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        formId={formData.id || ''}
       />
     </div>
   );
