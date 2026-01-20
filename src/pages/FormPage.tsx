@@ -18,7 +18,7 @@ import { DraftsModal } from '../components/DraftsModal';
 import { HistoryModal } from '../components/HistoryModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport, isJobNumberValid } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History, User, Mail, Shield } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -1068,6 +1068,41 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               </button>
             </div>
           </div>
+
+          {/* Profile Card Row */}
+          {userEmail && userRole && (
+            <div className="py-3 border-b border-gray-100">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg px-4 py-3 shadow-sm">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-blue-600 text-white rounded-full p-2">
+                      <User size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium">Name</p>
+                      <p className="text-sm font-semibold text-gray-900">{extractNameFromEmail(userEmail)}</p>
+                    </div>
+                  </div>
+                  <div className="h-8 w-px bg-blue-300"></div>
+                  <div className="flex items-center gap-2">
+                    <Mail size={16} className="text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium">Email</p>
+                      <p className="text-sm font-semibold text-gray-900">{userEmail}</p>
+                    </div>
+                  </div>
+                  <div className="h-8 w-px bg-blue-300"></div>
+                  <div className="flex items-center gap-2">
+                    <Shield size={16} className="text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium">Role</p>
+                      <p className="text-sm font-semibold text-gray-900 capitalize">{userRole}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Bottom Row: Actions */}
           <div className="py-3">
