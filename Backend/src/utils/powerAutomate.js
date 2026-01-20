@@ -94,8 +94,9 @@ async function sendPowerAutomateRequest(dataRow) {
 
 /**
  * Sends a reject notification to Power Automate.
+ * status can be "rejected" or "resubmitted" or "approved"
  */
-async function sendRejectNotification(formData, note) {
+async function sendRejectNotification(formData, note, status = 'rejected') {
   if (!PA_REJECT) {
     console.error("REJECT_URL is not set");
     return false;
@@ -108,7 +109,8 @@ async function sendRejectNotification(formData, note) {
     technicianEmail: formData.submitted_by_email || formData.data?.submitted_by_email || null,
     customer: formData.customer || formData.data?.customer || null,
     siteName: formData.site_name || formData.data?.site_name || null,
-    rejectionNote: note
+    rejectionNote: note,
+    status: status
   };
 
   try {

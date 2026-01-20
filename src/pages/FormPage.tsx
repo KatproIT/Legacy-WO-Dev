@@ -45,6 +45,7 @@ const RESERVED_TOP_LEVEL_KEYS = new Set([
   'http_post_sent',
   'is_rejected',
   'is_forwarded',
+  'is_approved',
   'rejection_note',
   'forwarded_to_email',
   'workflow_timestamp',
@@ -532,6 +533,39 @@ export function FormPage() {
     }
   };
 
+  const handleApprove = async () => {
+    try {
+      setSaving(true);
+
+      const payload = { id: formData.id };
+      const res = await authFetch(`${API}/workflow/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error('Approve failed');
+      }
+
+      if (formData.id) {
+        const refreshRes = await authFetch(`${API}/forms/${formData.id}`);
+        if (refreshRes.ok) {
+          const refreshedRaw = await refreshRes.json();
+          const refreshed = unpackForm(refreshedRaw);
+          setFormData(refreshed);
+        }
+      }
+
+      await handleSaveForm();
+      showToast('Form approved successfully', 'success');
+    } catch (error) {
+      showToast('Error approving form', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
 const handleFieldChange = useCallback((field: string, value: any) => {
   // 🩹 FIX: Normalize ISO datetime to yyyy-MM-dd
   if (
@@ -952,7 +986,25 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                     <span className="hidden sm:inline">Read-Only</span>
                   </span>
                 )}
-                {formData.id && (formData as any).http_post_sent && (
+                {formData.id && (formData as any).is_approved && (
+                  <span className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <CheckCircle size={14} />
+                    <span className="hidden sm:inline">Approved</span>
+                  </span>
+                )}
+                {formData.id && (formData as any).is_forwarded && (
+                  <span className="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <Forward size={14} />
+                    <span className="hidden sm:inline">Forwarded to {(formData as any).forwarded_to_email}</span>
+                  </span>
+                )}
+                {formData.id && (formData as any).is_rejected && (
+                  <span className="px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
+                    <XCircle size={14} />
+                    <span className="hidden sm:inline">Rejected: {(formData as any).rejection_note}</span>
+                  </span>
+                )}
+                {formData.id && (formData as any).http_post_sent && !(formData as any).is_approved && !(formData as any).is_forwarded && !(formData as any).is_rejected && (
                   <span className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-md flex items-center gap-1.5">
                     <CheckCircle size={14} />
                     <span className="hidden sm:inline">Submitted</span>
@@ -1050,12 +1102,12 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 <>
                   <div className="h-6 w-px bg-gray-300 mx-1"></div>
                   <button
-                    onClick={() => setShowRejectModal(true)}
+                    onClick={handleApprove}
                     disabled={saving}
-                    className="px-3 py-1.5 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                    className="px-3 py-1.5 text-green-700 bg-green-100 hover:bg-green-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
                   >
-                    <XCircle size={16} />
-                    <span>REJECT</span>
+                    <CheckCircle size={16} />
+                    <span>APPROVE</span>
                   </button>
                   <button
                     onClick={() => setShowForwardModal(true)}
@@ -1064,6 +1116,14 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                   >
                     <Forward size={16} />
                     <span>FORWARD</span>
+                  </button>
+                  <button
+                    onClick={() => setShowRejectModal(true)}
+                    disabled={saving}
+                    className="px-3 py-1.5 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  >
+                    <XCircle size={16} />
+                    <span>REJECT</span>
                   </button>
                 </>
               )}
