@@ -174,12 +174,15 @@ CREATE TABLE IF NOT EXISTS form_submissions (
   is_first_submission boolean DEFAULT true,
   is_rejected boolean DEFAULT false,
   is_forwarded boolean DEFAULT false,
+  is_approved boolean DEFAULT false,
+  is_draft boolean DEFAULT false,
   rejection_note text,
   forwarded_to_email text,
   workflow_timestamp timestamptz,
 
   -- Metadata
-  http_post_sent boolean DEFAULT false
+  http_post_sent boolean DEFAULT false,
+  data jsonb DEFAULT '{}'::jsonb
 );
 
 -- ============================================================================
