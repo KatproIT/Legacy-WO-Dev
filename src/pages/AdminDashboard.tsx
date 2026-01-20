@@ -227,6 +227,25 @@ export function AdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* User Management Section */}
+        {localStorage.getItem("userRole") === "superadmin" && (
+          <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">User Management</h3>
+                <p className="text-sm text-gray-500">Add, edit, or remove user accounts and permissions</p>
+              </div>
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 hover:shadow-md"
+              >
+                <User size={18} />
+                Manage Users
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Key Metrics Dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
@@ -1029,25 +1048,6 @@ export function AdminDashboard() {
             <p className="text-sm text-gray-500 mt-2">Total time logs recorded</p>
           </div>
         </div>
-
-        {/* User Management Section */}
-        {localStorage.getItem("userRole") === "superadmin" && (
-          <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">User Management</h3>
-                <p className="text-sm text-gray-500">Add, edit, or remove user accounts and permissions</p>
-              </div>
-              <button
-                onClick={() => navigate('/admin/users')}
-                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 hover:shadow-md"
-              >
-                <User size={18} />
-                Manage Users
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Toast Notification */}
