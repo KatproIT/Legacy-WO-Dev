@@ -3,11 +3,12 @@ import { X } from 'lucide-react';
 
 interface RejectModalProps {
   onClose: () => void;
-  onSubmit: (note: string) => void;
+  onSubmit: (note: string, escalation: boolean) => void;
 }
 
 export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
   const [note, setNote] = useState('');
+  const [escalation, setEscalation] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,7 +19,7 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
       return;
     }
 
-    onSubmit(note.trim());
+    onSubmit(note.trim(), escalation);
   };
 
   return (
@@ -60,6 +61,18 @@ export default function RejectModal({ onClose, onSubmit }: RejectModalProps) {
               {error && (
                 <p className="mt-2 text-sm text-red-600">{error.toUpperCase()}</p>
               )}
+            </div>
+
+            <div className="mb-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={escalation}
+                  onChange={(e) => setEscalation(e.target.checked)}
+                  className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                />
+                <span className="text-sm font-medium text-gray-700">ESCALATION REQUIRED</span>
+              </label>
             </div>
 
             <div className="flex gap-3">
