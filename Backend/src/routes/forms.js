@@ -7,7 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 router.get('/', async (req, res, next) => {
   try {
     const q = `
-      SELECT id, job_po_number, technician, status, http_post_sent,
+      SELECT id, job_po_number, technician, customer, site_name, site_address,
+             type_of_service, contact_name, contact_phone, contact_email,
+             next_inspection_due, date, status, http_post_sent,
              is_rejected, is_forwarded, submitted_by_email,
              created_at, updated_at, data
       FROM form_submissions
