@@ -489,12 +489,12 @@ export function FormPage() {
     }
   };
 
-  const handleReject = async (note: string, escalation: boolean) => {
+  const handleReject = async (note: string) => {
     try {
       setSaving(true);
       setShowRejectModal(false);
 
-      const payload = { id: formData.id, note, escalation };
+      const payload = { id: formData.id, note };
       const res = await authFetch(`${API}/workflow/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
