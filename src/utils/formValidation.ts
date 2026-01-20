@@ -5,6 +5,16 @@ export const getInputClass = (value: any, hasValidationErrors: boolean, readOnly
   return !value || value === '' ? 'form-input-error' : 'form-input';
 };
 
+export const isJobNumberValid = (jobNumber: string): boolean => {
+  if (!jobNumber || !jobNumber.trim()) return false;
+
+  const parts = jobNumber.split('-');
+  if (parts.length !== 3) return false;
+
+  const middleValue = parts[1];
+  return middleValue === '23' || middleValue === '29' || middleValue === '42' || middleValue === '67';
+};
+
 export const getSelectClass = (value: any, hasValidationErrors: boolean, readOnly: boolean): string => {
   return getInputClass(value, hasValidationErrors, readOnly);
 };

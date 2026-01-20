@@ -68,7 +68,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             {formData.job_po_number && (() => {
               const parts = formData.job_po_number.split('-');
               const middleValue = parts[1];
-              const isValid = middleValue === '23' || middleValue === '29' || middleValue === '42';
+              const isValid = middleValue === '23' || middleValue === '29' || middleValue === '42' || middleValue === '67';
 
               return parts.length === 3 && middleValue && !isValid ? (
                 <p className="text-xs text-amber-700 mt-1 font-medium">

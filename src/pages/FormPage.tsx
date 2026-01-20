@@ -16,7 +16,7 @@ import RejectModal from '../components/RejectModal';
 import ForwardModal from '../components/ForwardModal';
 import { DraftsModal } from '../components/DraftsModal';
 import { extractNameFromEmail } from '../utils/userRoles';
-import { validateLoadBankReport, validateServiceReport } from '../utils/formValidation';
+import { validateLoadBankReport, validateServiceReport, isJobNumberValid } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
@@ -374,16 +374,40 @@ export function FormPage() {
   };
 
   const handleSubmit = () => {
+    // Check if job number is valid
+    const jobNumberIsValid = isJobNumberValid(formData.job_po_number);
+
+    if (!jobNumberIsValid) {
+      // Show dialog with option to save as draft or cancel
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Invalid Job Number',
+        message: 'The Job/PO Number format is incorrect. Please change it or save as draft.',
+        type: 'warning',
+        confirmText: 'Save as Draft',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+          await handleSaveDraft();
+        }
+      });
+      return;
+    }
+
+    // Validate all other fields
     if (!validateForm()) {
       showToast('Please complete all required fields', 'error');
       return;
     }
 
+    // Show standard submit confirmation
     setConfirmDialog({
       isOpen: true,
-      title: 'Submit to Work Order?',
-      message: 'Are you sure you want to submit this form?.',
+      title: 'Submit Work Order?',
+      message: 'Are you sure you want to submit this form?',
       type: 'warning',
+      confirmText: 'Submit',
+      cancelText: 'Cancel',
       onConfirm: async () => {
         setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
         await performSubmit();
