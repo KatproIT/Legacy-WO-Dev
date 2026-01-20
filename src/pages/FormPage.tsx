@@ -1179,7 +1179,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 </button>
               ) : (
                 <>
-                  {(formData as any).is_rejected ? (
+                  {(formData as any).is_rejected && isUserTechnician ? (
                     <button
                       onClick={handleSubmit}
                       disabled={saving}
