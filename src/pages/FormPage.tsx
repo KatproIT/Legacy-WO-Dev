@@ -1127,10 +1127,10 @@ const handleFieldChange = useCallback((field: string, value: any) => {
               {isUserPM && formData.id && (
                 <button
                   onClick={() => setShowHistoryModal(true)}
-                  className="px-3 py-1.5 text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  className="px-3 py-1.5 text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors font-medium flex items-center justify-center text-sm"
+                  title="View Logs"
                 >
                   <History size={16} />
-                  <span>VIEW LOGS</span>
                 </button>
               )}
 
