@@ -69,10 +69,13 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.equipment_ats1?.ats1Amp) errors.push('ATS 1 Amp is required');
 
   if (!formData.exercise_day) errors.push('Exercise Day is required');
-  if (!formData.with_load) errors.push('With Load is required');
-  if (!formData.exercise_interval) errors.push('Exercise Interval is required');
-  if (!formData.load_bank_test) errors.push('Load Bank Test is required');
-  if (!formData.transfer_test) errors.push('Transfer Test is required');
+
+  if (formData.exercise_day !== 'SITEBOSS') {
+    if (!formData.with_load) errors.push('With Load is required');
+    if (!formData.exercise_interval) errors.push('Exercise Interval is required');
+    if (!formData.load_bank_test) errors.push('Load Bank Test is required');
+    if (!formData.transfer_test) errors.push('Transfer Test is required');
+  }
 
   if (!formData.fuel_type) errors.push('Fuel Type is required');
   if (!formData.full_caps) errors.push('Full Caps is required');
