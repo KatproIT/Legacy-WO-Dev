@@ -198,6 +198,25 @@ router.post('/approve', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// log general action (save draft, save changes, enable edit)
+router.post('/log', async (req, res, next) => {
+  try {
+    const { formId, action, actorEmail } = req.body;
+
+    if (!formId || !action || !actorEmail)
+      return res.status(400).json({ message: 'formId, action, and actorEmail required' });
+
+    await db.query(
+      `INSERT INTO workflow_history (form_id, action, actor_email, created_at)
+       VALUES ($1, $2, $3, now())`,
+      [formId, action, actorEmail]
+    );
+
+    res.json({ ok: true });
+
+  } catch (err) { next(err); }
+});
+
 // get workflow history for a form
 router.get('/history/:formId', async (req, res, next) => {
   try {

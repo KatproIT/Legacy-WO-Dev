@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, CheckCircle, XCircle, Forward, FileText, Clock } from 'lucide-react';
+import { X, CheckCircle, XCircle, Forward, FileText, Clock, Save, Edit } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
 const API =
@@ -27,7 +27,10 @@ const actionConfig: Record<string, { icon: any; color: string; label: string }> 
   resubmitted: { icon: FileText, color: 'text-blue-600', label: 'Resubmitted' },
   rejected: { icon: XCircle, color: 'text-red-600', label: 'Rejected' },
   forwarded: { icon: Forward, color: 'text-purple-600', label: 'Forwarded' },
-  approved: { icon: CheckCircle, color: 'text-green-600', label: 'Approved' }
+  approved: { icon: CheckCircle, color: 'text-green-600', label: 'Approved' },
+  saved_draft: { icon: Save, color: 'text-amber-600', label: 'Saved Draft' },
+  saved_changes: { icon: Save, color: 'text-blue-600', label: 'Saved Changes' },
+  enabled_edit: { icon: Edit, color: 'text-indigo-600', label: 'Enabled Edit' }
 };
 
 export function HistoryModal({ isOpen, onClose, formId }: HistoryModalProps) {
@@ -136,6 +139,8 @@ export function HistoryModal({ isOpen, onClose, formId }: HistoryModalProps) {
                         entry.action === 'approved' ? 'border-green-500' :
                         entry.action === 'rejected' ? 'border-red-500' :
                         entry.action === 'forwarded' ? 'border-purple-500' :
+                        entry.action === 'saved_draft' ? 'border-amber-500' :
+                        entry.action === 'enabled_edit' ? 'border-indigo-500' :
                         'border-blue-500'
                       }`}
                     >

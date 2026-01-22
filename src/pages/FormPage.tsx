@@ -671,16 +671,35 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     }
   };
 
+  const logAction = async (action: string) => {
+    if (!formData.id || !userEmail) return;
+
+    try {
+      await authFetch(`${API}/workflow/log`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formId: formData.id,
+          action,
+          actorEmail: userEmail
+        })
+      });
+    } catch (error) {
+      console.error('Failed to log action:', error);
+    }
+  };
+
   const handleEnableEdit = () => {
     setConfirmDialog({
       isOpen: true,
       title: 'Enable Edit Mode?',
       message: 'You are about to edit this form. Make sure to save your changes when done.',
       type: 'info',
-      onConfirm: () => {
+      onConfirm: async () => {
         setIsReadOnly(false);
         setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
         showToast('Edit mode enabled', 'success');
+        await logAction('enabled_edit');
       }
     });
   };
@@ -712,6 +731,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       setFormData(unpacked);
       setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
 
+      await logAction('saved_changes');
       showToast('Changes saved successfully!', 'success');
     } catch (error) {
       showToast('Error saving changes', 'error');
@@ -767,6 +787,10 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       const unpacked = unpackForm(savedData);
       setFormData(unpacked);
       setInitialFormData(JSON.parse(JSON.stringify(unpacked)));
+
+      if (savedData.id) {
+        await logAction('saved_draft');
+      }
 
       showToast('Draft saved! All saved drafts are available in the My Drafts button.', 'success');
     } catch (error) {
