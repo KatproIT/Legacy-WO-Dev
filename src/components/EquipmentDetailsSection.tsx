@@ -18,8 +18,12 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
     onChange(equipment, { ...current, [field]: value.toUpperCase() });
   };
 
-  const getTableInputClass = (value: any) => {
-    if (!hasValidationErrors || readOnly) return 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
+  // Check if LOAD BANK is selected - if so, equipment details are not mandatory
+  const isLoadBankChecked = (formData.type_of_service || '').includes('LOAD BANK');
+  const isEquipmentRequired = !isLoadBankChecked;
+
+  const getTableInputClass = (value: any, isRequired: boolean = true) => {
+    if (!hasValidationErrors || readOnly || !isRequired) return 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
     return !value || value === '' ? 'w-full px-2 py-1 border-2 border-red-500 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-100' : 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
   };
 
@@ -47,7 +51,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">MAKE <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">MAKE {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -55,7 +59,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'make', e.target.value)}
                     disabled={readOnly}
                     tabIndex={1}
-                    className={getTableInputClass(formData.equipment_generator?.make)}
+                    className={getTableInputClass(formData.equipment_generator?.make, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -66,7 +70,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_engine', 'make', e.target.value)}
                     disabled={readOnly}
                     tabIndex={11}
-                    className={getTableInputClass(formData.equipment_engine?.make)}
+                    className={getTableInputClass(formData.equipment_engine?.make, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -77,7 +81,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'make', e.target.value)}
                     disabled={readOnly}
                     tabIndex={15}
-                    className={getTableInputClass(formData.equipment_ats1?.make)}
+                    className={getTableInputClass(formData.equipment_ats1?.make, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -94,7 +98,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">MODEL <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">MODEL {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -102,7 +106,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'model', e.target.value)}
                     disabled={readOnly}
                     tabIndex={2}
-                    className={getTableInputClass(formData.equipment_generator?.model)}
+                    className={getTableInputClass(formData.equipment_generator?.model, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -113,7 +117,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_engine', 'model', e.target.value)}
                     disabled={readOnly}
                     tabIndex={12}
-                    className={getTableInputClass(formData.equipment_engine?.model)}
+                    className={getTableInputClass(formData.equipment_engine?.model, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -124,7 +128,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'model', e.target.value)}
                     disabled={readOnly}
                     tabIndex={16}
-                    className={getTableInputClass(formData.equipment_ats1?.model)}
+                    className={getTableInputClass(formData.equipment_ats1?.model, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -141,7 +145,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">SERIAL <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">SERIAL {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -149,7 +153,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'serial', e.target.value)}
                     disabled={readOnly}
                     tabIndex={3}
-                    className={getTableInputClass(formData.equipment_generator?.serial)}
+                    className={getTableInputClass(formData.equipment_generator?.serial, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -160,7 +164,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_engine', 'serial', e.target.value)}
                     disabled={readOnly}
                     tabIndex={13}
-                    className={getTableInputClass(formData.equipment_engine?.serial)}
+                    className={getTableInputClass(formData.equipment_engine?.serial, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -171,7 +175,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'serial', e.target.value)}
                     disabled={readOnly}
                     tabIndex={17}
-                    className={getTableInputClass(formData.equipment_ats1?.serial)}
+                    className={getTableInputClass(formData.equipment_ats1?.serial, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -188,7 +192,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">SPEC <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">SPEC {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -196,7 +200,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'spec', e.target.value)}
                     disabled={readOnly}
                     tabIndex={4}
-                    className={getTableInputClass(formData.equipment_generator?.spec)}
+                    className={getTableInputClass(formData.equipment_generator?.spec, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -207,7 +211,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_engine', 'spec', e.target.value)}
                     disabled={readOnly}
                     tabIndex={14}
-                    className={getTableInputClass(formData.equipment_engine?.spec)}
+                    className={getTableInputClass(formData.equipment_engine?.spec, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -218,7 +222,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'spec', e.target.value)}
                     disabled={readOnly}
                     tabIndex={18}
-                    className={getTableInputClass(formData.equipment_ats1?.spec)}
+                    className={getTableInputClass(formData.equipment_ats1?.spec, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -235,14 +239,14 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">PHASE <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">PHASE {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <select
                     value={formData.equipment_generator?.phase || ''}
                     onChange={(e) => updateEquipment('equipment_generator', 'phase', e.target.value)}
                     disabled={readOnly}
                     tabIndex={5}
-                    className={getTableInputClass(formData.equipment_generator?.phase)}
+                    className={getTableInputClass(formData.equipment_generator?.phase, isEquipmentRequired)}
                   >
                     <option value="">SELECT</option>
                     <option value="1P">1P</option>
@@ -258,7 +262,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'phase', e.target.value)}
                     disabled={readOnly}
                     tabIndex={19}
-                    className={getTableInputClass(formData.equipment_ats1?.phase)}
+                    className={getTableInputClass(formData.equipment_ats1?.phase, isEquipmentRequired)}
                   >
                     <option value="">SELECT</option>
                     <option value="1P">1P</option>
@@ -284,14 +288,14 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">VOLTAGE <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">VOLTAGE {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <select
                     value={formData.equipment_generator?.voltage || ''}
                     onChange={(e) => updateEquipment('equipment_generator', 'voltage', e.target.value)}
                     disabled={readOnly}
                     tabIndex={6}
-                    className={getTableInputClass(formData.equipment_generator?.voltage)}
+                    className={getTableInputClass(formData.equipment_generator?.voltage, isEquipmentRequired)}
                   >
                     <option value="">SELECT</option>
                     <option value="208">208</option>
@@ -308,7 +312,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'voltage', e.target.value)}
                     disabled={readOnly}
                     tabIndex={20}
-                    className={getTableInputClass(formData.equipment_ats1?.voltage)}
+                    className={getTableInputClass(formData.equipment_ats1?.voltage, isEquipmentRequired)}
                   >
                     <option value="">SELECT</option>
                     <option value="208">208</option>
@@ -336,7 +340,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">AMP <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">AMP {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -344,7 +348,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'genAmp', e.target.value)}
                     disabled={readOnly}
                     tabIndex={7}
-                    className={getTableInputClass(formData.equipment_generator?.genAmp)}
+                    className={getTableInputClass(formData.equipment_generator?.genAmp, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -356,7 +360,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_ats1', 'ats1Amp', e.target.value)}
                     disabled={readOnly}
                     tabIndex={21}
-                    className={getTableInputClass(formData.equipment_ats1?.ats1Amp)}
+                    className={getTableInputClass(formData.equipment_ats1?.ats1Amp, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -373,7 +377,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">KW <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">KW {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -381,7 +385,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'kw', e.target.value)}
                     disabled={readOnly}
                     tabIndex={8}
-                    className={getTableInputClass(formData.equipment_generator?.kw)}
+                    className={getTableInputClass(formData.equipment_generator?.kw, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
@@ -407,7 +411,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                 <td className="border border-gray-300 p-1 bg-gray-100"></td>
               </tr>
               <tr>
-                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">HOURS <span className="text-red-600">*</span></td>
+                <td className="border border-gray-300 px-3 py-2 font-medium bg-gray-50">HOURS {isEquipmentRequired && <span className="text-red-600">*</span>}</td>
                 <td className="border border-gray-300 p-1">
                   <input
                     type="text"
@@ -415,7 +419,7 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
                     onChange={(e) => updateEquipment('equipment_generator', 'hours', e.target.value)}
                     disabled={readOnly}
                     tabIndex={10}
-                    className={getTableInputClass(formData.equipment_generator?.hours)}
+                    className={getTableInputClass(formData.equipment_generator?.hours, isEquipmentRequired)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </td>
