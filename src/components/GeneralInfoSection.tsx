@@ -5,11 +5,11 @@ interface GeneralInfoSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  hasValidationErrors: boolean;
+  fieldErrors: Set<string>;
   isExistingForm?: boolean;
 }
 
-export function GeneralInfoSection({ formData, onChange, readOnly, hasValidationErrors, isExistingForm = false }: GeneralInfoSectionProps) {
+export function GeneralInfoSection({ formData, onChange, readOnly, fieldErrors, isExistingForm = false }: GeneralInfoSectionProps) {
   // Job number can be edited in drafts, but locked after submission
   const isJobNumberLocked = readOnly || isExistingForm;
   return (
@@ -30,7 +30,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               onChange={(e) => onChange('date', e.target.value)}
               disabled={readOnly}
               placeholder="DD-MM-YYYY"
-              className={getInputClass(formData.date, hasValidationErrors, readOnly)}
+              className={getInputClass('date', formData.date, fieldErrors, readOnly)}
             />
           </div>
           <div>
@@ -59,7 +59,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
                 onChange('job_po_number', formatted);
               }}
               disabled={isJobNumberLocked}
-              className={getInputClass(formData.job_po_number, hasValidationErrors, isJobNumberLocked)}
+              className={getInputClass('job_po_number', formData.job_po_number, fieldErrors, isJobNumberLocked)}
               placeholder="XX-XX-XXXX"
               maxLength={10}
               required
@@ -86,7 +86,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.technician || ''}
               onChange={(e) => onChange('technician', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.technician, hasValidationErrors, readOnly)}
+              className={getInputClass('technician', formData.technician, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
               required
             />
@@ -103,7 +103,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.customer || ''}
               onChange={(e) => onChange('customer', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.customer, hasValidationErrors, readOnly)}
+              className={getInputClass('customer', formData.customer, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
               required
             />
@@ -117,7 +117,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.contact_name || ''}
               onChange={(e) => onChange('contact_name', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.contact_name, hasValidationErrors, readOnly)}
+              className={getInputClass('contact_name', formData.contact_name, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
             />
           </div>
@@ -130,7 +130,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.site_name || ''}
               onChange={(e) => onChange('site_name', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.site_name, hasValidationErrors, readOnly)}
+              className={getInputClass('site_name', formData.site_name, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
               required
             />
@@ -144,7 +144,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.contact_phone || ''}
               onChange={(e) => onChange('contact_phone', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.contact_phone, hasValidationErrors, readOnly)}
+              className={getInputClass('contact_phone', formData.contact_phone, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
             />
           </div>
@@ -157,7 +157,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.site_address || ''}
               onChange={(e) => onChange('site_address', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.site_address, hasValidationErrors, readOnly)}
+              className={getInputClass('site_address', formData.site_address, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
               required
             />
@@ -171,7 +171,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               value={formData.contact_email || ''}
               onChange={(e) => onChange('contact_email', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={getInputClass(formData.contact_email, hasValidationErrors, readOnly)}
+              className={getInputClass('contact_email', formData.contact_email, fieldErrors, readOnly)}
               style={{ textTransform: 'uppercase' }}
             />
           </div>
@@ -223,7 +223,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
               onChange={(e) => onChange('next_inspection_due', e.target.value)}
               disabled={readOnly}
               placeholder="DD-MM-YYYY"
-              className={getInputClass(formData.next_inspection_due, hasValidationErrors, readOnly)}
+              className={getInputClass('next_inspection_due', formData.next_inspection_due, fieldErrors, readOnly)}
             />
           </div>
         </div>

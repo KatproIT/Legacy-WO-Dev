@@ -5,10 +5,10 @@ interface AdditionalATSSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  hasValidationErrors: boolean;
+  fieldErrors: Set<string>;
 }
 
-export function AdditionalATSSection({ formData, onChange, readOnly }: AdditionalATSSectionProps) {
+export function AdditionalATSSection({ formData, onChange, readOnly, fieldErrors }: AdditionalATSSectionProps) {
   const additionalATS = formData.additional_ats || [];
 
   const addATS = () => {

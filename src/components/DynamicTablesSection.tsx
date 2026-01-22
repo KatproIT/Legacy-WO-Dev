@@ -5,10 +5,10 @@ interface DynamicTablesSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  hasValidationErrors: boolean;
+  fieldErrors: Set<string>;
 }
 
-export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTablesSectionProps) {
+export function DynamicTablesSection({ formData, onChange, readOnly, fieldErrors }: DynamicTablesSectionProps) {
   const recommendedParts = formData.recommended_parts || [];
   const partsSupplies = formData.parts_supplies_used || [];
 

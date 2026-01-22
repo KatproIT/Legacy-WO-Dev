@@ -6,10 +6,10 @@ interface WorkLogSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  hasValidationErrors: boolean;
+  fieldErrors: Set<string>;
 }
 
-export function WorkLogSection({ formData, onChange, readOnly, hasValidationErrors }: WorkLogSectionProps) {
+export function WorkLogSection({ formData, onChange, readOnly, fieldErrors }: WorkLogSectionProps) {
   const timeEntries = formData.time_on_job || [];
   const tripCharge = formData.trip_charge || 0;
   const environmentalFee = formData.environmental_fee || 0;
@@ -281,7 +281,7 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
             disabled={readOnly}
             rows={6}
             className={`w-full px-3 py-2 focus:outline-none disabled:bg-gray-100 resize-y uppercase ${
-              hasValidationErrors && !readOnly && (!formData.work_performed || formData.work_performed === '')
+              fieldErrors.has('work_performed') && !readOnly
                 ? 'border-2 border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500'
                 : 'border border-gray-300 focus:ring-2 focus:ring-blue-500'
             }`}
