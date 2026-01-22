@@ -1,15 +1,14 @@
 import { Trash2, Plus } from 'lucide-react';
 import { FormSubmission, TimeEntry } from '../types/form';
-import { getInputClass } from '../utils/formValidation';
 
 interface WorkLogSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  fieldErrors: Set<string>;
+  hasValidationErrors: boolean;
 }
 
-export function WorkLogSection({ formData, onChange, readOnly, fieldErrors }: WorkLogSectionProps) {
+export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionProps) {
   const timeEntries = formData.time_on_job || [];
   const tripCharge = formData.trip_charge || 0;
   const environmentalFee = formData.environmental_fee || 0;
@@ -280,11 +279,7 @@ export function WorkLogSection({ formData, onChange, readOnly, fieldErrors }: Wo
             onChange={(e) => onChange('work_performed', e.target.value)}
             disabled={readOnly}
             rows={6}
-            className={`w-full px-3 py-2 focus:outline-none disabled:bg-gray-100 resize-y uppercase ${
-              fieldErrors.has('work_performed') && !readOnly
-                ? 'border-2 border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500'
-                : 'border border-gray-300 focus:ring-2 focus:ring-blue-500'
-            }`}
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-y uppercase"
             placeholder="DESCRIBE THE WORK PERFORMED..."
           />
         </div>

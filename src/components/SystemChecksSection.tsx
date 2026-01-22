@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { FormSubmission, BatteryReading } from '../types/form';
 import { ChevronDown, ChevronRight, Trash2, Plus } from 'lucide-react';
-import { getInputClass } from '../utils/formValidation';
 
 interface SystemChecksSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  fieldErrors: Set<string>;
+  hasValidationErrors: boolean;
 }
 
 const statusOptions = ['GOOD', 'REPLACED', 'SEE NOTES', 'N/A'];
@@ -17,7 +16,7 @@ const tempOptions = [
   '0°F', '5°F', '10°F', '15°F', '20°F', 'N/A'
 ];
 
-export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors }: SystemChecksSectionProps) {
+export function SystemChecksSection({ formData, onChange, readOnly }: SystemChecksSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const batteryReadings = formData.battery_health_readings || [];
 
@@ -98,7 +97,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.fuel_type || ''}
                 onChange={(e) => onChange('fuel_type', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('fuel_type', formData.fuel_type, fieldErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT FUEL TYPE</option>
                 <option value="DIESEL">DIESEL</option>
@@ -115,7 +114,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.full_caps || ''}
                 onChange={(e) => onChange('full_caps', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('full_caps', formData.full_caps, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -141,7 +140,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.fuel_percentage ?? ''}
                 onChange={(e) => onChange('fuel_percentage', e.target.value === '' ? null : parseFloat(e.target.value))}
                 disabled={readOnly}
-                className={getInputClass('fuel_percentage', formData.fuel_percentage, fieldErrors, readOnly)}
+                className="form-input"
               />
             </div>
           </div>
@@ -157,7 +156,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.oil_type || ''}
                 onChange={(e) => onChange('oil_type', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('oil_type', formData.oil_type, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -168,7 +167,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.oil_cap || ''}
                 onChange={(e) => onChange('oil_cap', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('oil_cap', formData.oil_cap, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -180,7 +179,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 onChange={(e) => onChange('date_last_oil_change', e.target.value)}
                 disabled={readOnly}
                 placeholder="DD-MM-YYYY"
-                className={getInputClass('date_last_oil_change', formData.date_last_oil_change, fieldErrors, readOnly)}
+                className="form-input"
               />
             </div>
             <div>
@@ -190,7 +189,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.oil_psi || ''}
                 onChange={(e) => onChange('oil_psi', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('oil_psi', formData.oil_psi, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -207,7 +206,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.oil_filter_pn || ''}
                 onChange={(e) => onChange('oil_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('oil_filter_pn', formData.oil_filter_pn, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -217,7 +216,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.oil_filter_status || ''}
                 onChange={(e) => onChange('oil_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('oil_filter_status', formData.oil_filter_status, fieldErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -230,7 +229,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.fuel_filter_pn || ''}
                 onChange={(e) => onChange('fuel_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('fuel_filter_pn', formData.fuel_filter_pn, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -240,7 +239,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.fuel_filter_status || ''}
                 onChange={(e) => onChange('fuel_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('fuel_filter_status', formData.fuel_filter_status, fieldErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -253,7 +252,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.coolant_filter_pn || ''}
                 onChange={(e) => onChange('coolant_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('coolant_filter_pn', formData.coolant_filter_pn, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -263,7 +262,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.coolant_filter_status || ''}
                 onChange={(e) => onChange('coolant_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('coolant_filter_status', formData.coolant_filter_status, fieldErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -276,7 +275,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.air_filter_pn || ''}
                 onChange={(e) => onChange('air_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('air_filter_pn', formData.air_filter_pn, fieldErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -286,7 +285,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.air_filter_status || ''}
                 onChange={(e) => onChange('air_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('air_filter_status', formData.air_filter_status, fieldErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -305,27 +304,27 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                 value={formData.coolant_level_field1 || ''}
                 onChange={(e) => onChange('coolant_level_field1', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('coolant_level_field1', formData.coolant_level_field1, fieldErrors, readOnly)}
+                className="form-input"
               >
-                <option value="">SELECT LEVEL</option>
+                <option value="">SELECT LEVEL <span className="text-red-600">*</span></option>
                 {coolantLevelOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
               <select
                 value={formData.coolant_level_field2 || ''}
                 onChange={(e) => onChange('coolant_level_field2', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('coolant_level_field2', formData.coolant_level_field2, fieldErrors, readOnly)}
+                className="form-input"
               >
-                <option value="">SELECT TEMPERATURE</option>
+                <option value="">SELECT TEMPERATURE<span className="text-red-600">*</span></option>
                 {tempOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
               <select
                 value={formData.coolant_level_field3 || ''}
                 onChange={(e) => onChange('coolant_level_field3', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('coolant_level_field3', formData.coolant_level_field3, fieldErrors, readOnly)}
+                className="form-input"
               >
-                <option value="">SELECT STATUS</option>
+                <option value="">SELECT STATUS<span className="text-red-600">*</span></option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
             </div>
@@ -356,7 +355,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                   value={(formData as any)[field] || ''}
                   onChange={(e) => onChange(field, e.target.value)}
                   disabled={readOnly}
-                  className={getInputClass(field, (formData as any)[field], fieldErrors, readOnly)}
+                  className="form-input"
                 >
                   <option value="">SELECT {field === 'recommend_generator_be_replaced' ? '' : 'STATUS'}</option>
                   {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -426,7 +425,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
               value={formData.fill_caps || ''}
               onChange={(e) => onChange('fill_caps', e.target.value)}
               disabled={readOnly}
-              className={getInputClass('fill_caps', formData.fill_caps, fieldErrors, readOnly)}
+              className="form-input"
             >
               <option value="">SELECT STATUS</option>
               <option value="ON">ON</option>
@@ -447,7 +446,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_ab || ''}
                     onChange={(e) => onChange('electrical_ab', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_ab', formData.electrical_ab, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -458,7 +457,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_bc || ''}
                     onChange={(e) => onChange('electrical_bc', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_bc', formData.electrical_bc, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -469,7 +468,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_ca || ''}
                     onChange={(e) => onChange('electrical_ca', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_ca', formData.electrical_ca, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -480,7 +479,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.frequency || ''}
                     onChange={(e) => onChange('frequency', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('frequency', formData.frequency, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -497,7 +496,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_an || ''}
                     onChange={(e) => onChange('electrical_an', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_an', formData.electrical_an, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -508,7 +507,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_bn || ''}
                     onChange={(e) => onChange('electrical_bn', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_bn', formData.electrical_bn, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -519,7 +518,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.electrical_cn || ''}
                     onChange={(e) => onChange('electrical_cn', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('electrical_cn', formData.electrical_cn, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -536,7 +535,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.voltage_a || ''}
                     onChange={(e) => onChange('voltage_a', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('voltage_a', formData.voltage_a, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -547,7 +546,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.voltage_b || ''}
                     onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('voltage_b', formData.voltage_b, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -558,7 +557,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, fieldErrors 
                     value={formData.voltage_c || ''}
                     onChange={(e) => onChange('voltage_c', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass('voltage_c', formData.voltage_c, fieldErrors, readOnly)}
+                    className="form-input"
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>

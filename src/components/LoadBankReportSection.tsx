@@ -7,10 +7,10 @@ interface LoadBankReportSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  fieldErrors: Set<string>;
+  hasValidationErrors: boolean;
 }
 
-export function LoadBankReportSection({ formData, onChange, readOnly, fieldErrors }: LoadBankReportSectionProps) {
+export function LoadBankReportSection({ formData, onChange, readOnly, hasValidationErrors }: LoadBankReportSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const entries = formData.load_bank_entries || [];
   const isRequired = isLoadBankRequired(formData);
@@ -76,7 +76,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_customer || ''}
                 onChange={(e) => onChange('load_bank_customer', e.target.value.toUpperCase())}
                 disabled={readOnly || isLoadBankChecked}
-                className={getInputClass('load_bank_customer', formData.load_bank_customer, fieldErrors, readOnly || isLoadBankChecked)}
+                className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -86,7 +86,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_resistive_load || ''}
                 onChange={(e) => onChange('load_bank_resistive_load', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('load_bank_resistive_load', formData.load_bank_resistive_load, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_resistive_load, hasValidationErrors && isRequired, readOnly)}
               >
                 <option value="">SELECT</option>
                 <option value="YES">YES</option>
@@ -103,7 +103,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_site_name || ''}
                 onChange={(e) => onChange('load_bank_site_name', e.target.value.toUpperCase())}
                 disabled={readOnly || isLoadBankChecked}
-                className={getInputClass('load_bank_site_name', formData.load_bank_site_name, fieldErrors, readOnly || isLoadBankChecked)}
+                className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -113,7 +113,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_reactive_load || ''}
                 onChange={(e) => onChange('load_bank_reactive_load', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass('load_bank_reactive_load', formData.load_bank_reactive_load, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_reactive_load, hasValidationErrors && isRequired, readOnly)}
               >
                 <option value="">SELECT</option>
                 <option value="YES">YES</option>
@@ -130,7 +130,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_site_address || ''}
                 onChange={(e) => onChange('load_bank_site_address', e.target.value.toUpperCase())}
                 disabled={readOnly || isLoadBankChecked}
-                className={getInputClass('load_bank_site_address', formData.load_bank_site_address, fieldErrors, readOnly || isLoadBankChecked)}
+                className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -141,7 +141,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_ambient_air_temp || ''}
                 onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('load_bank_ambient_air_temp', formData.load_bank_ambient_air_temp, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_ambient_air_temp, hasValidationErrors && isRequired, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -155,7 +155,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_make || ''}
                 onChange={(e) => onChange('load_bank_make', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('load_bank_make', formData.load_bank_make, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_make, hasValidationErrors && isRequired, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -166,7 +166,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_model || ''}
                 onChange={(e) => onChange('load_bank_model', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('load_bank_model', formData.load_bank_model, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_model, hasValidationErrors && isRequired, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -177,7 +177,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, fieldError
                 value={formData.load_bank_sn || ''}
                 onChange={(e) => onChange('load_bank_sn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass('load_bank_sn', formData.load_bank_sn, fieldErrors, readOnly)}
+                className={getInputClass(formData.load_bank_sn, hasValidationErrors && isRequired, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>

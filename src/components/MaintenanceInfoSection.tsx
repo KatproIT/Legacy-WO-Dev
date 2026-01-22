@@ -7,10 +7,10 @@ interface MaintenanceInfoSectionProps {
   formData: FormSubmission;
   onChange: (field: string, value: any) => void;
   readOnly: boolean;
-  fieldErrors: Set<string>;
+  hasValidationErrors: boolean;
 }
 
-export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErrors }: MaintenanceInfoSectionProps) {
+export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValidationErrors }: MaintenanceInfoSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
@@ -32,7 +32,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.exercise_day || ''}
             onChange={(e) => onChange('exercise_day', e.target.value)}
             disabled={readOnly}
-            className={getInputClass('exercise_day', formData.exercise_day, fieldErrors, readOnly)}
+            className={getInputClass(formData.exercise_day, hasValidationErrors, readOnly)}
           >
             <option value="">SELECT EXERCISE DAY</option>
             <option value="MONDAY">MONDAY</option>
@@ -53,7 +53,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
             disabled={readOnly}
-            className={getInputClass('with_load', formData.with_load, fieldErrors, readOnly)}
+            className={getInputClass(formData.with_load, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT WITH LOAD</option>
             <option value="YES">YES</option>
@@ -68,7 +68,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.exercise_time || ''}
             onChange={(e) => onChange('exercise_time', e.target.value)}
             disabled={readOnly || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass('exercise_time', formData.exercise_time, fieldErrors, readOnly || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS')}
+            className={getInputClass(formData.exercise_time, hasValidationErrors, readOnly || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS')}
           />
         </div>
         <div>
@@ -77,7 +77,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
             disabled={readOnly}
-            className={getInputClass('exercise_interval', formData.exercise_interval, fieldErrors, readOnly)}
+            className={getInputClass(formData.exercise_interval, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT EXERCISE INTERVAL</option>
             <option value="WEEKLY">WEEKLY</option>
@@ -93,7 +93,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
             disabled={readOnly}
-            className={getInputClass('load_bank_test', formData.load_bank_test, fieldErrors, readOnly)}
+            className={getInputClass(formData.load_bank_test, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT LOAD BANK TEST</option>
             <option value="1 HR">1 HR</option>
@@ -108,7 +108,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, fieldErro
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}
             disabled={readOnly}
-            className={getInputClass('transfer_test', formData.transfer_test, fieldErrors, readOnly)}
+            className={getInputClass(formData.transfer_test, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT TRANSFER TEST</option>
             <option value="YES">YES</option>

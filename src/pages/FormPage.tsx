@@ -159,7 +159,6 @@ export function FormPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [fieldErrors, setFieldErrors] = useState<Set<string>>(new Set());
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isNewForm, setIsNewForm] = useState(true);
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -304,12 +303,10 @@ export function FormPage() {
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
-    const allFieldErrors = new Set<string>();
 
     const serviceReportValidation = validateServiceReport(formData);
     if (!serviceReportValidation.isValid) {
       errors.push(...serviceReportValidation.errors);
-      serviceReportValidation.fieldErrors.forEach(field => allFieldErrors.add(field));
       setHasServiceReportErrors(true);
     } else {
       setHasServiceReportErrors(false);
@@ -318,14 +315,12 @@ export function FormPage() {
     const loadBankValidation = validateLoadBankReport(formData);
     if (!loadBankValidation.isValid) {
       errors.push(...loadBankValidation.errors);
-      loadBankValidation.fieldErrors.forEach(field => allFieldErrors.add(field));
       setHasLoadBankErrors(true);
     } else {
       setHasLoadBankErrors(false);
     }
 
     setValidationErrors(errors);
-    setFieldErrors(allFieldErrors);
     return errors.length === 0;
   };
 
@@ -634,15 +629,10 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     return updated;
   });
 
-  // Remove field from errors if it now has a value
-  if (value !== null && value !== undefined && value !== '') {
-    setFieldErrors(prev => {
-      const newErrors = new Set(prev);
-      newErrors.delete(field);
-      return newErrors;
-    });
+  if (validationErrors.length > 0) {
+    validateForm();
   }
-}, []);
+}, [validationErrors]);
 
 
   const getFieldError = (value: any): boolean => {
@@ -1346,38 +1336,38 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
                 isExistingForm={(formData as any).http_post_sent === true}
               />
               <EquipmentDetailsSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <SystemChecksSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <MaintenanceInfoSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <DynamicTablesSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
               <WorkLogSection
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>
@@ -1388,7 +1378,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>
@@ -1399,7 +1389,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                 formData={formData}
                 onChange={handleFieldChange}
                 readOnly={isReadOnly}
-                fieldErrors={fieldErrors}
+                hasValidationErrors={validationErrors.length > 0}
               />
             </div>
           </div>
