@@ -48,12 +48,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">WITH LOAD <span className="text-red-600">*</span></label>
+          <label className="form-label">WITH LOAD {formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
-            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass(formData.with_load, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
+            disabled={readOnly}
+            className={getInputClass(formData.with_load, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT WITH LOAD</option>
             <option value="YES">YES</option>
@@ -72,12 +72,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           />
         </div>
         <div>
-          <label className="form-label">EXERCISE INTERVAL <span className="text-red-600">*</span></label>
+          <label className="form-label">EXERCISE INTERVAL {formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
-            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass(formData.exercise_interval, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
+            disabled={readOnly}
+            className={getInputClass(formData.exercise_interval, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT EXERCISE INTERVAL</option>
             <option value="WEEKLY">WEEKLY</option>
@@ -88,12 +88,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">LOAD BANK TEST <span className="text-red-600">*</span></label>
+          <label className="form-label">LOAD BANK TEST {formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
-            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass(formData.load_bank_test, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
+            disabled={readOnly}
+            className={getInputClass(formData.load_bank_test, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT LOAD BANK TEST</option>
             <option value="1 HR">1 HR</option>
@@ -103,12 +103,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">TRANSFER TEST <span className="text-red-600">*</span></label>
+          <label className="form-label">TRANSFER TEST {formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}
-            disabled={readOnly || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass(formData.transfer_test, hasValidationErrors, readOnly || formData.exercise_day === 'SITEBOSS')}
+            disabled={readOnly}
+            className={getInputClass(formData.transfer_test, hasValidationErrors && formData.exercise_day !== 'SITEBOSS', readOnly)}
           >
             <option value="">SELECT TRANSFER TEST</option>
             <option value="YES">YES</option>
