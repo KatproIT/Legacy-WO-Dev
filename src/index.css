@@ -50,9 +50,23 @@
            disabled:bg-gray-50 disabled:text-gray-500 text-base;
     border: 2px solid #ef4444 !important;
     background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 1px #ef4444 !important;
     line-height: 1.5;
     min-height: 42px;
-    transition: box-shadow 0.15s ease-in-out;
+  }
+
+  input.form-input-error,
+  textarea.form-input-error,
+  select.form-input-error {
+    border: 2px solid #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 1px #ef4444 !important;
+  }
+
+  .table-input-error {
+    border: 2px solid #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 1px #ef4444 !important;
   }
 
   .form-label {

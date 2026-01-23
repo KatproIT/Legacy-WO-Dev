@@ -19,8 +19,22 @@ export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValid
   };
 
   const getTableInputClass = (value: any) => {
-    if (!hasValidationErrors || readOnly) return 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
-    return !value || value === '' ? 'w-full px-2 py-1 border-2 border-red-500 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-100' : 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
+    if (!hasValidationErrors || readOnly) {
+      return 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
+    }
+
+    // More robust empty check
+    const isEmpty = value === null ||
+                    value === undefined ||
+                    value === '' ||
+                    (typeof value === 'string' && value.trim() === '') ||
+                    (typeof value === 'number' && isNaN(value));
+
+    if (isEmpty) {
+      return 'w-full px-2 py-1 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-100 table-input-error';
+    }
+
+    return 'w-full px-2 py-1 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
   };
 
   return (
