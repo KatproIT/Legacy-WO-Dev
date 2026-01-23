@@ -2,7 +2,15 @@ import { FormSubmission, LoadBankEntry } from '../types/form';
 
 export const getInputClass = (value: any, hasValidationErrors: boolean, readOnly: boolean): string => {
   if (!hasValidationErrors || readOnly) return 'form-input';
-  return !value || value === '' ? 'form-input-error' : 'form-input';
+
+  // More robust empty check
+  const isEmpty = value === null ||
+                  value === undefined ||
+                  value === '' ||
+                  (typeof value === 'string' && value.trim() === '') ||
+                  (typeof value === 'number' && isNaN(value));
+
+  return isEmpty ? 'form-input-error' : 'form-input';
 };
 
 export const isJobNumberValid = (jobNumber: string): boolean => {
