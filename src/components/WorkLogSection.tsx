@@ -1,6 +1,7 @@
 import { Trash2, Plus } from 'lucide-react';
 import { FormSubmission, TimeEntry } from '../types/form';
 import { getInputClass } from '../utils/formValidation';
+import { SpellCheckTextarea } from './SpellCheckTextarea';
 
 interface WorkLogSectionProps {
   formData: FormSubmission;
@@ -275,12 +276,11 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
           WORK PERFORMED <span className="text-red-600">*</span>
         </h2>
         <div className="p-4">
-          <textarea
+          <SpellCheckTextarea
             value={formData.work_performed || ''}
-            onChange={(e) => onChange('work_performed', e.target.value)}
+            onChange={(value) => onChange('work_performed', value)}
             disabled={readOnly}
             rows={6}
-            spellCheck={true}
             className={`w-full px-3 py-2 focus:outline-none resize-y ${
               readOnly ? 'uppercase bg-gray-100' : ''
             } ${
@@ -289,6 +289,8 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
                 : 'border border-gray-300 focus:ring-2 focus:ring-blue-500'
             }`}
             placeholder="Describe the work performed..."
+            uppercase={readOnly}
+            required
           />
         </div>
       </div>
