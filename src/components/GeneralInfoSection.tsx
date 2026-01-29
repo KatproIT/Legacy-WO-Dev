@@ -1,5 +1,6 @@
 import { FormSubmission } from '../types/form';
 import { getInputClass } from '../utils/formValidation';
+import { SpellCheckInput } from './SpellCheckInput';
 
 interface GeneralInfoSectionProps {
   formData: FormSubmission;
@@ -81,12 +82,12 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               TECHNICIAN <span className="text-red-600">*</span>
             </label>
-            <input
-              type="text"
+            <SpellCheckInput
               value={formData.technician || ''}
-              onChange={(e) => onChange('technician', e.target.value)}
+              onChange={(value) => onChange('technician', value)}
               disabled={readOnly}
-              className={`${getInputClass(formData.technician, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.technician, hasValidationErrors, readOnly)}
+              uppercase={true}
               required
             />
           </div>
@@ -97,12 +98,12 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               CUSTOMER <span className="text-red-600">*</span>
             </label>
-            <input
-              type="text"
+            <SpellCheckInput
               value={formData.customer || ''}
-              onChange={(e) => onChange('customer', e.target.value)}
+              onChange={(value) => onChange('customer', value)}
               disabled={readOnly}
-              className={`${getInputClass(formData.customer, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.customer, hasValidationErrors, readOnly)}
+              uppercase={true}
               required
             />
           </div>
@@ -110,24 +111,24 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               CONTACT NAME <span className="text-red-600">*</span>
             </label>
-            <input
-              type="text"
+            <SpellCheckInput
               value={formData.contact_name || ''}
-              onChange={(e) => onChange('contact_name', e.target.value)}
+              onChange={(value) => onChange('contact_name', value)}
               disabled={readOnly}
-              className={`${getInputClass(formData.contact_name, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.contact_name, hasValidationErrors, readOnly)}
+              uppercase={true}
             />
           </div>
           <div>
             <label className="form-label">
               SITE NAME <span className="text-red-600">*</span>
             </label>
-            <input
-              type="text"
+            <SpellCheckInput
               value={formData.site_name || ''}
-              onChange={(e) => onChange('site_name', e.target.value)}
+              onChange={(value) => onChange('site_name', value)}
               disabled={readOnly}
-              className={`${getInputClass(formData.site_name, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.site_name, hasValidationErrors, readOnly)}
+              uppercase={true}
               required
             />
           </div>
@@ -147,12 +148,12 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               SITE ADDRESS <span className="text-red-600">*</span>
             </label>
-            <input
-              type="text"
+            <SpellCheckInput
               value={formData.site_address || ''}
-              onChange={(e) => onChange('site_address', e.target.value)}
+              onChange={(value) => onChange('site_address', value)}
               disabled={readOnly}
-              className={`${getInputClass(formData.site_address, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.site_address, hasValidationErrors, readOnly)}
+              uppercase={true}
               required
             />
           </div>
