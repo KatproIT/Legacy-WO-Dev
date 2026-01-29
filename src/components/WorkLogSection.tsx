@@ -277,16 +277,18 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
         <div className="p-4">
           <textarea
             value={formData.work_performed || ''}
-            onChange={(e) => onChange('work_performed', e.target.value.toUpperCase())}
+            onChange={(e) => onChange('work_performed', e.target.value)}
             disabled={readOnly}
             rows={6}
             spellCheck={true}
-            className={`w-full px-3 py-2 focus:outline-none disabled:bg-gray-100 resize-y ${
+            className={`w-full px-3 py-2 focus:outline-none resize-y ${
+              readOnly ? 'uppercase bg-gray-100' : ''
+            } ${
               hasValidationErrors && (!formData.work_performed || formData.work_performed === '')
                 ? 'border-2 border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500'
                 : 'border border-gray-300 focus:ring-2 focus:ring-blue-500'
             }`}
-            placeholder="DESCRIBE THE WORK PERFORMED..."
+            placeholder="Describe the work performed..."
           />
         </div>
       </div>

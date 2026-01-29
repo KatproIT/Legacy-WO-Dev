@@ -84,10 +84,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="text"
               value={formData.technician || ''}
-              onChange={(e) => onChange('technician', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('technician', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.technician, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.technician, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               required
             />
           </div>
@@ -101,10 +100,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="text"
               value={formData.customer || ''}
-              onChange={(e) => onChange('customer', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('customer', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.customer, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.customer, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               required
             />
           </div>
@@ -115,10 +113,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="text"
               value={formData.contact_name || ''}
-              onChange={(e) => onChange('contact_name', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('contact_name', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.contact_name, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.contact_name, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
             />
           </div>
           <div>
@@ -128,10 +125,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="text"
               value={formData.site_name || ''}
-              onChange={(e) => onChange('site_name', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('site_name', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.site_name, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.site_name, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               required
             />
           </div>
@@ -142,10 +138,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="tel"
               value={formData.contact_phone || ''}
-              onChange={(e) => onChange('contact_phone', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('contact_phone', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.contact_phone, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.contact_phone, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
             />
           </div>
           <div>
@@ -155,10 +150,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="text"
               value={formData.site_address || ''}
-              onChange={(e) => onChange('site_address', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('site_address', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.site_address, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.site_address, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               required
             />
           </div>
@@ -169,10 +163,9 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="email"
               value={formData.contact_email || ''}
-              onChange={(e) => onChange('contact_email', e.target.value.toUpperCase())}
+              onChange={(e) => onChange('contact_email', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.contact_email, hasValidationErrors, readOnly)}
-              style={{ textTransform: 'uppercase' }}
+              className={`${getInputClass(formData.contact_email, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
             />
           </div>
           <div className="md:col-span-2">

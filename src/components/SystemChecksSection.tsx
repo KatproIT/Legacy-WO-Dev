@@ -113,10 +113,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.full_caps || ''}
-                onChange={(e) => onChange('full_caps', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('full_caps', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.full_caps, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.full_caps, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -155,10 +154,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.oil_type || ''}
-                onChange={(e) => onChange('oil_type', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('oil_type', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_type, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.oil_type, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -166,10 +164,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.oil_cap || ''}
-                onChange={(e) => onChange('oil_cap', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('oil_cap', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_cap, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.oil_cap, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -188,10 +185,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.oil_psi || ''}
-                onChange={(e) => onChange('oil_psi', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('oil_psi', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_psi, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.oil_psi, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
           </div>
@@ -205,10 +201,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.oil_filter_pn || ''}
-                onChange={(e) => onChange('oil_filter_pn', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('oil_filter_pn', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_filter_pn, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.oil_filter_pn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -228,10 +223,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.fuel_filter_pn || ''}
-                onChange={(e) => onChange('fuel_filter_pn', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('fuel_filter_pn', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_filter_pn, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.fuel_filter_pn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -251,10 +245,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.coolant_filter_pn || ''}
-                onChange={(e) => onChange('coolant_filter_pn', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('coolant_filter_pn', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_filter_pn, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.coolant_filter_pn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -274,10 +267,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <input
                 type="text"
                 value={formData.air_filter_pn || ''}
-                onChange={(e) => onChange('air_filter_pn', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('air_filter_pn', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.air_filter_pn, hasValidationErrors, readOnly)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.air_filter_pn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -445,10 +437,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_ab || ''}
-                    onChange={(e) => onChange('electrical_ab', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_ab', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_ab, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_ab, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -456,10 +447,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_bc || ''}
-                    onChange={(e) => onChange('electrical_bc', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_bc', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_bc, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_bc, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -467,10 +457,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_ca || ''}
-                    onChange={(e) => onChange('electrical_ca', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_ca', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_ca, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_ca, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -478,10 +467,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.frequency || ''}
-                    onChange={(e) => onChange('frequency', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('frequency', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.frequency, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.frequency, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
               </div>
@@ -495,10 +483,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_an || ''}
-                    onChange={(e) => onChange('electrical_an', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_an', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_an, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_an, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -506,10 +493,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_bn || ''}
-                    onChange={(e) => onChange('electrical_bn', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_bn', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_bn, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_bn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -517,10 +503,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.electrical_cn || ''}
-                    onChange={(e) => onChange('electrical_cn', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('electrical_cn', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_cn, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.electrical_cn, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
               </div>
@@ -534,10 +519,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.voltage_a || ''}
-                    onChange={(e) => onChange('voltage_a', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('voltage_a', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.voltage_a, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.voltage_a, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -545,10 +529,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.voltage_b || ''}
-                    onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('voltage_b', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.voltage_b, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.voltage_b, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
                 <div>
@@ -556,10 +539,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   <input
                     type="text"
                     value={formData.voltage_c || ''}
-                    onChange={(e) => onChange('voltage_c', e.target.value.toUpperCase())}
+                    onChange={(e) => onChange('voltage_c', e.target.value)}
                     disabled={readOnly}
-                    className={getInputClass(formData.voltage_c, hasValidationErrors, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
+                    className={`${getInputClass(formData.voltage_c, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
                   />
                 </div>
               </div>
@@ -607,10 +589,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                       <input
                         type="text"
                         value={battery.batteryType || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value.toUpperCase())}
+                        onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value)}
                         disabled={readOnly}
-                        className="form-input"
-                        style={{ textTransform: 'uppercase' }}
+                        className={`form-input ${readOnly ? 'uppercase' : ''}`}
                       />
                     </div>
                     <div>
@@ -618,10 +599,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                       <input
                         type="text"
                         value={battery.batteryChargerVolts || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value.toUpperCase())}
+                        onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value)}
                         disabled={readOnly}
-                        className="form-input"
-                        style={{ textTransform: 'uppercase' }}
+                        className={`form-input ${readOnly ? 'uppercase' : ''}`}
                       />
                     </div>
                   </div>
@@ -642,30 +622,27 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                             <input
                               type="text"
                               value={battery.voltage}
-                              onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value.toUpperCase())}
+                              onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value)}
                               disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
+                              className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${readOnly ? 'uppercase' : ''}`}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">
                             <input
                               type="text"
                               value={battery.ccaRating}
-                              onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value.toUpperCase())}
+                              onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value)}
                               disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
+                              className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${readOnly ? 'uppercase' : ''}`}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">
                             <input
                               type="text"
                               value={battery.ccaTested}
-                              onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value.toUpperCase())}
+                              onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value)}
                               disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
+                              className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${readOnly ? 'uppercase' : ''}`}
                             />
                           </td>
                           <td className="border border-gray-300 px-2 py-2">

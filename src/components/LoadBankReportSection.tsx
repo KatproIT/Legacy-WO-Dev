@@ -46,7 +46,7 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
     onChange(
       'load_bank_entries',
       entries.map((entry: LoadBankEntry) =>
-        entry.id === id ? { ...entry, [field]: value.toUpperCase() } : entry
+        entry.id === id ? { ...entry, [field]: value } : entry
       )
     );
   };
@@ -74,10 +74,9 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_customer || ''}
-                onChange={(e) => onChange('load_bank_customer', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_customer', e.target.value)}
                 disabled={readOnly || isLoadBankChecked}
-                className={getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
-                style={{ textTransform: 'uppercase' }}
+                className={`${getInputClass(formData.load_bank_customer, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)} ${readOnly || isLoadBankChecked ? 'uppercase' : ''}`}
               />
             </div>
             <div>
@@ -101,11 +100,10 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_site_name || ''}
-                onChange={(e) => onChange('load_bank_site_name', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_site_name', e.target.value)}
                 disabled={readOnly || isLoadBankChecked}
                 className={getInputClass(formData.load_bank_site_name, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
             <div>
               <label className="form-label">BUILDING LOAD{isRequired && <span className="text-red-600"> *</span>}</label>
@@ -128,22 +126,20 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_site_address || ''}
-                onChange={(e) => onChange('load_bank_site_address', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_site_address', e.target.value)}
                 disabled={readOnly || isLoadBankChecked}
                 className={getInputClass(formData.load_bank_site_address, hasValidationErrors && isRequired, readOnly || isLoadBankChecked)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
             <div>
               <label className="form-label">AMBIENT AIR TEMP{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_ambient_air_temp || ''}
-                onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value)}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_ambient_air_temp, hasValidationErrors && isRequired, readOnly)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
           </div>
 
@@ -153,33 +149,30 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               <input
                 type="text"
                 value={formData.load_bank_make || ''}
-                onChange={(e) => onChange('load_bank_make', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_make', e.target.value)}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_make, hasValidationErrors && isRequired, readOnly)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
             <div>
               <label className="form-label">MODEL{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_model || ''}
-                onChange={(e) => onChange('load_bank_model', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_model', e.target.value)}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_model, hasValidationErrors && isRequired, readOnly)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
             <div>
               <label className="form-label">S/N{isRequired && <span className="text-red-600"> *</span>}</label>
               <input
                 type="text"
                 value={formData.load_bank_sn || ''}
-                onChange={(e) => onChange('load_bank_sn', e.target.value.toUpperCase())}
+                onChange={(e) => onChange('load_bank_sn', e.target.value)}
                 disabled={readOnly}
                 className={getInputClass(formData.load_bank_sn, hasValidationErrors && isRequired, readOnly)}
-                style={{ textTransform: 'uppercase' }}
-              />
+                />
             </div>
           </div>
         </div>
