@@ -88,7 +88,8 @@ export default function ForwardModal({ onClose, onSubmit }: ForwardModalProps) {
                   setSelectedTechnician(e.target.value);
                   setError('');
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                style={{ textTransform: 'uppercase' }}
                 autoFocus
                 disabled={loading}
               >

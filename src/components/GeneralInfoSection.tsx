@@ -1,6 +1,5 @@
 import { FormSubmission } from '../types/form';
 import { getInputClass } from '../utils/formValidation';
-import { SpellCheckInput } from './SpellCheckInput';
 
 interface GeneralInfoSectionProps {
   formData: FormSubmission;
@@ -82,12 +81,13 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               TECHNICIAN <span className="text-red-600">*</span>
             </label>
-            <SpellCheckInput
+            <input
+              type="text"
               value={formData.technician || ''}
-              onChange={(value) => onChange('technician', value)}
+              onChange={(e) => onChange('technician', e.target.value.toUpperCase())}
               disabled={readOnly}
               className={getInputClass(formData.technician, hasValidationErrors, readOnly)}
-              uppercase={true}
+              style={{ textTransform: 'uppercase' }}
               required
             />
           </div>
@@ -98,12 +98,13 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               CUSTOMER <span className="text-red-600">*</span>
             </label>
-            <SpellCheckInput
+            <input
+              type="text"
               value={formData.customer || ''}
-              onChange={(value) => onChange('customer', value)}
+              onChange={(e) => onChange('customer', e.target.value.toUpperCase())}
               disabled={readOnly}
               className={getInputClass(formData.customer, hasValidationErrors, readOnly)}
-              uppercase={true}
+              style={{ textTransform: 'uppercase' }}
               required
             />
           </div>
@@ -111,24 +112,26 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <label className="form-label">
               CONTACT NAME <span className="text-red-600">*</span>
             </label>
-            <SpellCheckInput
+            <input
+              type="text"
               value={formData.contact_name || ''}
-              onChange={(value) => onChange('contact_name', value)}
+              onChange={(e) => onChange('contact_name', e.target.value.toUpperCase())}
               disabled={readOnly}
               className={getInputClass(formData.contact_name, hasValidationErrors, readOnly)}
-              uppercase={true}
+              style={{ textTransform: 'uppercase' }}
             />
           </div>
           <div>
             <label className="form-label">
               SITE NAME <span className="text-red-600">*</span>
             </label>
-            <SpellCheckInput
+            <input
+              type="text"
               value={formData.site_name || ''}
-              onChange={(value) => onChange('site_name', value)}
+              onChange={(e) => onChange('site_name', e.target.value.toUpperCase())}
               disabled={readOnly}
               className={getInputClass(formData.site_name, hasValidationErrors, readOnly)}
-              uppercase={true}
+              style={{ textTransform: 'uppercase' }}
               required
             />
           </div>
@@ -139,21 +142,23 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="tel"
               value={formData.contact_phone || ''}
-              onChange={(e) => onChange('contact_phone', e.target.value)}
+              onChange={(e) => onChange('contact_phone', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={`${getInputClass(formData.contact_phone, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.contact_phone, hasValidationErrors, readOnly)}
+              style={{ textTransform: 'uppercase' }}
             />
           </div>
           <div>
             <label className="form-label">
               SITE ADDRESS <span className="text-red-600">*</span>
             </label>
-            <SpellCheckInput
+            <input
+              type="text"
               value={formData.site_address || ''}
-              onChange={(value) => onChange('site_address', value)}
+              onChange={(e) => onChange('site_address', e.target.value.toUpperCase())}
               disabled={readOnly}
               className={getInputClass(formData.site_address, hasValidationErrors, readOnly)}
-              uppercase={true}
+              style={{ textTransform: 'uppercase' }}
               required
             />
           </div>
@@ -164,9 +169,10 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
             <input
               type="email"
               value={formData.contact_email || ''}
-              onChange={(e) => onChange('contact_email', e.target.value)}
+              onChange={(e) => onChange('contact_email', e.target.value.toUpperCase())}
               disabled={readOnly}
-              className={`${getInputClass(formData.contact_email, hasValidationErrors, readOnly)} ${readOnly ? 'uppercase' : ''}`}
+              className={getInputClass(formData.contact_email, hasValidationErrors, readOnly)}
+              style={{ textTransform: 'uppercase' }}
             />
           </div>
           <div className="md:col-span-2">
