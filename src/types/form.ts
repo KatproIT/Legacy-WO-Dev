@@ -117,6 +117,7 @@ export interface FormSubmission {
   battery_date?: string;
   battery_type?: string;
   battery_charger_volts?: number;
+  ats_exerciser_enabled?: string;
   exercise_day?: string;
   with_load?: string;
   exercise_time?: string;
