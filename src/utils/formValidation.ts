@@ -32,6 +32,11 @@ export const isLoadBankRequired = (formData: FormSubmission): boolean => {
   return services.includes('LOAD BANK');
 };
 
+export const isServiceCallRepairOnly = (formData: FormSubmission): boolean => {
+  const services = (formData.type_of_service || '').split(',').map(s => s.trim()).filter(Boolean);
+  return services.length === 1 && services[0] === 'SERVICE CALL/REPAIR';
+};
+
 export const validateServiceReport = (formData: FormSubmission): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   const isLoadBankChecked = isLoadBankRequired(formData);
@@ -76,7 +81,9 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.equipment_ats1?.voltage) errors.push('ATS 1 Voltage is required');
   if (!formData.equipment_ats1?.ats1Amp) errors.push('ATS 1 Amp is required');
 
-  if (formData.ats_exerciser_enabled !== 'NO') {
+  const serviceCallOnly = isServiceCallRepairOnly(formData);
+
+  if (!serviceCallOnly && formData.ats_exerciser_enabled !== 'NO') {
     if (!formData.exercise_day) errors.push('Exercise Day is required');
 
     if (formData.exercise_day !== 'SITEBOSS') {
@@ -87,80 +94,82 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     }
   }
 
-  if (!formData.fuel_type) errors.push('Fuel Type is required');
-  if (!formData.full_caps) errors.push('Full Caps is required');
-  if (formData.fuel_percentage === undefined || formData.fuel_percentage === null) errors.push('Fuel Percentage is required');
+  if (!serviceCallOnly) {
+    if (!formData.fuel_type) errors.push('Fuel Type is required');
+    if (!formData.full_caps) errors.push('Full Caps is required');
+    if (formData.fuel_percentage === undefined || formData.fuel_percentage === null) errors.push('Fuel Percentage is required');
 
-  if (!formData.oil_type) errors.push('Oil Type is required');
-  if (!formData.oil_cap) errors.push('Oil Cap is required');
-  if (!formData.date_last_oil_change) errors.push('Date Last Oil Change is required');
-  if (!formData.oil_psi) errors.push('Oil PSI is required');
+    if (!formData.oil_type) errors.push('Oil Type is required');
+    if (!formData.oil_cap) errors.push('Oil Cap is required');
+    if (!formData.date_last_oil_change) errors.push('Date Last Oil Change is required');
+    if (!formData.oil_psi) errors.push('Oil PSI is required');
 
-  if (!formData.oil_filter_pn) errors.push('Oil Filter P/N is required');
-  if (!formData.oil_filter_status) errors.push('Oil Filter Status is required');
-  if (!formData.fuel_filter_pn) errors.push('Fuel Filter P/N is required');
-  if (!formData.fuel_filter_status) errors.push('Fuel Filter Status is required');
-  if (!formData.air_filter_pn) errors.push('Air Filter P/N is required');
-  if (!formData.air_filter_status) errors.push('Air Filter Status is required');
+    if (!formData.oil_filter_pn) errors.push('Oil Filter P/N is required');
+    if (!formData.oil_filter_status) errors.push('Oil Filter Status is required');
+    if (!formData.fuel_filter_pn) errors.push('Fuel Filter P/N is required');
+    if (!formData.fuel_filter_status) errors.push('Fuel Filter Status is required');
+    if (!formData.air_filter_pn) errors.push('Air Filter P/N is required');
+    if (!formData.air_filter_status) errors.push('Air Filter Status is required');
 
-  if (!formData.coolant_level_field1) errors.push('Coolant Level field is required');
-  if (!formData.coolant_level_field2) errors.push('Coolant Level Temperature is required');
-  if (!formData.coolant_level_field3) errors.push('Coolant Level Status is required');
+    if (!formData.coolant_level_field1) errors.push('Coolant Level field is required');
+    if (!formData.coolant_level_field2) errors.push('Coolant Level Temperature is required');
+    if (!formData.coolant_level_field3) errors.push('Coolant Level Status is required');
 
-  const systemCheckFields = [
-    'hoses_belts_cooling_fins',
-    'block_heater_status',
-    'ignition_system_status',
-    'governor_system',
-    'fuel_system_day_tank',
-    'fuel_line',
-    'check_all_systems_for_leaks',
-    'exhaust_system',
-    'charging_starting_system',
-    'instruments_lamps_wiring',
-    'generator_controls_safeties',
-    'enclosure_condition',
-    'ats_control_battery',
-    'ats_contactor',
-    'unit_in_auto_breakers_on'
-  ];
+    const systemCheckFields = [
+      'hoses_belts_cooling_fins',
+      'block_heater_status',
+      'ignition_system_status',
+      'governor_system',
+      'fuel_system_day_tank',
+      'fuel_line',
+      'check_all_systems_for_leaks',
+      'exhaust_system',
+      'charging_starting_system',
+      'instruments_lamps_wiring',
+      'generator_controls_safeties',
+      'enclosure_condition',
+      'ats_control_battery',
+      'ats_contactor',
+      'unit_in_auto_breakers_on'
+    ];
 
-  systemCheckFields.forEach((field) => {
-    if (!(formData as any)[field]) {
-      errors.push(`System check field is required`);
+    systemCheckFields.forEach((field) => {
+      if (!(formData as any)[field]) {
+        errors.push(`System check field is required`);
+      }
+    });
+
+    const timeFields = [
+      { field: 'transfer_time', label: 'Transfer Time' },
+      { field: 're_transfer_time', label: 'Re-Transfer Time' },
+      { field: 'cooldown', label: 'Cooldown' }
+    ];
+
+    timeFields.forEach(({ field, label }) => {
+      const value = (formData as any)[field];
+      if (!value || value === '') {
+        errors.push(`${label} is required`);
+      }
+    });
+
+    const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
+
+    if (!formData.electrical_ab) errors.push('Electrical A-B is required');
+    if (!isSinglePhase && !formData.electrical_bc) errors.push('Electrical B-C is required');
+    if (!isSinglePhase && !formData.electrical_ca) errors.push('Electrical A-C is required');
+    if (!formData.electrical_an) errors.push('Electrical A-N is required');
+    if (!formData.electrical_bn) errors.push('Electrical B-N is required');
+    if (!formData.electrical_cn) errors.push('Electrical C-N is required');
+    if (!formData.frequency) errors.push('Frequency is required');
+    if (!formData.voltage_a) errors.push('Current A is required');
+    if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
+    if (!formData.voltage_c) errors.push('Current C is required');
+
+    if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
+
+    if (!formData.battery_health_readings || formData.battery_health_readings.length === 0) {
+      errors.push('At least one Battery Health Reading is required');
     }
-  });
-
-  const timeFields = [
-    { field: 'transfer_time', label: 'Transfer Time' },
-    { field: 're_transfer_time', label: 'Re-Transfer Time' },
-    { field: 'cooldown', label: 'Cooldown' }
-  ];
-
-  timeFields.forEach(({ field, label }) => {
-    const value = (formData as any)[field];
-    if (!value || value === '') {
-      errors.push(`${label} is required`);
-    }
-  });
-
-  const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
-
-  if (!formData.electrical_ab) errors.push('Electrical A-B is required');
-  if (!isSinglePhase && !formData.electrical_bc) errors.push('Electrical B-C is required');
-  if (!isSinglePhase && !formData.electrical_ca) errors.push('Electrical A-C is required');
-  if (!formData.electrical_an) errors.push('Electrical A-N is required');
-  if (!formData.electrical_bn) errors.push('Electrical B-N is required');
-  if (!formData.electrical_cn) errors.push('Electrical C-N is required');
-  if (!formData.frequency) errors.push('Frequency is required');
-  if (!formData.voltage_a) errors.push('Current A is required');
-  if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
-  if (!formData.voltage_c) errors.push('Current C is required');
-
-  if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
-
-  if (!formData.battery_health_readings || formData.battery_health_readings.length === 0) {
-    errors.push('At least one Battery Health Reading is required');
   }
 
   if (!formData.work_performed) errors.push('Work Performed is required');

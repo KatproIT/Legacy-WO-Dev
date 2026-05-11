@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormSubmission } from '../types/form';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { getInputClass } from '../utils/formValidation';
+import { getInputClass, isServiceCallRepairOnly } from '../utils/formValidation';
 
 interface MaintenanceInfoSectionProps {
   formData: FormSubmission;
@@ -12,8 +12,10 @@ interface MaintenanceInfoSectionProps {
 
 export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValidationErrors }: MaintenanceInfoSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const serviceCallOnly = isServiceCallRepairOnly(formData);
   const isEnabled = formData.ats_exerciser_enabled !== 'NO';
   const isDisabled = readOnly || !isEnabled;
+  const isRequired = !serviceCallOnly;
 
   return (
     <div className="section-card">
@@ -46,12 +48,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
 
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${!isEnabled ? 'opacity-50' : ''}`}>
         <div>
-          <label className="form-label">EXERCISE DAY {isEnabled && <span className="text-red-600">*</span>}</label>
+          <label className="form-label">EXERCISE DAY {isRequired && isEnabled && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.exercise_day || ''}
             onChange={(e) => onChange('exercise_day', e.target.value)}
             disabled={isDisabled}
-            className={getInputClass(formData.exercise_day, hasValidationErrors && isEnabled, isDisabled)}
+            className={getInputClass(formData.exercise_day, hasValidationErrors && isRequired && isEnabled, isDisabled)}
           >
             <option value="">SELECT EXERCISE DAY</option>
             <option value="MONDAY">MONDAY</option>
@@ -67,12 +69,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">WITH LOAD {isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
+          <label className="form-label">WITH LOAD {isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.with_load || ''}
             onChange={(e) => onChange('with_load', e.target.value)}
             disabled={isDisabled}
-            className={getInputClass(formData.with_load, hasValidationErrors && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
+            className={getInputClass(formData.with_load, hasValidationErrors && isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
           >
             <option value="">SELECT WITH LOAD</option>
             <option value="YES">YES</option>
@@ -87,16 +89,16 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
             value={formData.exercise_time || ''}
             onChange={(e) => onChange('exercise_time', e.target.value)}
             disabled={isDisabled || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS'}
-            className={getInputClass(formData.exercise_time, hasValidationErrors && isEnabled, isDisabled || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS')}
+            className={getInputClass(formData.exercise_time, hasValidationErrors && isRequired && isEnabled, isDisabled || formData.exercise_day === 'OFF' || formData.exercise_day === 'SITEBOSS')}
           />
         </div>
         <div>
-          <label className="form-label">EXERCISE INTERVAL {isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
+          <label className="form-label">EXERCISE INTERVAL {isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.exercise_interval || ''}
             onChange={(e) => onChange('exercise_interval', e.target.value)}
             disabled={isDisabled}
-            className={getInputClass(formData.exercise_interval, hasValidationErrors && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
+            className={getInputClass(formData.exercise_interval, hasValidationErrors && isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
           >
             <option value="">SELECT EXERCISE INTERVAL</option>
             <option value="WEEKLY">WEEKLY</option>
@@ -107,12 +109,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">LOAD BANK TEST {isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
+          <label className="form-label">LOAD BANK TEST {isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.load_bank_test || ''}
             onChange={(e) => onChange('load_bank_test', e.target.value)}
             disabled={isDisabled}
-            className={getInputClass(formData.load_bank_test, hasValidationErrors && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
+            className={getInputClass(formData.load_bank_test, hasValidationErrors && isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
           >
             <option value="">SELECT LOAD BANK TEST</option>
             <option value="1 HR">1 HR</option>
@@ -122,12 +124,12 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
           </select>
         </div>
         <div>
-          <label className="form-label">TRANSFER TEST {isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
+          <label className="form-label">TRANSFER TEST {isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS' && <span className="text-red-600">*</span>}</label>
           <select
             value={formData.transfer_test || ''}
             onChange={(e) => onChange('transfer_test', e.target.value)}
             disabled={isDisabled}
-            className={getInputClass(formData.transfer_test, hasValidationErrors && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
+            className={getInputClass(formData.transfer_test, hasValidationErrors && isRequired && isEnabled && formData.exercise_day !== 'SITEBOSS', isDisabled)}
           >
             <option value="">SELECT TRANSFER TEST</option>
             <option value="YES">YES</option>

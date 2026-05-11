@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormSubmission, BatteryReading } from '../types/form';
 import { ChevronDown, ChevronRight, Trash2, Plus } from 'lucide-react';
-import { getInputClass } from '../utils/formValidation';
+import { getInputClass, isServiceCallRepairOnly } from '../utils/formValidation';
 
 interface SystemChecksSectionProps {
   formData: FormSubmission;
@@ -21,6 +21,9 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
   const [isCollapsed, setIsCollapsed] = useState(false);
   const batteryReadings = formData.battery_health_readings || [];
   const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
+  const serviceCallOnly = isServiceCallRepairOnly(formData);
+  const isRequired = !serviceCallOnly;
+  const showValidation = hasValidationErrors && isRequired;
 
   const parseTime = (timeStr: string) => {
     const parts = timeStr.split(':');
@@ -94,12 +97,12 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           <h3 className="font-semibold mb-3">FUEL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="form-label">FUEL TYPE <span className="text-red-600">*</span></label>
+              <label className="form-label">FUEL TYPE {isRequired && <span className="text-red-600">*</span>}</label>
               <select
                 value={formData.fuel_type || ''}
                 onChange={(e) => onChange('fuel_type', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_type, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.fuel_type, showValidation, readOnly)}
               >
                 <option value="">SELECT FUEL TYPE</option>
                 <option value="DIESEL">DIESEL</option>
@@ -110,13 +113,13 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               </select>
             </div>
             <div>
-              <label className="form-label">FUEL CAPACITY <span className="text-red-600">*</span></label>
+              <label className="form-label">FUEL CAPACITY {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.full_caps || ''}
                 onChange={(e) => onChange('full_caps', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.full_caps, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.full_caps, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -129,11 +132,11 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                 value={formData.fuel_added ?? ''}
                 onChange={(e) => onChange('fuel_added', e.target.value === '' ? null : parseFloat(e.target.value))}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_added, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.fuel_added, showValidation, readOnly)}
               />
             </div>
             <div>
-              <label className="form-label">FUEL (%) <span className="text-red-600">*</span></label>
+              <label className="form-label">FUEL (%) {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="number"
                 min="0"
@@ -142,7 +145,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                 value={formData.fuel_percentage ?? ''}
                 onChange={(e) => onChange('fuel_percentage', e.target.value === '' ? null : parseFloat(e.target.value))}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_percentage, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.fuel_percentage, showValidation, readOnly)}
               />
             </div>
           </div>
@@ -152,36 +155,36 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           <h3 className="font-semibold mb-3">OIL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="form-label">OIL TYPE <span className="text-red-600">*</span></label>
+              <label className="form-label">OIL TYPE {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.oil_type || ''}
                 onChange={(e) => onChange('oil_type', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_type, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.oil_type, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">OIL CAPACITY <span className="text-red-600">*</span></label>
+              <label className="form-label">OIL CAPACITY {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.oil_cap || ''}
                 onChange={(e) => onChange('oil_cap', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_cap, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.oil_cap, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">DATE LAST OIL CHANGE <span className="text-red-600">*</span></label>
+              <label className="form-label">DATE LAST OIL CHANGE {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="date"
                 value={formData.date_last_oil_change === 'NO_DATE' ? '' : (formData.date_last_oil_change || '')}
                 onChange={(e) => onChange('date_last_oil_change', e.target.value)}
                 disabled={readOnly || formData.date_last_oil_change === 'NO_DATE'}
                 placeholder="DD-MM-YYYY"
-                className={`${getInputClass(formData.date_last_oil_change, hasValidationErrors, readOnly)} ${formData.date_last_oil_change === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
+                className={`${getInputClass(formData.date_last_oil_change, showValidation, readOnly)} ${formData.date_last_oil_change === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
               />
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input
@@ -195,13 +198,13 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               </label>
             </div>
             <div>
-              <label className="form-label">OIL PSI <span className="text-red-600">*</span></label>
+              <label className="form-label">OIL PSI {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.oil_psi || ''}
                 onChange={(e) => onChange('oil_psi', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_psi, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.oil_psi, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
@@ -212,46 +215,46 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           <h3 className="font-semibold mb-3">FILTER INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-label">OIL FILTER P/N <span className="text-red-600">*</span></label>
+              <label className="form-label">OIL FILTER P/N {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.oil_filter_pn || ''}
                 onChange={(e) => onChange('oil_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_filter_pn, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.oil_filter_pn, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">STATUS <span className="text-red-600">*</span></label>
+              <label className="form-label">STATUS {isRequired && <span className="text-red-600">*</span>}</label>
               <select
                 value={formData.oil_filter_status || ''}
                 onChange={(e) => onChange('oil_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.oil_filter_status, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.oil_filter_status, showValidation, readOnly)}
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
             </div>
             <div>
-              <label className="form-label">FUEL FILTER P/N <span className="text-red-600">*</span></label>
+              <label className="form-label">FUEL FILTER P/N {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.fuel_filter_pn || ''}
                 onChange={(e) => onChange('fuel_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_filter_pn, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.fuel_filter_pn, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">STATUS <span className="text-red-600">*</span></label>
+              <label className="form-label">STATUS {isRequired && <span className="text-red-600">*</span>}</label>
               <select
                 value={formData.fuel_filter_status || ''}
                 onChange={(e) => onChange('fuel_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.fuel_filter_status, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.fuel_filter_status, showValidation, readOnly)}
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -281,23 +284,23 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               </select>
             </div>
             <div>
-              <label className="form-label">AIR FILTER P/N <span className="text-red-600">*</span></label>
+              <label className="form-label">AIR FILTER P/N {isRequired && <span className="text-red-600">*</span>}</label>
               <input
                 type="text"
                 value={formData.air_filter_pn || ''}
                 onChange={(e) => onChange('air_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.air_filter_pn, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.air_filter_pn, showValidation, readOnly)}
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">STATUS <span className="text-red-600">*</span></label>
+              <label className="form-label">STATUS {isRequired && <span className="text-red-600">*</span>}</label>
               <select
                 value={formData.air_filter_status || ''}
                 onChange={(e) => onChange('air_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.air_filter_status, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.air_filter_status, showValidation, readOnly)}
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -310,13 +313,13 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           <h3 className="font-semibold mb-3">SYSTEM CHECKS</h3>
 
           <div className="mb-3">
-            <label className="form-label">COOLANT LEVEL / PROTECTION <span className="text-red-600">*</span></label>
+            <label className="form-label">COOLANT LEVEL / PROTECTION {isRequired && <span className="text-red-600">*</span>}</label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <select
                 value={formData.coolant_level_field1 || ''}
                 onChange={(e) => onChange('coolant_level_field1', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_level_field1, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.coolant_level_field1, showValidation, readOnly)}
               >
                 <option value="">SELECT LEVEL <span className="text-red-600">*</span></option>
                 {coolantLevelOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -325,7 +328,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                 value={formData.coolant_level_field2 || ''}
                 onChange={(e) => onChange('coolant_level_field2', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_level_field2, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.coolant_level_field2, showValidation, readOnly)}
               >
                 <option value="">SELECT TEMPERATURE<span className="text-red-600">*</span></option>
                 {tempOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -334,7 +337,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                 value={formData.coolant_level_field3 || ''}
                 onChange={(e) => onChange('coolant_level_field3', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_level_field3, hasValidationErrors, readOnly)}
+                className={getInputClass(formData.coolant_level_field3, showValidation, readOnly)}
               >
                 <option value="">SELECT STATUS<span className="text-red-600">*</span></option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -361,12 +364,12 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON', options: statusOptions },
             ].map(({ field, label, options }) => (
               <div key={field}>
-                <label className="form-label text-sm">{label} <span className="text-red-600">*</span></label>
+                <label className="form-label text-sm">{label} {isRequired && <span className="text-red-600">*</span>}</label>
                 <select
                   value={(formData as any)[field] || ''}
                   onChange={(e) => onChange(field, e.target.value)}
                   disabled={readOnly}
-                  className={getInputClass((formData as any)[field], hasValidationErrors, readOnly)}
+                  className={getInputClass((formData as any)[field], showValidation, readOnly)}
                 >
                   <option value="">SELECT STATUS</option>
                   {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -384,7 +387,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               const time = parseTime((formData as any)[field] || '00:00:00');
               return (
                 <div key={field}>
-                  <label className="form-label text-sm">{label} <span className="text-red-600">*</span></label>
+                  <label className="form-label text-sm">{label} {isRequired && <span className="text-red-600">*</span>}</label>
                   <div className="flex items-center gap-1">
                     <select
                       value={time.hours}
@@ -431,12 +434,12 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
 
           <div className="mt-3">
-            <label className="form-label">OIL / COOLANT FILL CAP <span className="text-red-600">*</span></label>
+            <label className="form-label">OIL / COOLANT FILL CAP {isRequired && <span className="text-red-600">*</span>}</label>
             <select
               value={formData.fill_caps || ''}
               onChange={(e) => onChange('fill_caps', e.target.value)}
               disabled={readOnly}
-              className={getInputClass(formData.fill_caps, hasValidationErrors, readOnly)}
+              className={getInputClass(formData.fill_caps, showValidation, readOnly)}
             >
               <option value="">SELECT STATUS</option>
               <option value="ON">ON</option>
@@ -451,46 +454,46 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <h3 className="font-semibold mb-3">ELECTRICAL READINGS</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="form-label">A-B <span className="text-red-600">*</span></label>
+                  <label className="form-label">A-B {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.electrical_ab || ''}
                     onChange={(e) => onChange('electrical_ab', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_ab, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.electrical_ab, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B-C {!isSinglePhase && <span className="text-red-600">*</span>}</label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B-C {isRequired && !isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={isSinglePhase ? '' : (formData.electrical_bc || '')}
                     onChange={(e) => onChange('electrical_bc', e.target.value.toUpperCase())}
                     disabled={readOnly || isSinglePhase}
-                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_bc, hasValidationErrors, readOnly)}`}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_bc, showValidation, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>A-C {!isSinglePhase && <span className="text-red-600">*</span>}</label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>A-C {isRequired && !isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={isSinglePhase ? '' : (formData.electrical_ca || '')}
                     onChange={(e) => onChange('electrical_ca', e.target.value.toUpperCase())}
                     disabled={readOnly || isSinglePhase}
-                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_ca, hasValidationErrors, readOnly)}`}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_ca, showValidation, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className="form-label">FREQUENCY <span className="text-red-600">*</span></label>
+                  <label className="form-label">FREQUENCY {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.frequency || ''}
                     onChange={(e) => onChange('frequency', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.frequency, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.frequency, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -501,35 +504,35 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <h3 className="font-semibold mb-3 invisible">SPACER</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="form-label">A-N <span className="text-red-600">*</span></label>
+                  <label className="form-label">A-N {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.electrical_an || ''}
                     onChange={(e) => onChange('electrical_an', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_an, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.electrical_an, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className="form-label">B-N <span className="text-red-600">*</span></label>
+                  <label className="form-label">B-N {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.electrical_bn || ''}
                     onChange={(e) => onChange('electrical_bn', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_bn, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.electrical_bn, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className="form-label">C-N <span className="text-red-600">*</span></label>
+                  <label className="form-label">C-N {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.electrical_cn || ''}
                     onChange={(e) => onChange('electrical_cn', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.electrical_cn, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.electrical_cn, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -540,35 +543,35 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <h3 className="font-semibold mb-3">CURRENT</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="form-label">A <span className="text-red-600">*</span></label>
+                  <label className="form-label">A {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.voltage_a || ''}
                     onChange={(e) => onChange('voltage_a', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.voltage_a, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.voltage_a, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B {!isSinglePhase && <span className="text-red-600">*</span>}</label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B {isRequired && !isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={isSinglePhase ? '' : (formData.voltage_b || '')}
                     onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
                     disabled={readOnly || isSinglePhase}
-                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.voltage_b, hasValidationErrors, readOnly)}`}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.voltage_b, showValidation, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className="form-label">C <span className="text-red-600">*</span></label>
+                  <label className="form-label">C {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
                     value={formData.voltage_c || ''}
                     onChange={(e) => onChange('voltage_c', e.target.value.toUpperCase())}
                     disabled={readOnly}
-                    className={getInputClass(formData.voltage_c, hasValidationErrors, readOnly)}
+                    className={getInputClass(formData.voltage_c, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -578,7 +581,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold mb-3">BATTERY INFORMATION <span className="text-red-600">*</span></h3>
+          <h3 className="font-semibold mb-3">BATTERY INFORMATION {isRequired && <span className="text-red-600">*</span>}</h3>
           <div className="space-y-6">
             {batteryReadings.map((battery, index) => (
               <div key={battery.id}>
