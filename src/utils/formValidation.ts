@@ -98,8 +98,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
   if (!formData.oil_filter_status) errors.push('Oil Filter Status is required');
   if (!formData.fuel_filter_pn) errors.push('Fuel Filter P/N is required');
   if (!formData.fuel_filter_status) errors.push('Fuel Filter Status is required');
-  if (!formData.coolant_filter_pn) errors.push('Coolant Filter P/N is required');
-  if (!formData.coolant_filter_status) errors.push('Coolant Filter Status is required');
   if (!formData.air_filter_pn) errors.push('Air Filter P/N is required');
   if (!formData.air_filter_status) errors.push('Air Filter Status is required');
 

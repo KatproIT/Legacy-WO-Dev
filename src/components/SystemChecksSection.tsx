@@ -247,23 +247,23 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               </select>
             </div>
             <div>
-              <label className="form-label">COOLANT FILTER P/N <span className="text-red-600">*</span></label>
+              <label className="form-label">COOLANT FILTER P/N</label>
               <input
                 type="text"
                 value={formData.coolant_filter_pn || ''}
                 onChange={(e) => onChange('coolant_filter_pn', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_filter_pn, hasValidationErrors, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>
             <div>
-              <label className="form-label">STATUS <span className="text-red-600">*</span></label>
+              <label className="form-label">STATUS</label>
               <select
                 value={formData.coolant_filter_status || ''}
                 onChange={(e) => onChange('coolant_filter_status', e.target.value)}
                 disabled={readOnly}
-                className={getInputClass(formData.coolant_filter_status, hasValidationErrors, readOnly)}
+                className="form-input"
               >
                 <option value="">SELECT STATUS</option>
                 {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
