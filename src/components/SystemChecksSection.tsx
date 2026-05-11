@@ -361,7 +361,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               { field: 'enclosure_condition', label: 'ENCLOSURE CONDITION', options: statusOptions },
               { field: 'ats_control_battery', label: 'ATS CONTROL BATTERY', options: statusOptions },
               { field: 'ats_contactor', label: 'ATS CONTACTOR', options: statusOptions },
-              { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON', options: statusOptions },
+              { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON', options: ['YES', 'NO'] },
             ].map(({ field, label, options }) => (
               <div key={field}>
                 <label className="form-label text-sm">{label} {isRequired && <span className="text-red-600">*</span>}</label>
