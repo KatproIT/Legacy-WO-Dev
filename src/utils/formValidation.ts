@@ -122,8 +122,7 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     'enclosure_condition',
     'ats_control_battery',
     'ats_contactor',
-    'unit_in_auto_breakers_on',
-    'recommend_generator_be_replaced'
+    'unit_in_auto_breakers_on'
   ];
 
   systemCheckFields.forEach((field) => {

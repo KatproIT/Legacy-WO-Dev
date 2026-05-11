@@ -348,7 +348,6 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               { field: 'ats_control_battery', label: 'ATS CONTROL BATTERY', options: statusOptions },
               { field: 'ats_contactor', label: 'ATS CONTACTOR', options: statusOptions },
               { field: 'unit_in_auto_breakers_on', label: 'UNIT IN AUTO / BREAKERS ON', options: statusOptions },
-              { field: 'recommend_generator_be_replaced', label: 'RECOMMEND GENERATOR BE REPLACED', options: ['YES', 'NO'] },
             ].map(({ field, label, options }) => (
               <div key={field}>
                 <label className="form-label text-sm">{label} <span className="text-red-600">*</span></label>
@@ -358,7 +357,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   disabled={readOnly}
                   className={getInputClass((formData as any)[field], hasValidationErrors, readOnly)}
                 >
-                  <option value="">SELECT {field === 'recommend_generator_be_replaced' ? '' : 'STATUS'}</option>
+                  <option value="">SELECT STATUS</option>
                   {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
               </div>
@@ -697,6 +696,19 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               </button>
             )}
           </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={(formData as any).recommend_generator_be_replaced === 'YES'}
+              onChange={(e) => onChange('recommend_generator_be_replaced', e.target.checked ? 'YES' : 'NO')}
+              disabled={readOnly}
+              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="font-semibold text-sm text-gray-700">RECOMMEND GENERATOR BE REPLACED</span>
+          </label>
         </div>
 
       </div>
