@@ -20,6 +20,7 @@ const tempOptions = [
 export function SystemChecksSection({ formData, onChange, readOnly, hasValidationErrors }: SystemChecksSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const batteryReadings = formData.battery_health_readings || [];
+  const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
 
   const parseTime = (timeStr: string) => {
     const parts = timeStr.split(':');
@@ -461,24 +462,24 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   />
                 </div>
                 <div>
-                  <label className="form-label">B-C <span className="text-red-600">*</span></label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B-C {!isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
-                    value={formData.electrical_bc || ''}
+                    value={isSinglePhase ? '' : (formData.electrical_bc || '')}
                     onChange={(e) => onChange('electrical_bc', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.electrical_bc, hasValidationErrors, readOnly)}
+                    disabled={readOnly || isSinglePhase}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_bc, hasValidationErrors, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
                 <div>
-                  <label className="form-label">A-C <span className="text-red-600">*</span></label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>A-C {!isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
-                    value={formData.electrical_ca || ''}
+                    value={isSinglePhase ? '' : (formData.electrical_ca || '')}
                     onChange={(e) => onChange('electrical_ca', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.electrical_ca, hasValidationErrors, readOnly)}
+                    disabled={readOnly || isSinglePhase}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.electrical_ca, hasValidationErrors, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>
@@ -550,13 +551,13 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   />
                 </div>
                 <div>
-                  <label className="form-label">B <span className="text-red-600">*</span></label>
+                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B {!isSinglePhase && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
-                    value={formData.voltage_b || ''}
+                    value={isSinglePhase ? '' : (formData.voltage_b || '')}
                     onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.voltage_b, hasValidationErrors, readOnly)}
+                    disabled={readOnly || isSinglePhase}
+                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.voltage_b, hasValidationErrors, readOnly)}`}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>

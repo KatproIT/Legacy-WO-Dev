@@ -144,15 +144,17 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     }
   });
 
+  const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
+
   if (!formData.electrical_ab) errors.push('Electrical A-B is required');
-  if (!formData.electrical_bc) errors.push('Electrical B-C is required');
-  if (!formData.electrical_ca) errors.push('Electrical A-C is required');
+  if (!isSinglePhase && !formData.electrical_bc) errors.push('Electrical B-C is required');
+  if (!isSinglePhase && !formData.electrical_ca) errors.push('Electrical A-C is required');
   if (!formData.electrical_an) errors.push('Electrical A-N is required');
   if (!formData.electrical_bn) errors.push('Electrical B-N is required');
   if (!formData.electrical_cn) errors.push('Electrical C-N is required');
   if (!formData.frequency) errors.push('Frequency is required');
   if (!formData.voltage_a) errors.push('Current A is required');
-  if (!formData.voltage_b) errors.push('Current B is required');
+  if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
   if (!formData.voltage_c) errors.push('Current C is required');
 
   if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
