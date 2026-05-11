@@ -135,13 +135,13 @@ export function LoadBankReportSection({ formData, onChange, readOnly, hasValidat
               />
             </div>
             <div>
-              <label className="form-label">AMBIENT AIR TEMP{isRequired && <span className="text-red-600"> *</span>}</label>
+              <label className="form-label">AMBIENT AIR TEMP</label>
               <input
                 type="text"
                 value={formData.load_bank_ambient_air_temp || ''}
                 onChange={(e) => onChange('load_bank_ambient_air_temp', e.target.value.toUpperCase())}
                 disabled={readOnly}
-                className={getInputClass(formData.load_bank_ambient_air_temp, hasValidationErrors && isRequired, readOnly)}
+                className="form-input"
                 style={{ textTransform: 'uppercase' }}
               />
             </div>

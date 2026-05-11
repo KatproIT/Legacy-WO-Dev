@@ -183,7 +183,6 @@ export const validateLoadBankReport = (formData: FormSubmission): { isValid: boo
   if (!formData.load_bank_site_name) errors.push('SITE NAME is required');
   if (!formData.load_bank_reactive_load) errors.push('BUILDING LOAD is required');
   if (!formData.load_bank_site_address) errors.push('SITE ADDRESS is required');
-  if (!formData.load_bank_ambient_air_temp) errors.push('AMBIENT AIR TEMP is required');
   if (!formData.load_bank_make) errors.push('MAKE is required');
   if (!formData.load_bank_model) errors.push('MODEL is required');
   if (!formData.load_bank_sn) errors.push('S/N is required');
