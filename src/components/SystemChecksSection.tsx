@@ -607,11 +607,11 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                     <div>
                       <label className="form-label">BATTERY DATE</label>
                       <input
-                        type="date"
+                        type="month"
                         value={battery.batteryDate === 'NO_DATE' ? '' : (battery.batteryDate || '')}
                         onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
                         disabled={readOnly || battery.batteryDate === 'NO_DATE'}
-                        placeholder="DD-MM-YYYY"
+                        placeholder="MM/YYYY"
                         className={`form-input ${battery.batteryDate === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
                       />
                       <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">

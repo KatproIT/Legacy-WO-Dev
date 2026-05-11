@@ -20,7 +20,7 @@ import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport, isJobNumberValid } from '../utils/formValidation';
 import { Save, CheckCircle, AlertCircle, Printer, CreditCard as Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History, User, Mail, Shield } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
-import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
+import { generatePDF, generateLoadBankPDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
 const API =
   (import.meta.env.VITE_API_URL && (import.meta.env.VITE_API_URL as string).trim()) ||
@@ -671,6 +671,16 @@ const handleFieldChange = useCallback((field: string, value: any) => {
     }
   };
 
+  const handlePrintLoadBank = async () => {
+    try {
+      const filename = `Load_Bank_Report_${formData.job_po_number || 'draft'}.pdf`;
+      await generateLoadBankPDF(formData, { filename });
+    } catch (error) {
+      showToast('Error generating Load Bank Report PDF', 'error');
+      console.error(error);
+    }
+  };
+
   const logAction = async (action: string) => {
     if (!formData.id || !userEmail) return;
 
@@ -1183,6 +1193,13 @@ const handleFieldChange = useCallback((field: string, value: any) => {
                   >
                     <Download size={16} />
                     <span>CUSTOMER COPY</span>
+                  </button>
+                  <button
+                    onClick={handlePrintLoadBank}
+                    className="px-3 py-1.5 text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors font-medium flex items-center gap-1.5 text-sm"
+                  >
+                    <Printer size={16} />
+                    <span>LOAD BANK REPORT</span>
                   </button>
                 </>
               )}

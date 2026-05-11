@@ -779,7 +779,7 @@ export function AdminDashboard() {
                                 <div><span className="text-gray-600">Exercise Time:</span> <span className="font-medium">{submission.exercise_time || '-'}</span></div>
                                 <div><span className="text-gray-600">With Load:</span> <span className="font-medium">{submission.with_load || '-'}</span></div>
                                 <div><span className="text-gray-600">Last Oil Change:</span> <span className="font-medium">{submission.date_last_oil_change === 'NO_DATE' ? 'NO DATE' : (submission.date_last_oil_change || '-')}</span></div>
-                                <div><span className="text-gray-600">Battery Date:</span> <span className="font-medium">{submission.battery_date === 'NO_DATE' ? 'NO DATE' : (submission.battery_date || '-')}</span></div>
+                                <div><span className="text-gray-600">Battery Date:</span> <span className="font-medium">{submission.battery_date === 'NO_DATE' ? 'NO DATE' : (submission.battery_date ? (() => { const parts = submission.battery_date.split('-'); return parts.length >= 2 ? `${parts[1]}/${parts[0]}` : submission.battery_date; })() : '-')}</span></div>
                                 <div><span className="text-gray-600">Battery Type:</span> <span className="font-medium">{submission.battery_type || '-'}</span></div>
                                 <div><span className="text-gray-600">Fuel Type:</span> <span className="font-medium">{submission.fuel_type || '-'}</span></div>
                                 <div><span className="text-gray-600">Fuel %:</span> <span className="font-medium">{submission.fuel_percentage ? `${submission.fuel_percentage}%` : '-'}</span></div>
