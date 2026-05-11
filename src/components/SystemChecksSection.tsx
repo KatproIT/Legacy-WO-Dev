@@ -18,7 +18,7 @@ const tempOptions = [
 ];
 
 export function SystemChecksSection({ formData, onChange, readOnly, hasValidationErrors }: SystemChecksSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const batteryReadings = formData.battery_health_readings || [];
 
   const parseTime = (timeStr: string) => {

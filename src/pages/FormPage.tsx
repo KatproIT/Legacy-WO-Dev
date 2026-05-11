@@ -18,7 +18,7 @@ import { DraftsModal } from '../components/DraftsModal';
 import { HistoryModal } from '../components/HistoryModal';
 import { extractNameFromEmail } from '../utils/userRoles';
 import { validateLoadBankReport, validateServiceReport, isJobNumberValid } from '../utils/formValidation';
-import { Save, CheckCircle, AlertCircle, Printer, Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History, User, Mail, Shield } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Printer, CreditCard as Edit, Lock, XCircle, Forward, Download, FileText, Plus, Home, Copy, History, User, Mail, Shield } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 import { generatePDF, hasAdditionalATSData, hasLoadBankData } from '../utils/printUtils';
 
@@ -912,6 +912,42 @@ const handleFieldChange = useCallback((field: string, value: any) => {
       }
     };
   }, [formData, initialFormData, isReadOnly, performAutoSave]);
+
+  useEffect(() => {
+    const handleArrowNavigation = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+
+      const active = document.activeElement as HTMLElement;
+      if (!active || !active.matches('input, select, textarea')) return;
+
+      const container = document.querySelector('.print-container');
+      if (!container || !container.contains(active)) return;
+
+      const focusable = Array.from(
+        container.querySelectorAll<HTMLElement>(
+          'input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled])'
+        )
+      ).filter(el => el.offsetParent !== null);
+
+      const currentIndex = focusable.indexOf(active);
+      if (currentIndex === -1) return;
+
+      let nextIndex: number;
+      if (e.key === 'ArrowDown') {
+        nextIndex = currentIndex + 1;
+      } else {
+        nextIndex = currentIndex - 1;
+      }
+
+      if (nextIndex >= 0 && nextIndex < focusable.length) {
+        e.preventDefault();
+        focusable[nextIndex].focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleArrowNavigation);
+    return () => document.removeEventListener('keydown', handleArrowNavigation);
+  }, []);
 
   const checkUnsavedChanges = (): { hasChanges: boolean; isDraft: boolean; hasNewData: boolean } => {
     if (!initialFormData) {

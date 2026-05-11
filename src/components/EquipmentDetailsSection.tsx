@@ -11,7 +11,7 @@ interface EquipmentDetailsSectionProps {
 }
 
 export function EquipmentDetailsSection({ formData, onChange, readOnly, hasValidationErrors }: EquipmentDetailsSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const updateEquipment = (equipment: 'equipment_generator' | 'equipment_engine' | 'equipment_ats1' | 'equipment_ats2', field: keyof EquipmentDetails, value: string) => {
     const current = formData[equipment] || {};
