@@ -594,12 +594,22 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                       <label className="form-label">BATTERY DATE</label>
                       <input
                         type="date"
-                        value={battery.batteryDate || ''}
+                        value={battery.batteryDate === 'NO_DATE' ? '' : (battery.batteryDate || '')}
                         onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
-                        disabled={readOnly}
+                        disabled={readOnly || battery.batteryDate === 'NO_DATE'}
                         placeholder="DD-MM-YYYY"
-                        className="form-input"
+                        className={`form-input ${battery.batteryDate === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
                       />
+                      <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={battery.batteryDate === 'NO_DATE'}
+                          onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.checked ? 'NO_DATE' : '')}
+                          disabled={readOnly}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-600">NO DATE</span>
+                      </label>
                     </div>
                     <div>
                       <label className="form-label">BATTERY TYPE</label>
