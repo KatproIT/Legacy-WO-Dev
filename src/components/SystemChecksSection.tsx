@@ -176,12 +176,22 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <label className="form-label">DATE LAST OIL CHANGE <span className="text-red-600">*</span></label>
               <input
                 type="date"
-                value={formData.date_last_oil_change || ''}
+                value={formData.date_last_oil_change === 'NO_DATE' ? '' : (formData.date_last_oil_change || '')}
                 onChange={(e) => onChange('date_last_oil_change', e.target.value)}
-                disabled={readOnly}
+                disabled={readOnly || formData.date_last_oil_change === 'NO_DATE'}
                 placeholder="DD-MM-YYYY"
-                className={getInputClass(formData.date_last_oil_change, hasValidationErrors, readOnly)}
+                className={`${getInputClass(formData.date_last_oil_change, hasValidationErrors, readOnly)} ${formData.date_last_oil_change === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
               />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={formData.date_last_oil_change === 'NO_DATE'}
+                  onChange={(e) => onChange('date_last_oil_change', e.target.checked ? 'NO_DATE' : '')}
+                  disabled={readOnly}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-600">NO DATE</span>
+              </label>
             </div>
             <div>
               <label className="form-label">OIL PSI <span className="text-red-600">*</span></label>
