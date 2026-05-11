@@ -157,9 +157,6 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     if (!formData.electrical_ab) errors.push('Electrical A-B is required');
     if (!isSinglePhase && !formData.electrical_bc) errors.push('Electrical B-C is required');
     if (!isSinglePhase && !formData.electrical_ca) errors.push('Electrical A-C is required');
-    if (!formData.electrical_an) errors.push('Electrical A-N is required');
-    if (!formData.electrical_bn) errors.push('Electrical B-N is required');
-    if (!formData.electrical_cn) errors.push('Electrical C-N is required');
     if (!formData.frequency) errors.push('Frequency is required');
     if (!formData.voltage_a) errors.push('Current A is required');
     if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
@@ -203,7 +200,6 @@ export const validateLoadBankReport = (formData: FormSubmission): { isValid: boo
     const hasCompleteEntry = entries.some((entry: LoadBankEntry) => {
       return entry.time && entry.kw && entry.hertz &&
              entry.ab && entry.bc && entry.ca &&
-             entry.an && entry.bn && entry.cn &&
              entry.amps_a && entry.amps_b && entry.amps_c &&
              entry.oil_pressure && entry.water_temp && entry.batt_charger_voltage;
     });

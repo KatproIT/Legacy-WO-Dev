@@ -236,12 +236,9 @@ export async function generatePDF(
           { main: 'TIME', sub: '', width: '5%', colspan: 1, type: 'single' },
           { main: 'KW', sub: '', width: '4%', colspan: 1, type: 'single' },
           { main: 'HZ', sub: '', width: '4%', colspan: 1, type: 'single' },
-          { main: 'VOLTS', sub: 'A/B', width: '5%', colspan: 6, type: 'group-start' },
-          { main: '', sub: 'B/C', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'C/A', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'A/N', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'B/N', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'C/N', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: 'VOLTS', sub: 'A/B', width: '6.5%', colspan: 3, type: 'group-start' },
+          { main: '', sub: 'B/C', width: '6.5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'C/A', width: '6.5%', colspan: 0, type: 'group-sub' },
           { main: 'AMPS', sub: 'A', width: '4.3%', colspan: 3, type: 'group-start' },
           { main: '', sub: 'B', width: '4.3%', colspan: 0, type: 'group-sub' },
           { main: '', sub: 'C', width: '4.3%', colspan: 0, type: 'group-sub' },
@@ -340,7 +337,7 @@ export async function generatePDF(
           (row as HTMLElement).style.display = 'table-row';
           const bodyCells = row.querySelectorAll('td');
           
-          const widths = ['5%', '4%', '4%', '5%', '5%', '5%', '5%', '5%', '5%', '4.3%', '4.3%', '4.3%', '6%', '6%', '6%'];
+          const widths = ['6%', '5.5%', '5.5%', '6.5%', '6.5%', '6.5%', '5.5%', '5.5%', '5.5%', '7.5%', '7.5%', '7.5%'];
           bodyCells.forEach((cell, index) => {
             (cell as HTMLElement).style.display = 'table-cell';
             if (widths[index]) {
@@ -557,8 +554,6 @@ export async function generatePDF(
         setTimeout(resolve, 1000);
       })
     ]);
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.88);
 
     const imgWidth = pageWidth - (contentMargin * 2);
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -921,12 +916,9 @@ export async function generateLoadBankPDF(
           { main: 'TIME', sub: '', width: '5%', colspan: 1, type: 'single' },
           { main: 'KW', sub: '', width: '4%', colspan: 1, type: 'single' },
           { main: 'HZ', sub: '', width: '4%', colspan: 1, type: 'single' },
-          { main: 'VOLTS', sub: 'A/B', width: '5%', colspan: 6, type: 'group-start' },
-          { main: '', sub: 'B/C', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'C/A', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'A/N', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'B/N', width: '5%', colspan: 0, type: 'group-sub' },
-          { main: '', sub: 'C/N', width: '5%', colspan: 0, type: 'group-sub' },
+          { main: 'VOLTS', sub: 'A/B', width: '6.5%', colspan: 3, type: 'group-start' },
+          { main: '', sub: 'B/C', width: '6.5%', colspan: 0, type: 'group-sub' },
+          { main: '', sub: 'C/A', width: '6.5%', colspan: 0, type: 'group-sub' },
           { main: 'AMPS', sub: 'A', width: '4.3%', colspan: 3, type: 'group-start' },
           { main: '', sub: 'B', width: '4.3%', colspan: 0, type: 'group-sub' },
           { main: '', sub: 'C', width: '4.3%', colspan: 0, type: 'group-sub' },
@@ -1134,7 +1126,6 @@ export async function generateLoadBankPDF(
       new Promise((resolve) => { footerImage.onload = resolve; footerImage.onerror = resolve; setTimeout(resolve, 1000); })
     ]);
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.88);
     const imgWidth = pageWidth - (contentMargin * 2);
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 

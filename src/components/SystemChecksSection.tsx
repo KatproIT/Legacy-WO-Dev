@@ -449,7 +449,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold mb-3">ELECTRICAL READINGS</h3>
               <div className="space-y-3">
@@ -494,45 +494,6 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                     onChange={(e) => onChange('frequency', e.target.value.toUpperCase())}
                     disabled={readOnly}
                     className={getInputClass(formData.frequency, showValidation, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-3 invisible">SPACER</h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="form-label">A-N {isRequired && <span className="text-red-600">*</span>}</label>
-                  <input
-                    type="text"
-                    value={formData.electrical_an || ''}
-                    onChange={(e) => onChange('electrical_an', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.electrical_an, showValidation, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label">B-N {isRequired && <span className="text-red-600">*</span>}</label>
-                  <input
-                    type="text"
-                    value={formData.electrical_bn || ''}
-                    onChange={(e) => onChange('electrical_bn', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.electrical_bn, showValidation, readOnly)}
-                    style={{ textTransform: 'uppercase' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label">C-N {isRequired && <span className="text-red-600">*</span>}</label>
-                  <input
-                    type="text"
-                    value={formData.electrical_cn || ''}
-                    onChange={(e) => onChange('electrical_cn', e.target.value.toUpperCase())}
-                    disabled={readOnly}
-                    className={getInputClass(formData.electrical_cn, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>

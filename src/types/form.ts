@@ -71,9 +71,6 @@ export interface LoadBankEntry {
   ab?: string;
   bc?: string;
   ca?: string;
-  an?: string;
-  bn?: string;
-  cn?: string;
   amps_a?: string;
   amps_b?: string;
   amps_c?: string;
@@ -163,11 +160,8 @@ export interface FormSubmission {
   charging_starting_system?: string;
   charging_starting_system_text?: string;
 
-  electrical_an?: string;
   electrical_ab?: string;
-  electrical_bn?: string;
   electrical_bc?: string;
-  electrical_cn?: string;
   electrical_ca?: string;
   frequency?: string;
   voltage_a?: string;
