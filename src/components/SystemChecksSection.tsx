@@ -446,6 +446,19 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
               <option value="N/A">N/A</option>
             </select>
           </div>
+
+          <div className="mt-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={(formData as any).recommend_generator_be_replaced === 'YES'}
+                onChange={(e) => onChange('recommend_generator_be_replaced', e.target.checked ? 'YES' : 'NO')}
+                disabled={readOnly}
+                className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="font-semibold text-sm text-gray-700">RECOMMEND GENERATOR BE REPLACED</span>
+            </label>
+          </div>
         </div>
 
         <div className="bg-gray-50 p-4 border border-gray-300">
@@ -683,18 +696,6 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="mt-4">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={(formData as any).recommend_generator_be_replaced === 'YES'}
-              onChange={(e) => onChange('recommend_generator_be_replaced', e.target.checked ? 'YES' : 'NO')}
-              disabled={readOnly}
-              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="font-semibold text-sm text-gray-700">RECOMMEND GENERATOR BE REPLACED</span>
-          </label>
-        </div>
 
       </div>
       )}
