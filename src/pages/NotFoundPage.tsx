@@ -12,7 +12,7 @@ export function NotFoundPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img
-                src="/image.png"
+                src="/image copy.png"
                 alt="Legacy Power Systems"
                 className="h-14 sm:h-16 object-contain"
               />

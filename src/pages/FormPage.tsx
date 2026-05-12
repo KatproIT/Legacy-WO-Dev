@@ -1071,7 +1071,7 @@ const handleFieldChange = useCallback((field: string, value: any) => {
           <div className="flex items-center justify-between py-4 border-b border-gray-100">
             <div className="flex items-center gap-6">
               <img
-                src="/image.png"
+                src="/image copy.png"
                 alt="Legacy Power Systems"
                 className="h-14 sm:h-16 object-contain"
               />

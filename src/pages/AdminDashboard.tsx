@@ -206,7 +206,7 @@ export function AdminDashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <img
-                src="/image.png"
+                src="/image copy.png"
                 alt="Legacy Power Systems"
                 className="h-14 sm:h-16 object-contain"
               />
