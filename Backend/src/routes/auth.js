@@ -215,6 +215,41 @@ router.delete(
 );
 
 /* ---------------------------
+   SUPERADMIN UPDATE USER ROLE
+---------------------------- */
+router.put(
+  '/update-user/:id',
+  authMiddleware,
+  superAdminOnly,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { role } = req.body || {};
+
+      if (!role)
+        return res.status(400).json({ message: 'role is required' });
+
+      const allowed = ['pm', 'technician', 'admin'];
+      if (!allowed.includes(role))
+        return res.status(400).json({ message: 'invalid role' });
+
+      const check = await db.query('SELECT role FROM users WHERE id = $1', [id]);
+      if (check.rows.length === 0)
+        return res.status(404).json({ message: 'user not found' });
+
+      if (check.rows[0].role === 'superadmin')
+        return res.status(400).json({ message: 'cannot modify superadmin' });
+
+      await db.query('UPDATE users SET role = $1 WHERE id = $2', [role, id]);
+
+      res.json({ ok: true });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/* ---------------------------
    GET ALL TECHNICIANS
 ---------------------------- */
 router.get('/technicians', authMiddleware, async (req, res, next) => {

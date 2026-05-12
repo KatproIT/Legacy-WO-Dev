@@ -12,6 +12,9 @@ export default function UserManagementPage() {
   const [role, setRole] = useState("technician");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [editRole, setEditRole] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
 
   const superadminPassword = "Legacy@123!"; // can move to prompt
 
@@ -67,6 +70,41 @@ export default function UserManagementPage() {
       loadUsers();
     } catch {
       showToast("Error deleting user", "error");
+    }
+  };
+
+  const openEditModal = (user: any) => {
+    setEditingUser(user);
+    setEditRole(user.role);
+  };
+
+  const updateUserRole = async () => {
+    if (!editingUser) return;
+    if (editRole === editingUser.role) {
+      setEditingUser(null);
+      return;
+    }
+
+    setEditLoading(true);
+    try {
+      const res = await authFetch(`${API}/auth/update-user/${editingUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: editRole })
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || "Failed to update user");
+      }
+
+      showToast(`Role updated to ${editRole} successfully`, "success");
+      setEditingUser(null);
+      loadUsers();
+    } catch (err: any) {
+      showToast(err.message, "error");
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -137,19 +175,71 @@ export default function UserManagementPage() {
               <tr key={u.id} className="border-b">
                 <td className="p-2">{u.email}</td>
                 <td className="p-2 capitalize">{u.role}</td>
-                <td className="p-2">
-                  <button
-                    onClick={() => deleteUser(u.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
+                <td className="p-2 flex gap-2">
+                  {u.role !== 'superadmin' && (
+                    <>
+                      <button
+                        onClick={() => openEditModal(u)}
+                        className="bg-amber-600 text-white px-3 py-1 rounded hover:bg-amber-700"
+                      >
+                        Edit Role
+                      </button>
+                      <button
+                        onClick={() => deleteUser(u.id)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Role Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Edit User Role</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Changing role for: <span className="font-medium">{editingUser.email}</span>
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              Current role: <span className="font-medium capitalize">{editingUser.role}</span>
+            </p>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">New Role</label>
+            <select
+              className="form-input w-full mb-6"
+              value={editRole}
+              onChange={(e) => setEditRole(e.target.value)}
+            >
+              <option value="technician">Technician</option>
+              <option value="pm">PM</option>
+              <option value="admin">Admin</option>
+            </select>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setEditingUser(null)}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={updateUserRole}
+                disabled={editLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                {editLoading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
