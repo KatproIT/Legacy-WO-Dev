@@ -34,7 +34,7 @@ export const isLoadBankRequired = (formData: FormSubmission): boolean => {
 
 export const isServiceCallRepairOnly = (formData: FormSubmission): boolean => {
   const services = (formData.type_of_service || '').split(',').map(s => s.trim()).filter(Boolean);
-  return services.length === 1 && services[0] === 'SERVICE CALL/REPAIR';
+  return services.includes('SERVICE CALL/REPAIR');
 };
 
 export const validateServiceReport = (formData: FormSubmission): { isValid: boolean; errors: string[] } => {
@@ -152,7 +152,7 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
       }
     });
 
-    const isSinglePhase = formData.equipment_generator?.phase === '1P' || formData.equipment_ats1?.phase === '1P';
+    const isSinglePhase = formData.equipment_generator?.phase === '1P' && formData.equipment_ats1?.phase === '1P';
 
     if (!formData.electrical_ab) errors.push('Electrical A-B is required');
     if (!isSinglePhase && !formData.electrical_bc) errors.push('Electrical B-C is required');
@@ -160,7 +160,7 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     if (!formData.frequency) errors.push('Frequency is required');
     if (!formData.voltage_a) errors.push('Current A is required');
     if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
-    if (!formData.voltage_c) errors.push('Current C is required');
+    if (!isSinglePhase && !formData.voltage_c) errors.push('Current C is required');
 
     if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
 
