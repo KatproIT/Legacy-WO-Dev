@@ -528,13 +528,13 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
                   />
                 </div>
                 <div>
-                  <label className={`form-label ${isSinglePhase ? 'text-gray-400' : ''}`}>B {isRequired && !isSinglePhase && <span className="text-red-600">*</span>}</label>
+                  <label className="form-label">B {isRequired && <span className="text-red-600">*</span>}</label>
                   <input
                     type="text"
-                    value={isSinglePhase ? '' : (formData.voltage_b || '')}
+                    value={formData.voltage_b || ''}
                     onChange={(e) => onChange('voltage_b', e.target.value.toUpperCase())}
-                    disabled={readOnly || isSinglePhase}
-                    className={`${isSinglePhase ? 'form-input opacity-50 bg-gray-100 cursor-not-allowed' : getInputClass(formData.voltage_b, showValidation, readOnly)}`}
+                    disabled={readOnly}
+                    className={getInputClass(formData.voltage_b, showValidation, readOnly)}
                     style={{ textTransform: 'uppercase' }}
                   />
                 </div>

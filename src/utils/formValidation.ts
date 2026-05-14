@@ -159,7 +159,7 @@ export const validateServiceReport = (formData: FormSubmission): { isValid: bool
     if (!isSinglePhase && !formData.electrical_ca) errors.push('Electrical A-C is required');
     if (!formData.frequency) errors.push('Frequency is required');
     if (!formData.voltage_a) errors.push('Current A is required');
-    if (!isSinglePhase && !formData.voltage_b) errors.push('Current B is required');
+    if (!formData.voltage_b) errors.push('Current B is required');
     if (!isSinglePhase && !formData.voltage_c) errors.push('Current C is required');
 
     if (!formData.fill_caps) errors.push('OIL/Coolant Fill capacity is required');
