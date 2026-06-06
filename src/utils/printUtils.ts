@@ -538,7 +538,7 @@ export async function generatePDF(
     const contentMargin = 10;
 
     const logo = new Image();
-    logo.src = '/image.png';
+    logo.src = '/image copy.png';
     const footerImage = new Image();
     footerImage.src = '/image copy copy copy copy.png';
 
@@ -1117,7 +1117,7 @@ export async function generateLoadBankPDF(
     const contentMargin = 10;
 
     const logo = new Image();
-    logo.src = '/image.png';
+    logo.src = '/image copy.png';
     const footerImage = new Image();
     footerImage.src = '/image copy copy copy copy.png';
 
