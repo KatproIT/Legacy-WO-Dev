@@ -1,5 +1,5 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { FormPage } from './pages/FormPage';
 import { ViewFormPage } from './pages/ViewFormPage';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -24,11 +24,10 @@ function PrivateRoute({
   superadminOnly?: boolean;
 }) {
   const isAuth = isAuthenticated();
-  const location = window.location;
+  const location = useLocation();
 
   if (!isAuth) {
-    // Save the current path so we can redirect back after login
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
 
   if (superadminOnly) {

@@ -41,7 +41,9 @@ export default function LoginPage() {
       localStorage.setItem("userRole", data.user.role || "user");
 
       // Redirect back to the page user tried to open
-      const redirectPath = (location.state as any)?.from || "/admin";
+      const savedPath = (location.state as any)?.from;
+      const defaultPath = (data.user.role === 'superadmin') ? '/admin' : '/form/new';
+      const redirectPath = savedPath || defaultPath;
       navigate(redirectPath, { replace: true });
 
     } catch (err: any) {
