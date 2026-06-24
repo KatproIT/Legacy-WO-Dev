@@ -685,13 +685,23 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
             ))}
 
             {!readOnly && (
-              <button
-                onClick={addBattery}
-                className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              >
-                <Plus size={18} />
-                ADD BATTERY
-              </button>
+              <div className="mt-3 flex items-center gap-3">
+                <button
+                  onClick={addBattery}
+                  disabled={batteryReadings.length >= 5}
+                  className={`flex items-center gap-2 px-4 py-2 transition-colors ${
+                    batteryReadings.length >= 5
+                      ? 'bg-gray-400 text-white cursor-not-allowed opacity-60'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  <Plus size={18} />
+                  ADD BATTERY
+                </button>
+                {batteryReadings.length >= 5 && (
+                  <span className="text-red-600 text-sm font-medium">Only 5 batteries can be added</span>
+                )}
+              </div>
             )}
           </div>
         </div>

@@ -194,6 +194,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                 <th className="border border-gray-300 px-3 py-2 text-center">PART NO.</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">DESCRIPTION</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">COST</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">LINE ITEM TOTAL</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">FROM</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">ACTION</th>
               </tr>
@@ -243,6 +244,9 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
                       className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
                     />
                   </td>
+                  <td className="border border-gray-300 px-2 py-2 bg-gray-100 text-center font-medium">
+                    ${((parseFloat(part.qty) || 0) * (parseFloat(part.cost) || 0)).toFixed(2)}
+                  </td>
                   <td className="border border-gray-300 px-2 py-2">
                     <select
                       value={part.from}
@@ -270,6 +274,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
               <tr className="bg-blue-100 font-bold">
                 <td colSpan={3} className="border border-gray-300 px-4 py-2 text-right">TOTAL PARTS</td>
                 <td className="border border-gray-300 px-4 py-2">${totalPartsCost.toFixed(2)}</td>
+                <td className="border border-gray-300 px-4 py-2 bg-gray-100 text-center font-bold">${totalPartsCost.toFixed(2)}</td>
                 <td colSpan={2} className="border border-gray-300"></td>
               </tr>
             </tbody>
