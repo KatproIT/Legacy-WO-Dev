@@ -147,8 +147,8 @@ export async function generatePDF(
       (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
-      (table as HTMLElement).style.marginBottom = '24px';
-      (table as HTMLElement).style.marginTop = '12px';
+      (table as HTMLElement).style.marginBottom = '10px';
+      (table as HTMLElement).style.marginTop = '4px';
       (table as HTMLElement).style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif';
 
       if (isLoadBankTable) {
@@ -161,7 +161,7 @@ export async function generatePDF(
       }
     });
 
-    // Professional table cell styling with better spacing
+    // Compact table cell styling
     const tableCells = clonedContainer.querySelectorAll('td, th');
     tableCells.forEach(cell => {
       const table = cell.closest('table');
@@ -186,19 +186,19 @@ export async function generatePDF(
           (cell as HTMLElement).style.letterSpacing = '0.02em';
         }
       } else {
-        (cell as HTMLElement).style.padding = '16px 14px';
-        (cell as HTMLElement).style.minHeight = '48px';
-        (cell as HTMLElement).style.lineHeight = '1.6';
+        (cell as HTMLElement).style.padding = '7px 6px';
+        (cell as HTMLElement).style.minHeight = '24px';
+        (cell as HTMLElement).style.lineHeight = '1.3';
         (cell as HTMLElement).style.verticalAlign = 'middle';
-        (cell as HTMLElement).style.fontSize = '15px';
+        (cell as HTMLElement).style.fontSize = '10px';
         (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? '600' : '400';
         (cell as HTMLElement).style.color = '#1e293b';
         (cell as HTMLElement).style.fontFamily = '"Inter", sans-serif';
 
         if (cell.tagName === 'TH') {
           (cell as HTMLElement).style.backgroundColor = '#f1f5f9';
-          (cell as HTMLElement).style.borderBottom = '2px solid #cbd5e1';
-          (cell as HTMLElement).style.letterSpacing = '0.025em';
+          (cell as HTMLElement).style.borderBottom = '1.5px solid #cbd5e1';
+          (cell as HTMLElement).style.letterSpacing = '0.02em';
         }
       }
     });
@@ -353,11 +353,11 @@ export async function generatePDF(
       (row as HTMLElement).style.pageBreakInside = 'avoid';
     });
 
-    // Enhanced section spacing
+    // Compact section spacing
     const sections = clonedContainer.querySelectorAll('[data-section]');
     sections.forEach(section => {
-      (section as HTMLElement).style.marginBottom = '32px';
-      (section as HTMLElement).style.paddingBottom = '8px';
+      (section as HTMLElement).style.marginBottom = '12px';
+      (section as HTMLElement).style.paddingBottom = '4px';
     });
 
     const hiddenElements = clonedContainer.querySelectorAll('.hidden');
@@ -369,28 +369,66 @@ export async function generatePDF(
       htmlEl.style.opacity = '1';
     });
 
-    // Professional select styling with larger fonts
+    // Reduce label sizes and spacing
+    const labels = clonedContainer.querySelectorAll('label, .form-label');
+    labels.forEach(label => {
+      (label as HTMLElement).style.fontSize = '9px';
+      (label as HTMLElement).style.marginBottom = '2px';
+      (label as HTMLElement).style.lineHeight = '1.2';
+    });
+
+    // Reduce grid gap spacing
+    const grids = clonedContainer.querySelectorAll('.grid');
+    grids.forEach(grid => {
+      (grid as HTMLElement).style.gap = '8px';
+    });
+
+    // Reduce section header sizes
+    const sectionHeaders = clonedContainer.querySelectorAll('.section-header, h2, h3');
+    sectionHeaders.forEach(header => {
+      (header as HTMLElement).style.fontSize = '12px';
+      (header as HTMLElement).style.padding = '6px 10px';
+      (header as HTMLElement).style.marginBottom = '4px';
+    });
+
+    // Reduce padding on inner containers
+    const paddedContainers = clonedContainer.querySelectorAll('.p-4, .p-6');
+    paddedContainers.forEach(container => {
+      (container as HTMLElement).style.padding = '8px';
+    });
+
+    // Reduce space-y gaps
+    const spacedContainers = clonedContainer.querySelectorAll('.space-y-4, .space-y-6, .space-y-3');
+    spacedContainers.forEach(container => {
+      (container as HTMLElement).style.setProperty('--tw-space-y-reverse', '0');
+      const children = Array.from((container as HTMLElement).children);
+      children.forEach((child, idx) => {
+        if (idx > 0) (child as HTMLElement).style.marginTop = '6px';
+      });
+    });
+
+    // Compact select styling
     const selectElements = clonedContainer.querySelectorAll('select');
     selectElements.forEach((select, index) => {
       const selectedText = selectValues[index] || '';
 
       const replacement = document.createElement('div');
-      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.border = '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
-      replacement.style.height = '58px';
+      replacement.style.height = '28px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
-      replacement.style.borderRadius = '4px';
+      replacement.style.borderRadius = '3px';
 
       const span = document.createElement('span');
       span.textContent = selectedText;
       span.style.display = 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = '16px';
-      span.style.paddingRight = '16px';
+      span.style.paddingLeft = '8px';
+      span.style.paddingRight = '8px';
       span.style.color = '#1e293b';
-      span.style.fontSize = '16px';
+      span.style.fontSize = '11px';
       span.style.fontWeight = '500';
       span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.letterSpacing = '0.01em';
@@ -399,7 +437,7 @@ export async function generatePDF(
       select.parentNode?.replaceChild(replacement, select);
     });
 
-    // Professional input styling with larger fonts
+    // Compact input styling
     const inputElements = clonedContainer.querySelectorAll('input[type="text"], input[type="date"], input[type="month"], input[type="email"], input[type="tel"], input[type="number"], input[type="time"]');
     inputElements.forEach((input, index) => {
       if (input.closest('thead')) {
@@ -412,76 +450,76 @@ export async function generatePDF(
       const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
 
       const replacement = document.createElement('div');
-      replacement.style.border = isInTable ? 'none' : '1.5px solid #cbd5e1';
+      replacement.style.border = isInTable ? 'none' : '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
-      replacement.style.height = isInTable ? 'auto' : '58px';
-      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '44px') : '58px';
+      replacement.style.height = isInTable ? 'auto' : '28px';
+      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '22px') : '28px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '13px') : '0';
-      replacement.style.borderRadius = isInTable ? '0' : '4px';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '4px 6px') : '0';
+      replacement.style.borderRadius = isInTable ? '0' : '3px';
 
       const span = document.createElement('span');
       span.textContent = inputValue;
       span.style.display = isInTable ? 'block' : 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = isInTable ? '0' : '16px';
-      span.style.paddingRight = isInTable ? '0' : '16px';
+      span.style.paddingLeft = isInTable ? '0' : '8px';
+      span.style.paddingRight = isInTable ? '0' : '8px';
       span.style.color = '#1e293b';
-      span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '15px') : '16px';
+      span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '10px') : '11px';
       span.style.fontWeight = isInTable ? '400' : '500';
       span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = isLoadBankTable ? 'center' : 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = isLoadBankTable ? '1.3' : '1.5';
+      span.style.lineHeight = '1.3';
       span.style.letterSpacing = '0.01em';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
     });
 
-    // Enhanced checkbox styling
+    // Compact checkbox styling
     const checkboxElements = clonedContainer.querySelectorAll('input[type="checkbox"]');
     checkboxElements.forEach((checkbox, index) => {
       const isChecked = checkboxValues[index] || false;
 
       const replacement = document.createElement('span');
       replacement.textContent = isChecked ? '☑' : '☐';
-      replacement.style.fontSize = '22px';
+      replacement.style.fontSize = '14px';
       replacement.style.color = isChecked ? '#1e40af' : '#64748b';
       replacement.style.display = 'inline-block';
-      replacement.style.width = '24px';
-      replacement.style.height = '24px';
+      replacement.style.width = '16px';
+      replacement.style.height = '16px';
       replacement.style.textAlign = 'center';
-      replacement.style.lineHeight = '24px';
+      replacement.style.lineHeight = '16px';
       replacement.style.fontWeight = '600';
 
       checkbox.parentNode?.replaceChild(replacement, checkbox);
     });
 
-    // Professional textarea styling
+    // Compact textarea styling
     const textareaElements = clonedContainer.querySelectorAll('textarea');
     textareaElements.forEach((textarea, index) => {
       const textareaValue = textareaValues[index] || '';
 
       const replacement = document.createElement('div');
       replacement.textContent = textareaValue;
-      replacement.style.padding = '16px';
-      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.padding = '8px';
+      replacement.style.border = '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
       replacement.style.color = '#1e293b';
-      replacement.style.fontSize = '15px';
+      replacement.style.fontSize = '10px';
       replacement.style.fontWeight = '400';
-      replacement.style.lineHeight = '1.6';
-      replacement.style.minHeight = '90px';
+      replacement.style.lineHeight = '1.4';
+      replacement.style.minHeight = '40px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'block';
       replacement.style.whiteSpace = 'pre-wrap';
       replacement.style.wordWrap = 'break-word';
       replacement.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      replacement.style.borderRadius = '4px';
+      replacement.style.borderRadius = '3px';
       replacement.style.letterSpacing = '0.01em';
 
       textarea.parentNode?.replaceChild(replacement, textarea);
@@ -788,7 +826,7 @@ export async function generateLoadBankPDF(
     clonedContainer.style.width = '1200px';
     clonedContainer.style.backgroundColor = '#ffffff';
     clonedContainer.style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
-    clonedContainer.style.padding = '20px';
+    clonedContainer.style.padding = '10px';
     clonedContainer.classList.remove('hidden');
     clonedContainer.style.display = 'block';
     clonedContainer.style.visibility = 'visible';
@@ -834,6 +872,38 @@ export async function generateLoadBankPDF(
       htmlEl.style.opacity = '1';
     });
 
+    // Reduce label sizes and spacing
+    clonedContainer.querySelectorAll('label, .form-label').forEach(label => {
+      (label as HTMLElement).style.fontSize = '9px';
+      (label as HTMLElement).style.marginBottom = '2px';
+      (label as HTMLElement).style.lineHeight = '1.2';
+    });
+
+    // Reduce grid gap spacing
+    clonedContainer.querySelectorAll('.grid').forEach(grid => {
+      (grid as HTMLElement).style.gap = '8px';
+    });
+
+    // Reduce section header sizes
+    clonedContainer.querySelectorAll('.section-header, h2, h3').forEach(header => {
+      (header as HTMLElement).style.fontSize = '12px';
+      (header as HTMLElement).style.padding = '6px 10px';
+      (header as HTMLElement).style.marginBottom = '4px';
+    });
+
+    // Reduce padding on inner containers
+    clonedContainer.querySelectorAll('.p-4, .p-6').forEach(container => {
+      (container as HTMLElement).style.padding = '8px';
+    });
+
+    // Reduce space-y gaps
+    clonedContainer.querySelectorAll('.space-y-4, .space-y-6, .space-y-3').forEach(container => {
+      const children = Array.from((container as HTMLElement).children);
+      children.forEach((child, idx) => {
+        if (idx > 0) (child as HTMLElement).style.marginTop = '6px';
+      });
+    });
+
     // Style tables
     const tables = clonedContainer.querySelectorAll('table');
     tables.forEach(table => {
@@ -841,8 +911,8 @@ export async function generateLoadBankPDF(
       (table as HTMLElement).style.tableLayout = 'auto';
       (table as HTMLElement).style.width = '100%';
       (table as HTMLElement).style.borderCollapse = 'collapse';
-      (table as HTMLElement).style.marginBottom = '24px';
-      (table as HTMLElement).style.marginTop = '12px';
+      (table as HTMLElement).style.marginBottom = '10px';
+      (table as HTMLElement).style.marginTop = '4px';
       (table as HTMLElement).style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif';
       if (isLoadBankTable) {
         (table as HTMLElement).style.border = '1.5px solid #1e293b';
@@ -875,18 +945,18 @@ export async function generateLoadBankPDF(
           (cell as HTMLElement).style.letterSpacing = '0.02em';
         }
       } else {
-        (cell as HTMLElement).style.padding = '16px 14px';
-        (cell as HTMLElement).style.minHeight = '48px';
-        (cell as HTMLElement).style.lineHeight = '1.6';
+        (cell as HTMLElement).style.padding = '7px 6px';
+        (cell as HTMLElement).style.minHeight = '24px';
+        (cell as HTMLElement).style.lineHeight = '1.3';
         (cell as HTMLElement).style.verticalAlign = 'middle';
-        (cell as HTMLElement).style.fontSize = '15px';
+        (cell as HTMLElement).style.fontSize = '10px';
         (cell as HTMLElement).style.fontWeight = cell.tagName === 'TH' ? '600' : '400';
         (cell as HTMLElement).style.color = '#1e293b';
         (cell as HTMLElement).style.fontFamily = '"Inter", sans-serif';
         if (cell.tagName === 'TH') {
           (cell as HTMLElement).style.backgroundColor = '#f1f5f9';
-          (cell as HTMLElement).style.borderBottom = '2px solid #cbd5e1';
-          (cell as HTMLElement).style.letterSpacing = '0.025em';
+          (cell as HTMLElement).style.borderBottom = '1.5px solid #cbd5e1';
+          (cell as HTMLElement).style.letterSpacing = '0.02em';
         }
       }
     });
@@ -995,21 +1065,21 @@ export async function generateLoadBankPDF(
     selectElements.forEach((select, index) => {
       const selectedText = selectValues[index] || '';
       const replacement = document.createElement('div');
-      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.border = '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
-      replacement.style.height = '58px';
+      replacement.style.height = '28px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'table';
       replacement.style.width = '100%';
-      replacement.style.borderRadius = '4px';
+      replacement.style.borderRadius = '3px';
       const span = document.createElement('span');
       span.textContent = selectedText;
       span.style.display = 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = '16px';
-      span.style.paddingRight = '16px';
+      span.style.paddingLeft = '8px';
+      span.style.paddingRight = '8px';
       span.style.color = '#1e293b';
-      span.style.fontSize = '16px';
+      span.style.fontSize = '11px';
       span.style.fontWeight = '500';
       span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       replacement.appendChild(span);
@@ -1026,30 +1096,30 @@ export async function generateLoadBankPDF(
       const isLoadBankTable = table?.getAttribute('data-table-type') === 'load-bank';
 
       const replacement = document.createElement('div');
-      replacement.style.border = isInTable ? 'none' : '1.5px solid #cbd5e1';
+      replacement.style.border = isInTable ? 'none' : '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
-      replacement.style.height = isInTable ? 'auto' : '58px';
-      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '44px') : '58px';
+      replacement.style.height = isInTable ? 'auto' : '28px';
+      replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '22px') : '28px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = isInTable ? 'block' : 'table';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '13px') : '0';
-      replacement.style.borderRadius = isInTable ? '0' : '4px';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '4px 6px') : '0';
+      replacement.style.borderRadius = isInTable ? '0' : '3px';
 
       const span = document.createElement('span');
       span.textContent = inputValue;
       span.style.display = isInTable ? 'block' : 'table-cell';
       span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = isInTable ? '0' : '16px';
-      span.style.paddingRight = isInTable ? '0' : '16px';
+      span.style.paddingLeft = isInTable ? '0' : '8px';
+      span.style.paddingRight = isInTable ? '0' : '8px';
       span.style.color = '#1e293b';
-      span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '15px') : '16px';
+      span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '10px') : '11px';
       span.style.fontWeight = isInTable ? '400' : '500';
       span.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       span.style.textAlign = isLoadBankTable ? 'center' : 'left';
       span.style.wordWrap = 'break-word';
       span.style.overflowWrap = 'break-word';
-      span.style.lineHeight = isLoadBankTable ? '1.3' : '1.5';
+      span.style.lineHeight = '1.3';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
@@ -1061,13 +1131,13 @@ export async function generateLoadBankPDF(
       const isChecked = checkboxValues[index] || false;
       const replacement = document.createElement('span');
       replacement.textContent = isChecked ? '\u2611' : '\u2610';
-      replacement.style.fontSize = '22px';
+      replacement.style.fontSize = '14px';
       replacement.style.color = isChecked ? '#1e40af' : '#64748b';
       replacement.style.display = 'inline-block';
-      replacement.style.width = '24px';
-      replacement.style.height = '24px';
+      replacement.style.width = '16px';
+      replacement.style.height = '16px';
       replacement.style.textAlign = 'center';
-      replacement.style.lineHeight = '24px';
+      replacement.style.lineHeight = '16px';
       replacement.style.fontWeight = '600';
       checkbox.parentNode?.replaceChild(replacement, checkbox);
     });
@@ -1078,19 +1148,19 @@ export async function generateLoadBankPDF(
       const textareaValue = textareaValues[index] || '';
       const replacement = document.createElement('div');
       replacement.textContent = textareaValue;
-      replacement.style.padding = '16px';
-      replacement.style.border = '1.5px solid #cbd5e1';
+      replacement.style.padding = '8px';
+      replacement.style.border = '1px solid #cbd5e1';
       replacement.style.backgroundColor = '#ffffff';
       replacement.style.color = '#1e293b';
-      replacement.style.fontSize = '15px';
-      replacement.style.lineHeight = '1.6';
-      replacement.style.minHeight = '90px';
+      replacement.style.fontSize = '10px';
+      replacement.style.lineHeight = '1.4';
+      replacement.style.minHeight = '40px';
       replacement.style.boxSizing = 'border-box';
       replacement.style.display = 'block';
       replacement.style.whiteSpace = 'pre-wrap';
       replacement.style.wordWrap = 'break-word';
       replacement.style.fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      replacement.style.borderRadius = '4px';
+      replacement.style.borderRadius = '3px';
       textarea.parentNode?.replaceChild(replacement, textarea);
     });
 
