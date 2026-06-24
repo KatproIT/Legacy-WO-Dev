@@ -98,6 +98,7 @@ export async function generatePDF(
     clonedContainer.style.width = '1200px';
     clonedContainer.style.backgroundColor = '#ffffff';
     clonedContainer.style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
+    clonedContainer.style.paddingTop = '0';
     document.body.appendChild(clonedContainer);
 
     // Handle Load Bank table DEL column removal BEFORE other no-print elements
@@ -129,6 +130,16 @@ export async function generatePDF(
     // Remove all other no-print elements from clone
     const noPrintElements = clonedContainer.querySelectorAll('.no-print');
     noPrintElements.forEach(el => el.remove());
+
+    // Remove top margin from first visible child to eliminate gap after header
+    const firstChild = clonedContainer.firstElementChild as HTMLElement;
+    if (firstChild) {
+      firstChild.style.marginTop = '0';
+    }
+    const allChildren = clonedContainer.querySelectorAll(':scope > *');
+    allChildren.forEach(child => {
+      (child as HTMLElement).style.marginTop = '0';
+    });
 
     const buttons = clonedContainer.querySelectorAll('button');
     buttons.forEach(btn => btn.remove());
@@ -828,6 +839,7 @@ export async function generateLoadBankPDF(
     clonedContainer.style.backgroundColor = '#ffffff';
     clonedContainer.style.fontFamily = '"Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
     clonedContainer.style.padding = '10px';
+    clonedContainer.style.paddingTop = '0';
     clonedContainer.classList.remove('hidden');
     clonedContainer.style.display = 'block';
     clonedContainer.style.visibility = 'visible';
@@ -863,6 +875,12 @@ export async function generateLoadBankPDF(
     // Remove no-print elements and buttons
     clonedContainer.querySelectorAll('.no-print').forEach(el => el.remove());
     clonedContainer.querySelectorAll('button').forEach(btn => btn.remove());
+
+    // Remove top margin from first visible child to eliminate gap after header
+    const lbFirstChild = clonedContainer.firstElementChild as HTMLElement;
+    if (lbFirstChild) {
+      lbFirstChild.style.marginTop = '0';
+    }
 
     // Unhide hidden elements within the section
     clonedContainer.querySelectorAll('.hidden').forEach(el => {
