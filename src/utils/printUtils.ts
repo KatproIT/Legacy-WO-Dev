@@ -373,8 +373,9 @@ export async function generatePDF(
     const labels = clonedContainer.querySelectorAll('label, .form-label');
     labels.forEach(label => {
       (label as HTMLElement).style.fontSize = '9px';
-      (label as HTMLElement).style.marginBottom = '2px';
-      (label as HTMLElement).style.lineHeight = '1.2';
+      (label as HTMLElement).style.marginBottom = '6px';
+      (label as HTMLElement).style.lineHeight = '1.4';
+      (label as HTMLElement).style.display = 'block';
     });
 
     // Reduce grid gap spacing
@@ -875,8 +876,9 @@ export async function generateLoadBankPDF(
     // Reduce label sizes and spacing
     clonedContainer.querySelectorAll('label, .form-label').forEach(label => {
       (label as HTMLElement).style.fontSize = '9px';
-      (label as HTMLElement).style.marginBottom = '2px';
-      (label as HTMLElement).style.lineHeight = '1.2';
+      (label as HTMLElement).style.marginBottom = '6px';
+      (label as HTMLElement).style.lineHeight = '1.4';
+      (label as HTMLElement).style.display = 'block';
     });
 
     // Reduce grid gap spacing
