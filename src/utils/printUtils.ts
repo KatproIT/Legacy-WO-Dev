@@ -141,6 +141,23 @@ export async function generatePDF(
       (child as HTMLElement).style.marginTop = '0';
     });
 
+    // Replace ATS exerciser toggle with plain text before removing buttons
+    const atsExerciserSection = clonedContainer.querySelector('[data-print-section="ats-exerciser"]');
+    if (atsExerciserSection) {
+      const toggleLabel = atsExerciserSection.querySelector('label');
+      if (toggleLabel) {
+        const spans = toggleLabel.querySelectorAll('span');
+        const stateText = spans.length >= 2 ? (spans[spans.length - 1].textContent || '').trim() : 'ENABLED';
+        const replacement = document.createElement('div');
+        replacement.style.fontWeight = '600';
+        replacement.style.fontSize = '13px';
+        replacement.style.color = '#1e40af';
+        replacement.style.marginBottom = '8px';
+        replacement.textContent = stateText;
+        toggleLabel.replaceWith(replacement);
+      }
+    }
+
     const buttons = clonedContainer.querySelectorAll('button');
     buttons.forEach(btn => btn.remove());
 
