@@ -767,21 +767,32 @@ export async function generatePDF(
         // Find the best break point by checking which static sections would be cut
         let bestBreakPoint = sliceEnd;
 
-        // Check all static sections - find the one being cut that gives us the best break
-        for (let i = sectionBreakpoints.length - 1; i >= 0; i--) {
+        // Force page break before battery section - always push it to a new page
+        for (let i = 0; i < sectionBreakpoints.length; i++) {
           const section = sectionBreakpoints[i];
-          if (section.isDynamic) continue;
+          if (section.name === 'battery-info' && section.topMm > currentY && section.topMm < sliceEnd) {
+            bestBreakPoint = section.topMm;
+            break;
+          }
+        }
 
-          const sectionStart = section.topMm;
-          const sectionEnd = section.bottomMm;
+        // Check all static sections - find the one being cut that gives us the best break
+        if (bestBreakPoint === sliceEnd) {
+          for (let i = sectionBreakpoints.length - 1; i >= 0; i--) {
+            const section = sectionBreakpoints[i];
+            if (section.isDynamic) continue;
 
-          // Section is being cut if it starts before slice end AND ends after slice end
-          if (sectionStart < sliceEnd && sectionEnd > sliceEnd && sectionStart > currentY) {
-            const spaceWasted = sliceEnd - sectionStart;
-            const maxWaste = availableHeight * 0.35;
+            const sectionStart = section.topMm;
+            const sectionEnd = section.bottomMm;
 
-            if (spaceWasted < maxWaste) {
-              bestBreakPoint = sectionStart;
+            // Section is being cut if it starts before slice end AND ends after slice end
+            if (sectionStart < sliceEnd && sectionEnd > sliceEnd && sectionStart > currentY) {
+              const spaceWasted = sliceEnd - sectionStart;
+              const maxWaste = availableHeight * 0.35;
+
+              if (spaceWasted < maxWaste) {
+                bestBreakPoint = sectionStart;
+              }
             }
           }
         }
