@@ -446,16 +446,15 @@ export async function generatePDF(
       replacement.style.backgroundColor = '#ffffff';
       replacement.style.height = '28px';
       replacement.style.boxSizing = 'border-box';
-      replacement.style.display = 'table';
+      replacement.style.display = 'flex';
+      replacement.style.alignItems = 'center';
       replacement.style.width = '100%';
       replacement.style.borderRadius = '3px';
+      replacement.style.padding = '0 8px';
 
       const span = document.createElement('span');
       span.textContent = selectedText;
-      span.style.display = 'table-cell';
-      span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = '8px';
-      span.style.paddingRight = '8px';
+      span.style.display = 'block';
       span.style.color = '#1e293b';
       span.style.fontSize = '11px';
       span.style.fontWeight = '500';
@@ -484,17 +483,15 @@ export async function generatePDF(
       replacement.style.height = isInTable ? 'auto' : '28px';
       replacement.style.minHeight = isInTable ? (isLoadBankTable ? '28px' : '22px') : '28px';
       replacement.style.boxSizing = 'border-box';
-      replacement.style.display = isInTable ? 'block' : 'table';
+      replacement.style.display = isInTable ? 'flex' : 'flex';
+      replacement.style.alignItems = 'center';
       replacement.style.width = '100%';
-      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '4px 6px') : '0';
+      replacement.style.padding = isInTable ? (isLoadBankTable ? '6px 4px' : '4px 6px') : '0 8px';
       replacement.style.borderRadius = isInTable ? '0' : '3px';
 
       const span = document.createElement('span');
       span.textContent = inputValue;
-      span.style.display = isInTable ? 'block' : 'table-cell';
-      span.style.verticalAlign = 'middle';
-      span.style.paddingLeft = isInTable ? '0' : '8px';
-      span.style.paddingRight = isInTable ? '0' : '8px';
+      span.style.display = 'block';
       span.style.color = '#1e293b';
       span.style.fontSize = isInTable ? (isLoadBankTable ? '10px' : '10px') : '11px';
       span.style.fontWeight = isInTable ? '400' : '500';
@@ -504,6 +501,7 @@ export async function generatePDF(
       span.style.overflowWrap = 'break-word';
       span.style.lineHeight = '1.3';
       span.style.letterSpacing = '0.01em';
+      span.style.width = '100%';
 
       replacement.appendChild(span);
       input.parentNode?.replaceChild(replacement, input);
