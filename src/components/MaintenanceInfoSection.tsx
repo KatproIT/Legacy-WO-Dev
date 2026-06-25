@@ -18,7 +18,7 @@ export function MaintenanceInfoSection({ formData, onChange, readOnly, hasValida
   const isRequired = !serviceCallOnly;
 
   return (
-    <div className="section-card">
+    <div className="section-card" data-print-section="ats-exerciser">
       <h2
         className="section-header cursor-pointer flex items-center gap-2 hover:bg-gray-50"
         onClick={() => setIsCollapsed(!isCollapsed)}

@@ -63,8 +63,8 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
   }, 0);
 
   return (
-    <div className="space-y-6 mt-6">
-      <div className="bg-white border border-gray-300 shadow-sm">
+    <div className="space-y-6 mt-6" data-print-dynamic="true">
+      <div className="bg-white border border-gray-300 shadow-sm" data-print-section="service-interval">
         <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           MANUFACTURE - FACTORY RECOMMENDED SERVICE INTERVAL
         </div>
@@ -105,7 +105,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
         </div>
       </div>
 
-      <div className="bg-white border border-gray-300 shadow-sm">
+      <div className="bg-white border border-gray-300 shadow-sm" data-print-section="recommended-parts" data-print-dynamic="true">
         <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           RECOMMENDED PARTS REPLACEMENT
         </div>
@@ -181,7 +181,7 @@ export function DynamicTablesSection({ formData, onChange, readOnly }: DynamicTa
         </div>
       </div>
 
-      <div className="bg-white border border-gray-300 shadow-sm" data-section="parts-supplies">
+      <div className="bg-white border border-gray-300 shadow-sm" data-section="parts-supplies" data-print-section="parts-supplies" data-print-dynamic="true">
         <div className="bg-blue-600 text-white px-4 py-2 font-semibold">
           PARTS & SUPPLIES USED
         </div>

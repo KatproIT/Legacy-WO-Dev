@@ -566,6 +566,20 @@ export async function generatePDF(
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
+    // Measure section positions before rendering to canvas
+    const containerRect = clonedContainer.getBoundingClientRect();
+    const sectionElements = clonedContainer.querySelectorAll('[data-print-section]');
+    const sectionMeasurements: { top: number; height: number; isDynamic: boolean; name: string }[] = [];
+    sectionElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      sectionMeasurements.push({
+        top: rect.top - containerRect.top,
+        height: rect.height,
+        isDynamic: el.hasAttribute('data-print-dynamic'),
+        name: el.getAttribute('data-print-section') || ''
+      });
+    });
+
     const canvas = await html2canvas(clonedContainer, {
       scale: 2.5,
       useCORS: true,
@@ -576,6 +590,7 @@ export async function generatePDF(
       removeContainer: false,
     });
 
+    const containerWidth = clonedContainer.offsetWidth;
     document.body.removeChild(clonedContainer);
 
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -718,7 +733,17 @@ export async function generatePDF(
       pdf.text(`Page ${pageNum}`, pageWidth - contentMargin, pageHeight - 4, { align: 'right' });
     };
 
-    // Add pages
+    // Add pages with section-aware page breaking
+    // Convert section measurements from pixels to mm (same scale as imgHeight)
+    const pxToMm = imgWidth / containerWidth;
+    const sectionBreakpoints = sectionMeasurements.map(s => ({
+      topMm: s.top * pxToMm,
+      heightMm: s.height * pxToMm,
+      bottomMm: (s.top + s.height) * pxToMm,
+      isDynamic: s.isDynamic,
+      name: s.name
+    }));
+
     while (currentY < imgHeight) {
       if (pageNumber > 1) {
         pdf.addPage();
@@ -732,13 +757,43 @@ export async function generatePDF(
       addHeader(pdf, isFirstPage);
       addFooter(pdf, pageNumber);
 
-      // Calculate how much content fits on this page
-      const remainingHeight = imgHeight - currentY;
-      const heightToAdd = Math.min(remainingHeight, availableHeight);
+      // Calculate the natural slice end
+      let sliceEnd = currentY + availableHeight;
+
+      // If there's still content after this slice, check if we're cutting a static section
+      if (sliceEnd < imgHeight) {
+        // Find the best break point by checking which static sections would be cut
+        let bestBreakPoint = sliceEnd;
+
+        // Check all static sections - find the one being cut that gives us the best break
+        for (let i = sectionBreakpoints.length - 1; i >= 0; i--) {
+          const section = sectionBreakpoints[i];
+          if (section.isDynamic) continue;
+
+          const sectionStart = section.topMm;
+          const sectionEnd = section.bottomMm;
+
+          // Section is being cut if it starts before slice end AND ends after slice end
+          if (sectionStart < sliceEnd && sectionEnd > sliceEnd && sectionStart > currentY) {
+            const spaceWasted = sliceEnd - sectionStart;
+            const maxWaste = availableHeight * 0.35;
+
+            if (spaceWasted < maxWaste) {
+              bestBreakPoint = sectionStart;
+            }
+          }
+        }
+
+        sliceEnd = bestBreakPoint;
+      }
+
+      // Safety: ensure we always advance at least a small amount to prevent infinite loop
+      const heightToAdd = Math.max(sliceEnd - currentY, availableHeight * 0.2);
+      const clampedHeight = Math.min(heightToAdd, imgHeight - currentY);
 
       // Add content slice
       const sourceY = (currentY / imgHeight) * canvas.height;
-      const sourceHeight = (heightToAdd / imgHeight) * canvas.height;
+      const sourceHeight = (clampedHeight / imgHeight) * canvas.height;
 
       // Create a temporary canvas for this page slice
       const tempCanvas = document.createElement('canvas');
@@ -768,7 +823,7 @@ export async function generatePDF(
         );
       }
 
-      currentY += heightToAdd;
+      currentY += clampedHeight;
       pageNumber++;
     }
 

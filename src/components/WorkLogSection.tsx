@@ -86,7 +86,7 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="section-card" data-section="time-on-job">
+      <div className="section-card" data-section="time-on-job" data-print-section="time-on-job" data-print-dynamic="true">
         <h2 className="section-header">
           TIME ON JOB
         </h2>
@@ -187,7 +187,7 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" data-print-section="charges-totals" data-print-dynamic="true">
         <div className="section-card" data-section="additional-charges">
           <div className="bg-blue-100 px-4 py-2 font-semibold border-b border-gray-300">
             ADDITIONAL CHARGES

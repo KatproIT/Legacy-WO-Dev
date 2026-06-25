@@ -82,7 +82,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
   };
 
   return (
-    <div className="section-card">
+    <div className="section-card" data-print-section="maintenance-info">
       <h2
         className="section-header cursor-pointer flex items-center gap-2 hover:bg-gray-50"
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -93,7 +93,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
 
       {!isCollapsed && (
       <div className="p-4 space-y-4">
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="fuel-info">
           <h3 className="font-semibold mb-3">FUEL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
@@ -151,7 +151,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="oil-info">
           <h3 className="font-semibold mb-3">OIL INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
@@ -211,7 +211,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="filter-info">
           <h3 className="font-semibold mb-3">FILTER INFORMATION</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -309,7 +309,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="system-checks">
           <h3 className="font-semibold mb-3">SYSTEM CHECKS</h3>
 
           <div className="mb-3">
@@ -461,7 +461,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="electrical-readings">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <h3 className="font-semibold mb-3">ELECTRICAL READINGS</h3>
@@ -554,7 +554,7 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="battery-info" data-print-dynamic="true">
           <h3 className="font-semibold mb-3">BATTERY INFORMATION {isRequired && <span className="text-red-600">*</span>}</h3>
           <div className="space-y-6">
             {batteryReadings.map((battery, index) => (

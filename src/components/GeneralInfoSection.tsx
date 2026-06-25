@@ -13,7 +13,7 @@ export function GeneralInfoSection({ formData, onChange, readOnly, hasValidation
   // Job number can be edited in drafts, but locked after submission
   const isJobNumberLocked = readOnly || isExistingForm;
   return (
-    <div className="section-card">
+    <div className="section-card" data-print-section="general-info">
       <h2 className="section-header">
         FIELD SERVICE REPORT - WORK ORDER
       </h2>
