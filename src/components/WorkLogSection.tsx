@@ -1,6 +1,4 @@
-import { Trash2, Plus } from 'lucide-react';
 import { FormSubmission, TimeEntry } from '../types/form';
-import { getInputClass } from '../utils/formValidation';
 
 interface WorkLogSectionProps {
   formData: FormSubmission;
@@ -9,7 +7,32 @@ interface WorkLogSectionProps {
   hasValidationErrors: boolean;
 }
 
-export function WorkLogSection({ formData, onChange, readOnly, hasValidationErrors }: WorkLogSectionProps) {
+const TIME_ENTRY_ROWS = 10;
+
+function getOrdinal(n: number): string {
+  const suffixes = ['TH', 'ST', 'ND', 'RD'];
+  const v = n % 100;
+  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+}
+
+function makeEmptyTimeEntry(index: number): TimeEntry {
+  return {
+    id: `time-slot-${index}`,
+    activity: `(${getOrdinal(index + 1)} DAY) TIME ON JOB`,
+    date: '',
+    rate: '',
+    startTime: '00:00',
+    endTime: '00:00',
+  };
+}
+
+function isTimeEntryEmpty(entry: TimeEntry | undefined): boolean {
+  if (!entry) return true;
+  const bothTimesZero = (!entry.startTime || entry.startTime === '00:00') && (!entry.endTime || entry.endTime === '00:00');
+  return !entry.date && !entry.rate && bothTimesZero;
+}
+
+export function WorkLogSection({ formData, onChange, readOnly }: WorkLogSectionProps) {
   const timeEntries = formData.time_on_job || [];
   const tripCharge = formData.trip_charge || 0;
   const environmentalFee = formData.environmental_fee || 0;
@@ -51,42 +74,28 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
 
   const grandTotal = totalLaborCost + totalPartsCost + tripCharge + environmentalFee + consumables;
 
-  const addTimeEntry = () => {
-    const newEntry: TimeEntry = {
-      id: Date.now().toString(),
-      activity: `(${getOrdinal(timeEntries.length + 1)} DAY) TIME ON JOB`,
-      date: '',
-      rate: '',
-      startTime: '00:00',
-      endTime: '00:00'
-    };
-    onChange('time_on_job', [...timeEntries, newEntry]);
-  };
-
-  const removeTimeEntry = (id: string) => {
-    const updated = timeEntries.filter(e => e.id !== id);
-    const renumbered = updated.map((entry, index) => ({
-      ...entry,
-      activity: `(${getOrdinal(index + 1)} DAY) TIME ON JOB`
-    }));
-    onChange('time_on_job', renumbered);
-  };
-
-  const updateTimeEntry = (id: string, field: keyof TimeEntry, value: any) => {
-    onChange('time_on_job', timeEntries.map(e =>
-      e.id === id ? { ...e, [field]: value } : e
-    ));
-  };
-
-  const getOrdinal = (n: number): string => {
-    const suffixes = ['TH', 'ST', 'ND', 'RD'];
-    const v = n % 100;
-    return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+  const updateTimeEntryAt = (index: number, field: keyof TimeEntry, value: any) => {
+    const padded: TimeEntry[] = [];
+    for (let i = 0; i <= index; i++) {
+      const existing = timeEntries[i];
+      if (existing) {
+        padded.push({ ...existing, activity: `(${getOrdinal(i + 1)} DAY) TIME ON JOB` });
+      } else {
+        const empty = makeEmptyTimeEntry(i);
+        empty.id = `${Date.now()}-t-${i}`;
+        padded.push(empty);
+      }
+    }
+    for (let i = index + 1; i < timeEntries.length; i++) {
+      padded.push({ ...timeEntries[i], activity: `(${getOrdinal(i + 1)} DAY) TIME ON JOB` });
+    }
+    padded[index] = { ...padded[index], [field]: value };
+    onChange('time_on_job', padded.slice(0, TIME_ENTRY_ROWS));
   };
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="section-card" data-section="time-on-job" data-print-section="time-on-job" data-print-dynamic="true">
+      <div className="section-card" data-section="time-on-job" data-print-section="time-on-job">
         <h2 className="section-header">
           TIME ON JOB
         </h2>
@@ -102,25 +111,28 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
                 <th className="border border-gray-300 px-3 py-2 text-center">END TIME</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">TOTAL TIME</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">TOTAL ($)</th>
-                <th className="border border-gray-300 px-3 py-2 text-center">ACTION</th>
               </tr>
             </thead>
             <tbody>
-              {timeEntries.map((entry, index) => {
+              {Array.from({ length: TIME_ENTRY_ROWS }, (_, index) => {
+                const entry = timeEntries[index] ?? makeEmptyTimeEntry(index);
+                const empty = isTimeEntryEmpty(timeEntries[index]);
                 const totalTime = calculateTotalTime(entry.startTime, entry.endTime);
                 const totalDollar = calculateTotalDollar(entry.rate, totalTime);
+                const rowBg = empty ? 'bg-gray-50' : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
+                const cellBg = empty ? 'bg-gray-100' : '';
 
                 return (
-                  <tr key={entry.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="border border-gray-300 px-3 py-2 font-medium">{entry.activity}</td>
+                  <tr key={index} className={rowBg}>
+                    <td className={`border border-gray-300 px-3 py-2 font-medium ${empty ? 'text-gray-400' : ''}`}>{`(${getOrdinal(index + 1)} DAY) TIME ON JOB`}</td>
                     <td className="border border-gray-300 px-2 py-2">
                       <input
                         type="date"
                         value={entry.date}
-                        onChange={(e) => updateTimeEntry(entry.id, 'date', e.target.value)}
+                        onChange={(e) => updateTimeEntryAt(index, 'date', e.target.value)}
                         disabled={readOnly}
                         placeholder="DD-MM-YYYY"
-                        className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${cellBg}`}
                       />
                     </td>
                     <td className="border border-gray-300 px-2 py-2">
@@ -129,45 +141,35 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
                         min="0"
                         step="0.01"
                         value={entry.rate}
-                        onChange={(e) => updateTimeEntry(entry.id, 'rate', e.target.value)}
+                        onChange={(e) => updateTimeEntryAt(index, 'rate', e.target.value)}
                         disabled={readOnly}
                         placeholder="$0.00"
-                        className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${cellBg}`}
                       />
                     </td>
                     <td className="border border-gray-300 px-2 py-2">
                       <input
                         type="time"
                         value={entry.startTime}
-                        onChange={(e) => updateTimeEntry(entry.id, 'startTime', e.target.value)}
+                        onChange={(e) => updateTimeEntryAt(index, 'startTime', e.target.value)}
                         disabled={readOnly}
-                        className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${cellBg}`}
                       />
                     </td>
                     <td className="border border-gray-300 px-2 py-2">
                       <input
                         type="time"
                         value={entry.endTime}
-                        onChange={(e) => updateTimeEntry(entry.id, 'endTime', e.target.value)}
+                        onChange={(e) => updateTimeEntryAt(index, 'endTime', e.target.value)}
                         disabled={readOnly}
-                        className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                        className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${cellBg}`}
                       />
                     </td>
-                    <td className="border border-gray-300 px-3 py-2 text-center font-medium">
+                    <td className={`border border-gray-300 px-3 py-2 text-center font-medium ${empty ? 'text-gray-400' : ''}`}>
                       {totalTime.toFixed(2)} HRS
                     </td>
-                    <td className="border border-gray-300 px-3 py-2 text-center font-medium">
+                    <td className={`border border-gray-300 px-3 py-2 text-center font-medium ${empty ? 'text-gray-400' : ''}`}>
                       ${totalDollar.toFixed(2)}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center">
-                      {!readOnly && (
-                        <button
-                          onClick={() => removeTimeEntry(entry.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
                     </td>
                   </tr>
                 );
@@ -175,15 +177,6 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
             </tbody>
             </table>
           </div>
-          {!readOnly && (
-            <button
-              onClick={addTimeEntry}
-              className="mt-3 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={18} />
-              ADD DAY
-            </button>
-          )}
         </div>
       </div>
 
@@ -267,27 +260,6 @@ export function WorkLogSection({ formData, onChange, readOnly, hasValidationErro
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="section-card">
-        <h2 className="section-header">
-          WORK PERFORMED <span className="text-red-600">*</span>
-        </h2>
-        <div className="p-4">
-          <textarea
-            value={formData.work_performed || ''}
-            onChange={(e) => onChange('work_performed', e.target.value)}
-            disabled={readOnly}
-            rows={6}
-            spellCheck={true}
-            className={`w-full px-3 py-2 focus:outline-none disabled:bg-gray-100 resize-y ${
-              hasValidationErrors && (!formData.work_performed || formData.work_performed === '')
-                ? 'border-2 border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500'
-                : 'border border-gray-300 focus:ring-2 focus:ring-blue-500'
-            }`}
-            placeholder="Describe the work performed..."
-          />
         </div>
       </div>
     </div>

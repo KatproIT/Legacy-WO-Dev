@@ -774,10 +774,11 @@ export async function generatePDF(
         // Find the best break point by checking which static sections would be cut
         let bestBreakPoint = sliceEnd;
 
-        // Force page break before battery section - always push it to a new page
+        // Force page break before specific static sections - always push them to a new page
+        const forceBreakSections = ['battery-info', 'service-interval', 'time-on-job', 'load-bank-report'];
         for (let i = 0; i < sectionBreakpoints.length; i++) {
           const section = sectionBreakpoints[i];
-          if (section.name === 'battery-info' && section.topMm > currentY && section.topMm < sliceEnd) {
+          if (forceBreakSections.includes(section.name) && section.topMm > currentY && section.topMm < sliceEnd) {
             bestBreakPoint = section.topMm;
             break;
           }

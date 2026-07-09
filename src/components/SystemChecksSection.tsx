@@ -1,7 +1,37 @@
 import { useState } from 'react';
 import { FormSubmission, BatteryReading } from '../types/form';
-import { ChevronDown, ChevronRight, Trash2, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { getInputClass, isServiceCallRepairOnly } from '../utils/formValidation';
+
+const BATTERY_SLOT_COUNT = 4;
+
+function makeEmptyBattery(index: number): BatteryReading {
+  return {
+    id: `battery-slot-${index}`,
+    battery: index + 1,
+    batteryDate: '',
+    batteryType: '',
+    batteryChargerVolts: '',
+    voltage: '',
+    ccaRating: '',
+    ccaTested: '',
+    testedPercent: '',
+    passFail: 'Pass',
+  };
+}
+
+function isBatteryEmpty(b: BatteryReading | undefined): boolean {
+  if (!b) return true;
+  const noDate = !b.batteryDate || b.batteryDate === '';
+  return (
+    noDate &&
+    !b.batteryType &&
+    !b.batteryChargerVolts &&
+    !b.voltage &&
+    !b.ccaRating &&
+    !b.ccaTested
+  );
+}
 
 interface SystemChecksSectionProps {
   formData: FormSubmission;
@@ -55,30 +85,23 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
     onChange(field, formattedTime);
   };
 
-  const addBattery = () => {
-    const newBattery: BatteryReading = {
-      id: Date.now().toString(),
-      battery: batteryReadings.length + 1,
-      batteryDate: '',
-      batteryType: '',
-      batteryChargerVolts: '',
-      voltage: '',
-      ccaRating: '',
-      ccaTested: '',
-      testedPercent: '',
-      passFail: 'Pass'
-    };
-    onChange('battery_health_readings', [...batteryReadings, newBattery]);
-  };
-
-  const removeBattery = (id: string) => {
-    onChange('battery_health_readings', batteryReadings.filter(b => b.id !== id));
-  };
-
-  const updateBattery = (id: string, field: keyof BatteryReading, value: any) => {
-    onChange('battery_health_readings', batteryReadings.map(b =>
-      b.id === id ? { ...b, [field]: value } : b
-    ));
+  const updateBatteryAtIndex = (index: number, field: keyof BatteryReading, value: any) => {
+    const padded: BatteryReading[] = [];
+    for (let i = 0; i <= index; i++) {
+      const existing = batteryReadings[i];
+      if (existing) {
+        padded.push(existing);
+      } else {
+        const empty = makeEmptyBattery(i);
+        empty.id = `${Date.now()}-${i}`;
+        padded.push(empty);
+      }
+    }
+    for (let i = index + 1; i < batteryReadings.length; i++) {
+      padded.push(batteryReadings[i]);
+    }
+    padded[index] = { ...padded[index], [field]: value };
+    onChange('battery_health_readings', padded);
   };
 
   return (
@@ -554,155 +577,135 @@ export function SystemChecksSection({ formData, onChange, readOnly, hasValidatio
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="battery-info" data-print-dynamic="true">
+        <div className="bg-gray-50 p-4 border border-gray-300" data-print-section="battery-info">
           <h3 className="font-semibold mb-3">BATTERY INFORMATION {isRequired && <span className="text-red-600">*</span>}</h3>
           <div className="space-y-6">
-            {batteryReadings.map((battery, index) => (
-              <div key={battery.id}>
-                {index > 0 && (
-                  <div className="mb-6 border-t-2 border-gray-300"></div>
-                )}
+            {Array.from({ length: BATTERY_SLOT_COUNT }, (_, index) => {
+              const battery = batteryReadings[index] ?? makeEmptyBattery(index);
+              const empty = isBatteryEmpty(batteryReadings[index]);
+              const rowBaseClass = empty ? 'opacity-70' : '';
+              const inputBg = empty ? 'bg-gray-100' : '';
+              return (
+                <div key={index} className={rowBaseClass}>
+                  {index > 0 && (
+                    <div className="mb-6 border-t-2 border-gray-300"></div>
+                  )}
 
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-700">BATTERY {battery.battery}</h3>
-                    {!readOnly && (
-                      <button
-                        onClick={() => removeBattery(battery.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors flex items-center gap-2"
-                      >
-                        <Trash2 size={18} />
-                        REMOVE
-                      </button>
-                    )}
-                  </div>
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className={`text-lg font-semibold ${empty ? 'text-gray-400' : 'text-gray-700'}`}>BATTERY {index + 1}</h3>
+                      {empty && (
+                        <span className="text-xs uppercase tracking-wide text-gray-400 font-medium">EMPTY</span>
+                      )}
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="form-label">BATTERY DATE</label>
-                      <input
-                        type="month"
-                        value={battery.batteryDate === 'NO_DATE' ? '' : (battery.batteryDate || '')}
-                        onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.value)}
-                        disabled={readOnly || battery.batteryDate === 'NO_DATE'}
-                        placeholder="MM/YYYY"
-                        className={`form-input ${battery.batteryDate === 'NO_DATE' ? 'opacity-50 bg-gray-100' : ''}`}
-                      />
-                      <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <label className="form-label">BATTERY DATE</label>
                         <input
-                          type="checkbox"
-                          checked={battery.batteryDate === 'NO_DATE'}
-                          onChange={(e) => updateBattery(battery.id, 'batteryDate', e.target.checked ? 'NO_DATE' : '')}
-                          disabled={readOnly}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          type="month"
+                          value={battery.batteryDate === 'NO_DATE' ? '' : (battery.batteryDate || '')}
+                          onChange={(e) => updateBatteryAtIndex(index, 'batteryDate', e.target.value)}
+                          disabled={readOnly || battery.batteryDate === 'NO_DATE'}
+                          placeholder="MM/YYYY"
+                          className={`form-input ${battery.batteryDate === 'NO_DATE' ? 'opacity-50 bg-gray-100' : inputBg}`}
                         />
-                        <span className="text-sm text-gray-600">NO DATE</span>
-                      </label>
+                        <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={battery.batteryDate === 'NO_DATE'}
+                            onChange={(e) => updateBatteryAtIndex(index, 'batteryDate', e.target.checked ? 'NO_DATE' : '')}
+                            disabled={readOnly}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-600">NO DATE</span>
+                        </label>
+                      </div>
+                      <div>
+                        <label className="form-label">BATTERY TYPE</label>
+                        <input
+                          type="text"
+                          value={battery.batteryType || ''}
+                          onChange={(e) => updateBatteryAtIndex(index, 'batteryType', e.target.value.toUpperCase())}
+                          disabled={readOnly}
+                          className={`form-input ${inputBg}`}
+                          style={{ textTransform: 'uppercase' }}
+                        />
+                      </div>
+                      <div>
+                        <label className="form-label">BATTERY CHARGER VOLTS</label>
+                        <input
+                          type="text"
+                          value={battery.batteryChargerVolts || ''}
+                          onChange={(e) => updateBatteryAtIndex(index, 'batteryChargerVolts', e.target.value.toUpperCase())}
+                          disabled={readOnly}
+                          className={`form-input ${inputBg}`}
+                          style={{ textTransform: 'uppercase' }}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="form-label">BATTERY TYPE</label>
-                      <input
-                        type="text"
-                        value={battery.batteryType || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryType', e.target.value.toUpperCase())}
-                        disabled={readOnly}
-                        className="form-input"
-                        style={{ textTransform: 'uppercase' }}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label">BATTERY CHARGER VOLTS</label>
-                      <input
-                        type="text"
-                        value={battery.batteryChargerVolts || ''}
-                        onChange={(e) => updateBattery(battery.id, 'batteryChargerVolts', e.target.value.toUpperCase())}
-                        disabled={readOnly}
-                        className="form-input"
-                        style={{ textTransform: 'uppercase' }}
-                      />
-                    </div>
-                  </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-blue-100">
-                          <th className="border border-gray-300 px-3 py-2 text-center">VOLTAGE</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">CCA RATING</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">CCA TESTED</th>
-                          <th className="border border-gray-300 px-3 py-2 text-center">PASS/FAIL</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="bg-white">
-                          <td className="border border-gray-300 px-2 py-2">
-                            <input
-                              type="text"
-                              value={battery.voltage}
-                              onChange={(e) => updateBattery(battery.id, 'voltage', e.target.value.toUpperCase())}
-                              disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
-                            />
-                          </td>
-                          <td className="border border-gray-300 px-2 py-2">
-                            <input
-                              type="text"
-                              value={battery.ccaRating}
-                              onChange={(e) => updateBattery(battery.id, 'ccaRating', e.target.value.toUpperCase())}
-                              disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
-                            />
-                          </td>
-                          <td className="border border-gray-300 px-2 py-2">
-                            <input
-                              type="text"
-                              value={battery.ccaTested}
-                              onChange={(e) => updateBattery(battery.id, 'ccaTested', e.target.value.toUpperCase())}
-                              disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                              style={{ textTransform: 'uppercase' }}
-                            />
-                          </td>
-                          <td className="border border-gray-300 px-2 py-2">
-                            <select
-                              value={battery.passFail}
-                              onChange={(e) => updateBattery(battery.id, 'passFail', e.target.value)}
-                              disabled={readOnly}
-                              className="w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-                            >
-                              <option value="Pass">PASS</option>
-                              <option value="Fail">FAIL</option>
-                            </select>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-blue-100">
+                            <th className="border border-gray-300 px-3 py-2 text-center">VOLTAGE</th>
+                            <th className="border border-gray-300 px-3 py-2 text-center">CCA RATING</th>
+                            <th className="border border-gray-300 px-3 py-2 text-center">CCA TESTED</th>
+                            <th className="border border-gray-300 px-3 py-2 text-center">PASS/FAIL</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className={empty ? 'bg-gray-50' : 'bg-white'}>
+                            <td className="border border-gray-300 px-2 py-2">
+                              <input
+                                type="text"
+                                value={battery.voltage}
+                                onChange={(e) => updateBatteryAtIndex(index, 'voltage', e.target.value.toUpperCase())}
+                                disabled={readOnly}
+                                className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${inputBg}`}
+                                style={{ textTransform: 'uppercase' }}
+                              />
+                            </td>
+                            <td className="border border-gray-300 px-2 py-2">
+                              <input
+                                type="text"
+                                value={battery.ccaRating}
+                                onChange={(e) => updateBatteryAtIndex(index, 'ccaRating', e.target.value.toUpperCase())}
+                                disabled={readOnly}
+                                className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${inputBg}`}
+                                style={{ textTransform: 'uppercase' }}
+                              />
+                            </td>
+                            <td className="border border-gray-300 px-2 py-2">
+                              <input
+                                type="text"
+                                value={battery.ccaTested}
+                                onChange={(e) => updateBatteryAtIndex(index, 'ccaTested', e.target.value.toUpperCase())}
+                                disabled={readOnly}
+                                className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${inputBg}`}
+                                style={{ textTransform: 'uppercase' }}
+                              />
+                            </td>
+                            <td className="border border-gray-300 px-2 py-2">
+                              <select
+                                value={battery.passFail}
+                                onChange={(e) => updateBatteryAtIndex(index, 'passFail', e.target.value)}
+                                disabled={readOnly}
+                                className={`w-full px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 ${inputBg}`}
+                              >
+                                <option value="Pass">PASS</option>
+                                <option value="Fail">FAIL</option>
+                              </select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-
-            {!readOnly && (
-              <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={addBattery}
-                  disabled={batteryReadings.length >= 5}
-                  className={`flex items-center gap-2 px-4 py-2 transition-colors ${
-                    batteryReadings.length >= 5
-                      ? 'bg-gray-400 text-white cursor-not-allowed opacity-60'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  <Plus size={18} />
-                  ADD BATTERY
-                </button>
-                {batteryReadings.length >= 5 && (
-                  <span className="text-red-600 text-sm font-medium">Only 5 batteries can be added</span>
-                )}
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
 
