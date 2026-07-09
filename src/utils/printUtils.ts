@@ -564,6 +564,13 @@ export async function generatePDF(
 
     if (loadBankSection && !hasLoadBankData(formData)) {
       loadBankSection.remove();
+    } else if (loadBankSection) {
+      const services = (formData.type_of_service || '')
+        .split(',')
+        .map(s => s.trim().toUpperCase());
+      if (!services.includes('LOAD BANK')) {
+        loadBankSection.remove();
+      }
     }
 
     await new Promise(resolve => setTimeout(resolve, 500));
