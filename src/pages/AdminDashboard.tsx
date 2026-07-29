@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FormSubmission } from '../types/form';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -32,6 +32,8 @@ export function AdminDashboard() {
   const [dateFromFilter, setDateFromFilter] = useState<string>('');
   const [dateToFilter, setDateToFilter] = useState<string>('');
   const [poNumberFilter, setPONumberFilter] = useState<string>('');
+  const [visibleCount, setVisibleCount] = useState(100);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadSubmissions();
@@ -126,7 +128,30 @@ export function AdminDashboard() {
     setDateFromFilter('');
     setDateToFilter('');
     setPONumberFilter('');
+    setVisibleCount(100);
   };
+
+  useEffect(() => {
+    setVisibleCount(100);
+  }, [searchTerm, statusFilter, technicianFilter, customerFilter, siteFilter, serviceTypeFilter, dateFromFilter, dateToFilter, poNumberFilter]);
+
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount(prev => prev + 100);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const el = loadMoreRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, [handleLoadMore]);
 
   const filteredSubmissions = submissions.filter(sub => {
     const matchesSearch =
@@ -613,7 +638,7 @@ export function AdminDashboard() {
             <>
               {/* --- SUBMISSIONS LIST --- */}
               <div className="divide-y divide-gray-200">
-                {filteredSubmissions.map((submission) => {
+                {filteredSubmissions.slice(0, visibleCount).map((submission) => {
                   const isExpanded = expandedRows.has(submission.id!);
 
                   return (
@@ -990,6 +1015,16 @@ export function AdminDashboard() {
                   );
                 })}
               </div>
+              {visibleCount < filteredSubmissions.length && (
+                <div ref={loadMoreRef} className="p-6 text-center border-t border-gray-200">
+                  <button
+                    onClick={handleLoadMore}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-all inline-flex items-center gap-2"
+                  >
+                    Load More ({filteredSubmissions.length - visibleCount} remaining)
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
